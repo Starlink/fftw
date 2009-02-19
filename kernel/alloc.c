@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: alloc.c,v 1.47 2006-01-17 13:28:18 athena Exp $ */
 #include "ifftw.h"
 
 /**********************************************************
@@ -76,7 +75,7 @@ struct minfo {
 
 static struct minfo *minfo[HASHSZ] = {0};
 
-#ifdef HAVE_THREADS
+#if defined(HAVE_THREADS) || defined(HAVE_OPENMP)
 int X(in_thread) = 0;
 #endif
 

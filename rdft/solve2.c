@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: solve2.c,v 1.5 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "rdft.h"
 
@@ -27,5 +26,7 @@ void X(rdft2_solve)(const plan *ego_, const problem *p_)
 {
      const plan_rdft2 *ego = (const plan_rdft2 *) ego_;
      const problem_rdft2 *p = (const problem_rdft2 *) p_;
-     ego->apply(ego_, UNTAINT(p->r), UNTAINT(p->rio), UNTAINT(p->iio));
+     ego->apply(ego_, 
+		UNTAINT(p->r0), UNTAINT(p->r1),
+		UNTAINT(p->cr), UNTAINT(p->ci));
 }

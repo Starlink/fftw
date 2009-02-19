@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: expr.ml,v 1.13 2006-02-12 23:34:12 athena Exp $ *)
 
 (* Here, we define the data type encapsulating a symbolic arithmetic
    expression, and provide some routines for manipulating it. *)
 
 (* I will regret this hack : *)
 (* NEWS: I did *)
-type transcendent = I | MULTI_A | MULTI_B
+type transcendent = I | MULTI_A | MULTI_B | CONJ
 
 type expr =
   | Num of Number.number
@@ -51,6 +50,7 @@ let transcendent_to_float = function
   | I -> 2.718281828459045235360287471  (* any transcendent number will do *)
   | MULTI_A -> 0.6931471805599453094172321214
   | MULTI_B -> -0.3665129205816643270124391582
+  | CONJ -> 0.6019072301972345747375400015
 
 let rec hash = function
   | Num x -> hash_float (Number.to_float x)
@@ -98,6 +98,7 @@ let string_of_transcendent = function
   | I -> "I"
   | MULTI_A -> "MULTI_A"
   | MULTI_B -> "MULTI_B"
+  | CONJ -> "CONJ"
 
 let rec to_string = function
   | Load v -> Variable.unparse v

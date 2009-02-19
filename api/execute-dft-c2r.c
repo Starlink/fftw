@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,5 +25,6 @@
 void X(execute_dft_c2r)(const X(plan) p, C *in, R *out)
 WITH_ALIGNED_STACK({
      plan_rdft2 *pln = (plan_rdft2 *) p->pln;
-     pln->apply((plan *) pln, out, in[0], in[0]+1);
+     problem_rdft2 *prb = (problem_rdft2 *) p->prb;
+     pln->apply((plan *) pln, out, out + (prb->r1 - prb->r0), in[0], in[0]+1);
 })

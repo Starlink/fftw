@@ -2,23 +2,16 @@
 /* NOTE to users: this is the FFTW self-test and benchmark program.
    It is probably NOT a good place to learn FFTW usage, since it has a
    lot of added complexity in order to exercise and test the full API,
-   etcetera.  We suggest reading the manual. */
+   etcetera.  We suggest reading the manual. 
+
+   (Some of the self-test code is split off into fftw-bench.c and
+   hook.c.) */
 /**************************************************************************/
 
-#include "bench-user.h"
 #include <math.h>
 #include <stdio.h>
-#include <fftw3.h>
 #include <string.h>
-
-#define CONCAT(prefix, name) prefix ## name
-#if defined(BENCHFFT_SINGLE)
-#define FFTW(x) CONCAT(fftwf_, x)
-#elif defined(BENCHFFT_LDOUBLE)
-#define FFTW(x) CONCAT(fftwl_, x)
-#else
-#define FFTW(x) CONCAT(fftw_, x)
-#endif
+#include "fftw-bench.h"
 
 static const char *mkversion(void) { return FFTW(version); }
 static const char *mkcc(void) { return FFTW(cc); }
@@ -30,94 +23,6 @@ BENCH_DOCF("version", mkversion)
 BENCH_DOCF("cc", mkcc)
 BENCH_DOCF("codelet-optim", mkcodelet_optim)
 END_BENCH_DOC 
-
-FFTW(plan) the_plan = 0;
-
-static const char *wisdat = "wis.dat";
-unsigned the_flags = 0;
-int paranoid = 0;
-int usewisdom = 0;
-int havewisdom = 0;
-int nthreads = 1;
-int amnesia = 0;
-
-extern void install_hook(void);  /* in hook.c */
-extern void uninstall_hook(void);  /* in hook.c */
-
-void useropt(const char *arg)
-{
-     int x;
-     double y;
-
-     if (!strcmp(arg, "patient")) the_flags |= FFTW_PATIENT;
-     else if (!strcmp(arg, "estimate")) the_flags |= FFTW_ESTIMATE;
-     else if (!strcmp(arg, "estimatepat")) the_flags |= FFTW_ESTIMATE_PATIENT;
-     else if (!strcmp(arg, "exhaustive")) the_flags |= FFTW_EXHAUSTIVE;
-     else if (!strcmp(arg, "unaligned")) the_flags |= FFTW_UNALIGNED;
-     else if (!strcmp(arg, "nosimd")) the_flags |= FFTW_NO_SIMD;
-     else if (!strcmp(arg, "noindirectop")) the_flags |= FFTW_NO_INDIRECT_OP;
-     else if (sscanf(arg, "flag=%d", &x) == 1) the_flags |= x;
-     else if (!strcmp(arg, "paranoid")) paranoid = 1;
-     else if (!strcmp(arg, "wisdom")) usewisdom = 1;
-     else if (!strcmp(arg, "amnesia")) amnesia = 1;
-     else if (sscanf(arg, "nthreads=%d", &x) == 1) nthreads = x;
-     else if (sscanf(arg, "timelimit=%lg", &y) == 1) {
-	  FFTW(set_timelimit)(y);
-     }
-
-     else fprintf(stderr, "unknown user option: %s.  Ignoring.\n", arg);
-}
-
-void rdwisdom(void)
-{
-     FILE *f;
-     double tim;
-     int success = 0;
-
-     if (havewisdom) return;
-
-#ifdef HAVE_THREADS
-     BENCH_ASSERT(FFTW(init_threads)());
-     FFTW(plan_with_nthreads)(nthreads);
-#endif
-
-     if (!usewisdom) return;
-
-     timer_start(USER_TIMER);
-     if ((f = fopen(wisdat, "r"))) {
-	  if (!FFTW(import_wisdom_from_file)(f))
-	       fprintf(stderr, "bench: ERROR reading wisdom\n");
-	  else
-	       success = 1;
-	  fclose(f);
-     }
-     tim = timer_stop(USER_TIMER);
-
-     if (success) {
-	  if (verbose > 1) printf("READ WISDOM (%g seconds): ", tim);
-	  
-	  if (verbose > 3)
-	       FFTW(export_wisdom_to_file)(stdout);
-	  if (verbose > 1)
-	       printf("\n");
-     }
-     havewisdom = 1;
-}
-
-void wrwisdom(void)
-{
-     FILE *f;
-     double tim;
-     if (!havewisdom) return;
-
-     timer_start(USER_TIMER);
-     if ((f = fopen(wisdat, "w"))) {
-	  FFTW(export_wisdom_to_file)(f);
-	  fclose(f);
-     }
-     tim = timer_stop(USER_TIMER);
-     if (verbose > 1) printf("write wisdom took %g seconds\n", tim);
-}
 
 static FFTW(iodim) *bench_tensor_to_fftw_iodim(bench_tensor *t)
 {
@@ -210,7 +115,7 @@ static int halfish_sizeof_problem(bench_problem *p)
      return n2;
 }
 
-static FFTW(plan) mkplan_real_split(bench_problem *p, int flags)
+static FFTW(plan) mkplan_real_split(bench_problem *p, unsigned flags)
 {
      FFTW(plan) pln;
      bench_tensor *sz = p->sz, *vecsz = p->vecsz;
@@ -240,7 +145,7 @@ static FFTW(plan) mkplan_real_split(bench_problem *p, int flags)
      return pln;
 }
 
-static FFTW(plan) mkplan_real_interleaved(bench_problem *p, int flags)
+static FFTW(plan) mkplan_real_interleaved(bench_problem *p, unsigned flags)
 {
      FFTW(plan) pln;
      bench_tensor *sz = p->sz, *vecsz = p->vecsz;
@@ -385,7 +290,7 @@ static FFTW(plan) mkplan_real_interleaved(bench_problem *p, int flags)
      }
 }
 
-static FFTW(plan) mkplan_real(bench_problem *p, int flags)
+static FFTW(plan) mkplan_real(bench_problem *p, unsigned flags)
 {
      if (p->split)
 	  return mkplan_real_split(p, flags);
@@ -393,16 +298,15 @@ static FFTW(plan) mkplan_real(bench_problem *p, int flags)
 	  return mkplan_real_interleaved(p, flags);
 }
 
-static FFTW(plan) mkplan_complex_split(bench_problem *p, int flags)
+static FFTW(plan) mkplan_complex_split(bench_problem *p, unsigned flags)
 {
      FFTW(plan) pln;
      bench_tensor *sz = p->sz, *vecsz = p->vecsz;
      FFTW(iodim) *dims, *howmany_dims;
      bench_real *ri, *ii, *ro, *io;
-     int n = sizeof_problem(p);
 
-     extract_reim_split(p->sign, n, (bench_real *) p->in, &ri, &ii);
-     extract_reim_split(p->sign, n, (bench_real *) p->out, &ro, &io);
+     extract_reim_split(p->sign, p->iphyssz, (bench_real *) p->in, &ri, &ii);
+     extract_reim_split(p->sign, p->ophyssz, (bench_real *) p->out, &ro, &io);
 
      dims = bench_tensor_to_fftw_iodim(sz);
      howmany_dims = bench_tensor_to_fftw_iodim(vecsz);
@@ -415,7 +319,7 @@ static FFTW(plan) mkplan_complex_split(bench_problem *p, int flags)
      return pln;
 }
 
-static FFTW(plan) mkplan_complex_interleaved(bench_problem *p, int flags)
+static FFTW(plan) mkplan_complex_interleaved(bench_problem *p, unsigned flags)
 {
      FFTW(plan) pln;
      bench_tensor *sz = p->sz, *vecsz = p->vecsz;
@@ -498,7 +402,7 @@ static FFTW(plan) mkplan_complex_interleaved(bench_problem *p, int flags)
      }
 }
 
-static FFTW(plan) mkplan_complex(bench_problem *p, int flags)
+static FFTW(plan) mkplan_complex(bench_problem *p, unsigned flags)
 {
      if (p->split)
 	  return mkplan_complex_split(p, flags);
@@ -506,7 +410,7 @@ static FFTW(plan) mkplan_complex(bench_problem *p, int flags)
 	  return mkplan_complex_interleaved(p, flags);
 }
 
-static FFTW(plan) mkplan_r2r(bench_problem *p, int flags)
+static FFTW(plan) mkplan_r2r(bench_problem *p, unsigned flags)
 {
      FFTW(plan) pln;
      bench_tensor *sz = p->sz, *vecsz = p->vecsz;
@@ -613,7 +517,7 @@ static FFTW(plan) mkplan_r2r(bench_problem *p, int flags)
      return pln;
 }
 
-static FFTW(plan) mkplan(bench_problem *p, int flags)
+FFTW(plan) mkplan(bench_problem *p, unsigned flags)
 {
      switch (p->kind) {
 	 case PROBLEM_COMPLEX:	  return mkplan_complex(p, flags);
@@ -623,112 +527,26 @@ static FFTW(plan) mkplan(bench_problem *p, int flags)
      }
 }
 
-static unsigned preserve_input_flags(bench_problem *p)
+void main_init(int *argc, char ***argv)
 {
-     /*
-      * fftw3 cannot preserve input for multidimensional c2r transforms.
-      * Enforce FFTW_DESTROY_INPUT
-      */
-     if (p->kind == PROBLEM_REAL && 
-	 p->sign > 0 && 
-	 !p->in_place && 
-	 p->sz->rnk > 1)
-	  p->destroy_input = 1;
-
-     if (p->destroy_input)
-	  return FFTW_DESTROY_INPUT;
-     else
-	  return FFTW_PRESERVE_INPUT;
+     UNUSED(argc);
+     UNUSED(argv);
 }
 
-int can_do(bench_problem *p)
+void initial_cleanup(void)
 {
-     double tim;
-
-     if (verbose > 2 && p->pstring)
-	  printf("Planning %s...\n", p->pstring);
-     rdwisdom();
-
-     timer_start(USER_TIMER);
-     the_plan = mkplan(p, preserve_input_flags(p) | the_flags | FFTW_ESTIMATE);
-     tim = timer_stop(USER_TIMER);
-     if (verbose > 2) printf("estimate-planner time: %g s\n", tim);
-
-     if (the_plan) {
-	  FFTW(destroy_plan)(the_plan);
-	  return 1;
-     }
-     return 0;
 }
 
-void setup(bench_problem *p)
+void final_cleanup(void)
 {
-     double tim;
-
-     if (amnesia)
-	  FFTW(forget_wisdom)();
-
-     /* Regression test: check that fftw_malloc exists and links
-      * properly */
-     FFTW(free(FFTW(malloc(42))));
-
-     rdwisdom();
-     install_hook();
-
-#ifdef HAVE_THREADS
-     if (verbose > 1 && nthreads > 1) printf("NTHREADS = %d\n", nthreads);
-#endif
-
-     timer_start(USER_TIMER);
-     the_plan = mkplan(p, preserve_input_flags(p) | the_flags);
-     tim = timer_stop(USER_TIMER);
-     if (verbose > 1) printf("planner time: %g s\n", tim);
-
-     BENCH_ASSERT(the_plan);
-
-     if (verbose > 1) {
-	  double add, mul, fma;
-	  FFTW(print_plan)(the_plan);
-	  printf("\n");
-	  FFTW(flops)(the_plan, &add, &mul, &fma);
-	  printf("flops: %0.0f add, %0.0f mul, %0.0f fma\n", add, mul, fma);
-	  printf("estimated cost: %f\n", FFTW(estimate_cost)(the_plan));
-     }
 }
 
-
-void doit(int iter, bench_problem *p)
+int import_wisdom(FILE *f)
 {
-     int i;
-     FFTW(plan) q = the_plan;
-
-     UNUSED(p);
-     for (i = 0; i < iter; ++i) 
-	  FFTW(execute)(q);
+     return FFTW(import_wisdom_from_file)(f);
 }
 
-void done(bench_problem *p)
+void export_wisdom(FILE *f)
 {
-     UNUSED(p);
-
-     FFTW(destroy_plan)(the_plan);
-     uninstall_hook();
-}
-
-void cleanup(void)
-{
-     wrwisdom();
-#ifdef HAVE_THREADS
-     FFTW(cleanup_threads)();
-#else
-     FFTW(cleanup)();
-#endif
-
-#    ifdef FFTW_DEBUG_MALLOC
-     {
-	  /* undocumented memory checker */
-	  FFTW_EXTERN void FFTW(malloc_print_minfo)(int v);
-	  FFTW(malloc_print_minfo)(verbose);
-     }
-#    endif
+     FFTW(export_wisdom_to_file)(f);
 }

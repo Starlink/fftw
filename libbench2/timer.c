@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: timer.c,v 1.13 2006-01-30 16:09:32 athena Exp $ */
 
 #include "bench.h"
 #include <stdio.h>
@@ -59,7 +58,7 @@ static double elapsed(mytime t1, mytime t0)
 {
      LARGE_INTEGER freq;
      QueryPerformanceFrequency(&freq);
-     return ((double) (t1.QuadPart - t0.QuadPart)) /
+     return (((double) t1.QuadPart - (double) t0.QuadPart)) /
 	  ((double) freq.QuadPart);
 }
 
@@ -79,8 +78,8 @@ static mytime get_time(void)
 
 static double elapsed(mytime t1, mytime t0)
 {
-     return (double)(t1.tv_sec - t0.tv_sec) +
-	  (double)(t1.tv_usec - t0.tv_usec) * 1.0E-6;
+     return ((double) t1.tv_sec - (double) t0.tv_sec) +
+	  ((double) t1.tv_usec - (double) t0.tv_usec) * 1.0E-6;
 }
 
 #define HAVE_TIMER
@@ -90,79 +89,12 @@ static double elapsed(mytime t1, mytime t0)
 #error "timer not defined"
 #endif
 
-static const double tmax_try = 1.0;    /* seconds */
-static const int nmin = 128, nmax = 133;
-
-static double time_one(int n)
-{
-     float X[16], Y[16];
-     int i;
-     mytime t0, t1;
-
-     for (i = 0; i < 16; ++i)
-	  X[i] = 0;
-
-     t0 = get_time();
-     for (i = 0; i < n; ++i)
-	  bench_fft8(X, X+1, Y, Y+1, 2, 2);
-     t1 = get_time();
-     return (elapsed(t1, t0));
-}
-
-static double time_n(int n)
-{
-     int     i;
-     double  tmin;
-
-     tmin = time_one(n);
-     for (i = 1; i < time_repeat; ++i) {
-	  double t = time_one(n);
-	  if (t < tmin)
-	       tmin = t;
-     }
-     return tmin;
-}
-
-static int good_enough_p(int n, double *tp)
-{
-     int i;
-     double t = 0.0;
-
-     /* vary nmin and see if time scales proportionally */
-     for (i = nmin; i < nmax; ++i) {
-	  double t1 = time_n(n * i);
-
-	  if (t1 <= 0)
-	       return 0; /* not enough resolution */
-
-	  if (t1 >= tmax_try) {
-	       t = t1;
-	       break;
-	  }
-
-	  t = (i == nmin) ? t1 : t;
-
-	  if (t1 >= (t * (i + 0.5) / nmin))
-	       return 0;
-
-	  if (t1 <= (t * (i - 0.5) / nmin))
-	       return 0;
-     }
-
-     *tp = t;
-     return 1;
-}
-
 static double calibrate(void)
 {
-     double t = tmax_try;
-     int n;
+     /* there seems to be no reasonable way to calibrate the
+	clock automatically any longer.  Grrr... */
 
-     for (n = 1; n < (1 << 20); n += n) 
-	  if (good_enough_p(n, &t))
-	       break;
-
-     return t;
+     return 0.01;
 }
 
 

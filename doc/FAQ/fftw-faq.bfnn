@@ -9,7 +9,7 @@
 \set authormail fftw@fftw.org
 \set title      FFTW Frequently Asked Questions with Answers
 \set copyholder Matteo Frigo and Massachusetts Institute of Technology
-\call-html startup html.refs
+\call-html startup html.refs2
 \copyto ASCII
             FFTW FREQUENTLY ASKED QUESTIONS WITH ANSWERS
                             `date '+%d %h %Y'`
@@ -158,8 +158,10 @@ problems may appear:
 
 \courier{gcc\} 3.4.[0123] for x86 produces incorrect SSE2 code for
 FFTW when \courier{-O2\} (the best choice for FFTW) is used, causing
-FFTW to crash (\courier{make check\} crashes).  This bug is fixed
-in \courier{gcc\} 3.4.4.
+FFTW to crash (\courier{make check\} crashes).  This bug is fixed in
+\courier{gcc\} 3.4.4.  On x86_64 (amd64/em64t), \courier{gcc\} 3.4.4
+reportedly still has a similar problem, but this is fixed as of
+\courier{gcc\} 3.4.6.
 
 \courier{gcc-3.2\} for x86 produces incorrect SIMD code if
 \courier{-O3\} is used.  The same compiler produces incorrect SIMD
@@ -190,6 +192,16 @@ permutations, but FFTW has a workaround.  \courier{gcc\} 4.0.1 on
 MacOS for Intel crashes when compiling FFTW; a workaround is to
 compile one file without optimization: \courier{cd kernel; make
 CFLAGS=" " trig.lo\}.
+
+\courier{gcc\} 4.1.1 reportedly crashes when compiling FFTW for MIPS;
+the workaround is to compile the file it crashes on
+(\courier{t2_64.c\}) with a lower optimization level.
+
+\courier{gcc\} versions 4.1.2 to 4.2.0 for x86 reportedly miscompile
+FFTW 3.1's test program, causing \courier{make check\} to crash
+(\courier{gcc\} bug #26528).  The bug was reportedly fixed in
+\courier{gcc\} version 4.2.1 and later.  A workaround is to compile
+\courier{libbench2/verify-lib.c\} without optimization.
 
 \question 26aug:solarisSucks FFTW does not compile on Solaris, complaining about \courier{const\}.
 
@@ -247,11 +259,11 @@ force one or the other by using the \courier{--enable-fma\} or
 
 Definitely use fma if you have a PowerPC-based system with
 \courier{gcc\} (or IBM \courier{xlc\}).  This includes all GNU/Linux
-systems for PowerPC and all MacOS X systems.  Also use it on PA-RISC
-and Itanium with the HP/UX compiler.
+systems for PowerPC and the older PowerPC-based MacOS systems.  Also
+use it on PA-RISC and Itanium with the HP/UX compiler.
 
 Definitely do not use the fma version if you have an ia-32 processor
-(Intel, AMD, etcetera).
+(Intel, AMD, MacOS on Intel, etcetera).
 
 For other architectures/compilers, the situation is not so clear.  For
 example, ia-64 has the fma instruction, but \courier{gcc-3.2\} appears
@@ -354,7 +366,8 @@ interface.
 \call item
 If the abovementioned array characteristics are the same, you are
 willing to pay close attention to the documentation, and you really
-need to, we provide a "guru" interface to apply a plan to a new array.
+need to, we provide a "new-array execution" interface to apply a plan
+to a new array.
 \call endlist
 
 \question 25may:slow FFTW seems really slow.
@@ -420,6 +433,19 @@ different FFT algorithms will give slightly different results (on the
 order of the numerical accuracy; typically a fractional difference of
 1e-15 or so in double precision).
 
+\question 31aug:nondeterministic FFTW gives different results between runs
+
+If you use \courier{FFTW_MEASURE\} or \courier{FFTW_PATIENT\} mode,
+then the algorithm FFTW employs is not deterministic: it depends on
+runtime performance measurements.  This will cause the results to vary
+slightly from run to run.  However, the differences should be slight,
+on the order of the floating-point precision, and therefore should
+have no practical impact on most applications.
+
+If you use saved plans (wisdom) or \courier{FFTW_ESTIMATE\} mode,
+however, then the algorithm is deterministic and the results should be
+identical between runs.
+
 \question 26aug:savePlans Can I save FFTW's plans?
 
 Yes. Starting with version 1.2, FFTW provides the \courier{wisdom\}
@@ -472,7 +498,7 @@ library and link it into your program, not just \courier{#include
 
 \question 22oct:nostack My program crashes, complaining about stack space.
 
-You cannot declare large arrays statically (e.g. via
+You cannot declare large arrays with automatic storage (e.g. via
 \courier{fftw_complex array[N]\}); you should use
 \courier{fftw_malloc\} (or equivalent) to allocate the arrays you want
 to transform if they are larger than a few hundred elements.

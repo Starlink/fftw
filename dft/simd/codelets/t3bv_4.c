@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 22:33:14 EDT 2006 */
+/* Generated on Mon Feb  9 19:53:16 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,30 +30,23 @@
 /*
  * This function contains 12 FP additions, 10 FP multiplications,
  * (or, 10 additions, 8 multiplications, 2 fused multiply/add),
- * 16 stack variables, and 8 memory accesses
+ * 16 stack variables, 0 constants, and 8 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t3b.h"
 
-static const R *t3bv_4(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t3bv_4(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T2, T3, T1, Ta, T5, T8;
 	  T2 = LDW(&(W[0]));
 	  T3 = LDW(&(W[TWVL * 2]));
-	  T1 = LD(&(x[0]), dist, &(x[0]));
-	  Ta = LD(&(x[WS(ios, 3)]), dist, &(x[WS(ios, 1)]));
-	  T5 = LD(&(x[WS(ios, 2)]), dist, &(x[0]));
-	  T8 = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+	  T1 = LD(&(x[0]), ms, &(x[0]));
+	  Ta = LD(&(x[WS(rs, 3)]), ms, &(x[WS(rs, 1)]));
+	  T5 = LD(&(x[WS(rs, 2)]), ms, &(x[0]));
+	  T8 = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 	  {
 	       V T4, Tb, T9, T6;
 	       T4 = VZMULJ(T2, T3);
@@ -66,19 +59,18 @@ static const R *t3bv_4(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    Te = VADD(T9, Tb);
 		    T7 = VSUB(T1, T6);
 		    Td = VADD(T1, T6);
-		    ST(&(x[0]), VADD(Td, Te), dist, &(x[0]));
-		    ST(&(x[WS(ios, 2)]), VSUB(Td, Te), dist, &(x[0]));
-		    ST(&(x[WS(ios, 1)]), VFMAI(Tc, T7), dist, &(x[WS(ios, 1)]));
-		    ST(&(x[WS(ios, 3)]), VFNMSI(Tc, T7), dist, &(x[WS(ios, 1)]));
+		    ST(&(x[0]), VADD(Td, Te), ms, &(x[0]));
+		    ST(&(x[WS(rs, 2)]), VSUB(Td, Te), ms, &(x[0]));
+		    ST(&(x[WS(rs, 1)]), VFMAI(Tc, T7), ms, &(x[WS(rs, 1)]));
+		    ST(&(x[WS(rs, 3)]), VFNMSI(Tc, T7), ms, &(x[WS(rs, 1)]));
 	       }
 	  }
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(3),
+     VTW(0, 1),
+     VTW(0, 3),
      {TW_NEXT, VL, 0}
 };
 
@@ -94,55 +86,47 @@ void X(codelet_t3bv_4) (planner *p) {
 /*
  * This function contains 12 FP additions, 8 FP multiplications,
  * (or, 12 additions, 8 multiplications, 0 fused multiply/add),
- * 16 stack variables, and 8 memory accesses
+ * 16 stack variables, 0 constants, and 8 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t3b.h"
 
-static const R *t3bv_4(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t3bv_4(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T2, T3, T4;
 	  T2 = LDW(&(W[0]));
 	  T3 = LDW(&(W[TWVL * 2]));
 	  T4 = VZMULJ(T2, T3);
 	  {
 	       V T1, Tb, T6, T9, Ta, T5, T8;
-	       T1 = LD(&(x[0]), dist, &(x[0]));
-	       Ta = LD(&(x[WS(ios, 3)]), dist, &(x[WS(ios, 1)]));
+	       T1 = LD(&(x[0]), ms, &(x[0]));
+	       Ta = LD(&(x[WS(rs, 3)]), ms, &(x[WS(rs, 1)]));
 	       Tb = VZMUL(T3, Ta);
-	       T5 = LD(&(x[WS(ios, 2)]), dist, &(x[0]));
+	       T5 = LD(&(x[WS(rs, 2)]), ms, &(x[0]));
 	       T6 = VZMUL(T4, T5);
-	       T8 = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+	       T8 = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 	       T9 = VZMUL(T2, T8);
 	       {
 		    V T7, Tc, Td, Te;
 		    T7 = VSUB(T1, T6);
 		    Tc = VBYI(VSUB(T9, Tb));
-		    ST(&(x[WS(ios, 3)]), VSUB(T7, Tc), dist, &(x[WS(ios, 1)]));
-		    ST(&(x[WS(ios, 1)]), VADD(T7, Tc), dist, &(x[WS(ios, 1)]));
+		    ST(&(x[WS(rs, 3)]), VSUB(T7, Tc), ms, &(x[WS(rs, 1)]));
+		    ST(&(x[WS(rs, 1)]), VADD(T7, Tc), ms, &(x[WS(rs, 1)]));
 		    Td = VADD(T1, T6);
 		    Te = VADD(T9, Tb);
-		    ST(&(x[WS(ios, 2)]), VSUB(Td, Te), dist, &(x[0]));
-		    ST(&(x[0]), VADD(Td, Te), dist, &(x[0]));
+		    ST(&(x[WS(rs, 2)]), VSUB(Td, Te), ms, &(x[0]));
+		    ST(&(x[0]), VADD(Td, Te), ms, &(x[0]));
 	       }
 	  }
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(3),
+     VTW(0, 1),
+     VTW(0, 3),
      {TW_NEXT, VL, 0}
 };
 

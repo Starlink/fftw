@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ void X(spawn_loop)(int loopmax, int nthreads,
 		   spawn_function proc, void *data);
 int X(ithreads_init)(void);
 void X(threads_cleanup)(void);
-void X(threads_setmax)(int nthreads_max);
 
 /* configurations */
 
@@ -44,9 +43,12 @@ void X(dft_thr_vrank_geq1_register)(planner *p);
 void X(rdft_thr_vrank_geq1_register)(planner *p);
 void X(rdft2_thr_vrank_geq1_register)(planner *p);
 
-ct_solver *X(mksolver_ct_threads)(size_t size, INT r, int dec, ct_mkinferior mkcldw);
+ct_solver *X(mksolver_ct_threads)(size_t size, INT r, int dec, 
+				  ct_mkinferior mkcldw,
+				  ct_force_vrecursion force_vrecursionp);
 hc2hc_solver *X(mksolver_hc2hc_threads)(size_t size, INT r, hc2hc_mkinferior mkcldw);
 
 void X(threads_conf_standard)(planner *p);
-
+void X(threads_register_hooks)(void);
+void X(threads_unregister_hooks)(void);
 #endif /* __THREADS_H__ */

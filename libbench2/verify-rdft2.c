@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: verify-rdft2.c,v 1.10 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "verify.h"
 
@@ -155,7 +154,7 @@ static void rdft2_apply(dofft_closure *k_,
      ri = (bench_real *) p->in;
      ro = (bench_real *) p->out;
 
-     if (p->sz->rnk > 0) {
+     if (FINITE_RNK(p->sz->rnk) && p->sz->rnk > 0 && n2 > 0) {
 	  probsz2 = tensor_copy_sub(p->sz, p->sz->rnk - 1, 1);
 	  totalsz2 = tensor_copy_sub(totalsz, 0, totalsz->rnk - 1);
 	  pckdsz2 = tensor_copy_sub(pckdsz, 0, pckdsz->rnk - 1);
@@ -188,7 +187,9 @@ static void rdft2_apply(dofft_closure *k_,
      if (p->sign < 0) { /* R2HC */
 	  int N, vN, i;
 	  cpyr(&c_re(in[0]), pckdsz, ri, totalsz);
+	  after_problem_rcopy_from(p, ri);
 	  doit(1, p);
+	  after_problem_hccopy_to(p, ro, io);
 	  if (k->k.recopy_input)
 	       cpyr(ri, totalsz_swap, &c_re(in[0]), pckdsz_swap);
 	  cpyhc2(ro, io, probsz2, totalsz2, totalscale,
@@ -201,7 +202,9 @@ static void rdft2_apply(dofft_closure *k_,
      else { /* HC2R */
 	  icpyhc2(ri, ii, probsz2, totalsz2, totalscale,
 		  &c_re(in[0]), &c_im(in[0]), pckdsz2);
+	  after_problem_hccopy_from(p, ri, ii);
 	  doit(1, p);
+	  after_problem_rcopy_to(p, ro);
 	  if (k->k.recopy_input)
 	       cpyhc2(ri, ii, probsz2_swap, totalsz2_swap, totalscale,
 		      &c_re(in[0]), &c_im(in[0]), pckdsz2_swap);
@@ -228,6 +231,9 @@ void verify_rdft2(bench_problem *p, int rounds, double tol, errors *e)
      dofft_rdft2_closure k;
 
      BENCH_ASSERT(p->kind == PROBLEM_REAL);
+
+     if (!FINITE_RNK(p->sz->rnk) || !FINITE_RNK(p->vecsz->rnk))
+	  return;      /* give up */
 
      k.k.apply = rdft2_apply;
      k.k.recopy_input = 0;

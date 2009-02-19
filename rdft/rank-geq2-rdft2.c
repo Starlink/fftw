@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: rank-geq2-rdft2.c,v 1.29 2006-01-27 02:10:50 athena Exp $ */
 
 /* plans for RDFT2 of rank >= 2 (multidimensional) */
 
@@ -38,33 +37,33 @@ typedef struct {
      const S *solver;
 } P;
 
-static void apply_r2hc(const plan *ego_, R *r, R *rio, R *iio)
+static void apply_r2hc(const plan *ego_, R *r0, R *r1, R *cr, R *ci)
 {
      const P *ego = (const P *) ego_;
 
      {
 	  plan_rdft2 *cldr = (plan_rdft2 *) ego->cldr;
-	  cldr->apply((plan *) cldr, r, rio, iio);
+	  cldr->apply((plan *) cldr, r0, r1, cr, ci);
      }
      
      {
 	  plan_dft *cldc = (plan_dft *) ego->cldc;
-	  cldc->apply((plan *) cldc, rio, iio, rio, iio);
+	  cldc->apply((plan *) cldc, cr, ci, cr, ci);
      }
 }
 
-static void apply_hc2r(const plan *ego_, R *r, R *rio, R *iio)
+static void apply_hc2r(const plan *ego_, R *r0, R *r1, R *cr, R *ci)
 {
      const P *ego = (const P *) ego_;
 
      {
 	  plan_dft *cldc = (plan_dft *) ego->cldc;
-	  cldc->apply((plan *) cldc, iio, rio, iio, rio);
+	  cldc->apply((plan *) cldc, ci, cr, ci, cr);
      }
 
      {
 	  plan_rdft2 *cldr = (plan_rdft2 *) ego->cldr;
-	  cldr->apply((plan *) cldr, r, rio, iio);
+	  cldr->apply((plan *) cldr, r0, r1, cr, ci);
      }
      
 }
@@ -109,17 +108,20 @@ static int applicable0(const solver *ego_, const problem *p_, int *rp,
      const S *ego = (const S *)ego_;
      return (1
 	     && FINITE_RNK(p->sz->rnk) && FINITE_RNK(p->vecsz->rnk)
+
+	     /* FIXME: multidimensional R2HCII ? */
+	     && (p->kind == R2HC || p->kind == HC2R)
+
 	     && p->sz->rnk >= 2
 	     && picksplit(ego, p->sz, rp)
 	     && (0
 
 		 /* can work out-of-place, but HC2R destroys input */
-		 || (p->r != p->rio && p->r != p->iio && 
+		 || (p->r0 != p->cr && 
 		     (p->kind == R2HC || !NO_DESTROY_INPUTP(plnr)))
 
 		 /* FIXME: what are sufficient conditions for inplace? */
-		 || (!(p->r != p->rio && p->r != p->iio))
-		  )
+		 || (p->r0 == p->cr))
 	  );
 }
 
@@ -131,9 +133,6 @@ static int applicable(const solver *ego_, const problem *p_,
 
      if (!applicable0(ego_, p_, rp, plnr)) return 0;
 
-     /* fixed spltrnk (unlike fftw2's spltrnk=1, default buddies[0] is
-        spltrnk=0, which is an asymptotic "theoretical optimum" for
-        an ideal cache; it's equivalent to spltrnk=1 for rnk < 4). */
      if (NO_RANK_SPLITSP(plnr) && (ego->spltrnk != ego->buddies[0]))
           return 0;
 
@@ -141,7 +140,7 @@ static int applicable(const solver *ego_, const problem *p_,
 	  const problem_rdft2 *p = (const problem_rdft2 *) p_;
 
 	  /* Heuristic: if the vector stride is greater than the transform
-	     sz, don't use (prefer to do the vector loop first with a
+	     size, don't use (prefer to do the vector loop first with a
 	     vrank-geq1 plan). */
 	  if (p->vecsz->rnk > 0 &&
 	      X(tensor_min_stride)(p->vecsz) 
@@ -183,17 +182,18 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      cldr = X(mkplan_d)(plnr, 
 		       X(mkproblem_rdft2_d)(X(tensor_copy)(sz2),
 					    X(tensor_append)(p->vecsz, sz1),
-					    p->r, p->rio, p->iio, p->kind));
+					    p->r0, p->r1,
+					    p->cr, p->ci, p->kind));
      if (!cldr) goto nada;
 
      if (p->kind == R2HC)
 	  cldp = X(mkproblem_dft_d)(X(tensor_copy_inplace)(sz1, k),
 				    X(tensor_append)(vecszi, sz2i),
-				    p->rio, p->iio, p->rio, p->iio);
+				    p->cr, p->ci, p->cr, p->ci);
      else /* HC2R must swap re/im parts to get IDFT */
 	  cldp = X(mkproblem_dft_d)(X(tensor_copy_inplace)(sz1, k),
 				    X(tensor_append)(vecszi, sz2i),
-				    p->iio, p->rio, p->iio, p->rio);
+				    p->ci, p->cr, p->ci, p->cr);
      cldc = X(mkplan_d)(plnr, cldp);
      if (!cldc) goto nada;
 
@@ -218,7 +218,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(int spltrnk, const int *buddies, int nbuddies)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->spltrnk = spltrnk;
      slv->buddies = buddies;
@@ -229,7 +229,7 @@ static solver *mksolver(int spltrnk, const int *buddies, int nbuddies)
 void X(rdft2_rank_geq2_register)(planner *p)
 {
      int i;
-     static const int buddies[] = { 0, 1, -2 };
+     static const int buddies[] = { 1, 0, -2 };
 
      const int nbuddies = (int)(sizeof(buddies) / sizeof(buddies[0]));
 

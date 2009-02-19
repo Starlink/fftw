@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: verify-lib.c,v 1.21 2006-02-26 01:27:01 stevenj Exp $ */
 
 #include "verify.h"
 #include <math.h>
@@ -229,18 +228,18 @@ double acmp(C *a, C *b, int n, const char *test, double tol)
 {
      double d = aerror(a, b, n);
      if (d > tol) {
-	  fprintf(stderr, "Found relative error %e (%s)\n", d, test);
+	  ovtpvt_err("Found relative error %e (%s)\n", d, test);
 
 	  {
-	       int i;
-	       for (i = 0; i < n; ++i) 
-		    fprintf(stderr,
-			    "%8d %16.12f %16.12f   %16.12f %16.12f\n", i, 
-			   (double) c_re(a[i]), (double) c_im(a[i]),
-			   (double) c_re(b[i]), (double) c_im(b[i]));
+	       int i, N;
+	       N = n > 300 && verbose <= 2 ? 300 : n;
+	       for (i = 0; i < N; ++i) 
+		    ovtpvt_err("%8d %16.12f %16.12f   %16.12f %16.12f\n", i, 
+			       (double) c_re(a[i]), (double) c_im(a[i]),
+			       (double) c_re(b[i]), (double) c_im(b[i]));
 	  }
 
-	  exit(EXIT_FAILURE);
+	  bench_exit(EXIT_FAILURE);
      }
      return d;
 }

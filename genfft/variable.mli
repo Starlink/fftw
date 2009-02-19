@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: variable.mli,v 1.6 2006-01-05 03:04:27 stevenj Exp $ *)
 
 type variable
 
@@ -32,6 +31,8 @@ val same_class : variable -> variable -> bool
 val make_temporary : unit -> variable
 val make_constant : Unique.unique -> string -> variable
 val make_locative :
-    Unique.unique -> Unique.unique -> (int -> string) -> int -> variable
+  Unique.unique -> Unique.unique -> (int -> string) -> 
+  int -> string -> variable
 val unparse : variable -> string
 val unparse_for_alignment : int -> variable -> string
+val vstride_of_locative : variable -> string

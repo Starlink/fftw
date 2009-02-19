@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Complex Multi-Dimensional DFTs - FFTW 3.1.2</title>
+<title>Complex Multi-Dimensional DFTs - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Tutorial.html#Tutorial" title="Tutorial">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -64,10 +64,10 @@ many times as you want with <code>fftw_execute(plan)</code>, and clean up
 with <code>fftw_destroy_plan(plan)</code> (and <code>fftw_free</code>).  The only
 difference is the routine you use to create the plan:
 
-<pre class="example">     fftw_plan fftw_plan_dft_2d(int nx, int ny,
+<pre class="example">     fftw_plan fftw_plan_dft_2d(int n0, int n1,
                                 fftw_complex *in, fftw_complex *out,
                                 int sign, unsigned flags);
-     fftw_plan fftw_plan_dft_3d(int nx, int ny, int nz,
+     fftw_plan fftw_plan_dft_3d(int n0, int n1, int n2,
                                 fftw_complex *in, fftw_complex *out,
                                 int sign, unsigned flags);
      fftw_plan fftw_plan_dft(int rank, const int *n,
@@ -75,8 +75,8 @@ difference is the routine you use to create the plan:
                              int sign, unsigned flags);
 </pre>
    <p><a name="index-fftw_005fplan_005fdft_005f2d-38"></a><a name="index-fftw_005fplan_005fdft_005f3d-39"></a><a name="index-fftw_005fplan_005fdft-40"></a>
-These routines create plans for <code>nx</code> by <code>ny</code> two-dimensional
-(2d) transforms, <code>nx</code> by <code>ny</code> by <code>nz</code> 3d transforms,
+These routines create plans for <code>n0</code> by <code>n1</code> two-dimensional
+(2d) transforms, <code>n0</code> by <code>n1</code> by <code>n2</code> 3d transforms,
 and arbitrary <code>rank</code>-dimensional transforms, respectively.  In the
 <a name="index-rank-41"></a>third case, <code>n</code> is a pointer to an array <code>n[rank]</code> denoting
 an <code>n[0]</code> by <code>n[1]</code> by <small class="dots">...</small> by <code>n[rank-1]</code>
@@ -88,8 +88,8 @@ further in <a href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensiona
    <p>You may have noticed that all the planner routines described so far
 have overlapping functionality.  For example, you can plan a 1d or 2d
 transform by using <code>fftw_plan_dft</code> with a <code>rank</code> of <code>1</code>
-or <code>2</code>, or even by calling <code>fftw_plan_dft_3d</code> with <code>nx</code>
-and/or <code>ny</code> equal to <code>1</code> (with no loss in efficiency).  This
+or <code>2</code>, or even by calling <code>fftw_plan_dft_3d</code> with <code>n0</code>
+and/or <code>n1</code> equal to <code>1</code> (with no loss in efficiency).  This
 pattern continues, and FFTW's planning routines in general form a
 &ldquo;partial order,&rdquo; sequences of
 <a name="index-partial-order-42"></a>interfaces with strictly increasing generality but correspondingly

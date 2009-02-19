@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: gen_r2r.ml,v 1.10 2006-02-12 23:34:12 athena Exp $ *)
 
 (* generation of trigonometric transforms *)
 
@@ -26,7 +25,6 @@ open Util
 open Genutil
 open C
 
-let cvsid = "$Id: gen_r2r.ml,v 1.10 2006-02-12 23:34:12 athena Exp $"
 
 let usage = "Usage: " ^ Sys.argv.(0) ^ " -n <number>"
 
@@ -52,6 +50,7 @@ type mode =
 let mode = ref NONE
 let normsqr = ref 1
 let unitary = ref false
+let noloop = ref false
 
 let speclist = [
   "-with-istride",
@@ -125,6 +124,10 @@ let speclist = [
   "-unitary",
   Arg.Unit(fun () -> unitary := true),
   " unitary normalization (up overall scale factor)";
+
+  "-noloop",
+  Arg.Unit(fun () -> noloop := true),
+  " no vector loop";
 ]
 
 let sqrt_half = Complex.inverse_int_sqrt 2
@@ -152,8 +155,8 @@ let generate n mode =
   and vostride = either_stride (!uostride) (C.SVar ostride)
   in
 
-  let _ = Simd.ovs := stride_to_string "ovs" !uovstride in
-  let _ = Simd.ivs := stride_to_string "ivs" !uivstride in
+  let sovs = stride_to_string "ovs" !uovstride in
+  let sivs = stride_to_string "ivs" !uivstride in
 
   let (transform, load_input, store_output, si1,si2,so1,so2) = match mode with
   | RDFT -> Trig.rdft sign, load_array_r, store_array_hc, -1,-1,-1,-1
@@ -174,7 +177,7 @@ let generate n mode =
   let input = locative_array_c n 
       (C.array_subscript iarray vistride)
       (C.array_subscript "BUG" vistride)
-      locations in
+      locations sivs in
   let output = rescale sqrt_half so1 so2
       ((Complex.times (Complex.inverse_int_sqrt !normsqr))
        @@ (transform n (rescale sqrt_two si1 si2 (load_array_c n input)))) in
@@ -182,18 +185,18 @@ let generate n mode =
     locative_array_c n 
       (C.array_subscript oarray vostride)
       (C.array_subscript "BUG" vostride)
-      locations in
+      locations sovs in
   let odag = store_output n oloc output in
   let annot = standard_optimizer odag in
 
-  let body = Block (
+  let body = if !noloop then Block([], [Asch annot]) else Block (
     [Decl ("INT", i)],
     [For (Expr_assign (CVar i, CVar v),
 	  Binop (" > ", CVar i, Integer 0),
 	  list_to_comma 
 	    [Expr_assign (CVar i, CPlus [CVar i; CUminus (Integer 1)]);
-	     Expr_assign (CVar iarray, CPlus [CVar iarray; CVar !Simd.ivs]);
-	     Expr_assign (CVar oarray, CPlus [CVar oarray; CVar !Simd.ovs]);
+	     Expr_assign (CVar iarray, CPlus [CVar iarray; CVar sivs]);
+	     Expr_assign (CVar oarray, CPlus [CVar oarray; CVar sovs]);
 	     make_volatile_stride (CVar istride);
 	     make_volatile_stride (CVar ostride)
 	   ],
@@ -204,17 +207,22 @@ let generate n mode =
   let tree =
     Fcn ((if !Magic.standalone then "void" else "static void"), name,
 	 ([Decl (C.constrealtypep, iarray);
-	   Decl (C.realtypep, oarray);
-	   Decl (C.stridetype, istride);
-	   Decl (C.stridetype, ostride);
-	   Decl ("INT", v);
-	   Decl ("INT", "ivs");
-	   Decl ("INT", "ovs")]),
+	   Decl (C.realtypep, oarray)]
+	  @ (if stride_fixed !uistride then [] 
+               else [Decl (C.stridetype, istride)])
+	  @ (if stride_fixed !uostride then [] 
+	       else [Decl (C.stridetype, ostride)])
+	  @ (if !noloop then [] else
+               [Decl ("INT", v)]
+	       @ (if stride_fixed !uivstride then [] 
+                    else [Decl ("INT", "ivs")])
+	       @ (if stride_fixed !uovstride then [] 
+                    else [Decl ("INT", "ovs")]))),
 	 add_constants body)
 
   in let desc = 
     Printf.sprintf 
-      "static const kr2r_desc desc = { %d, \"%s\", %s, &GENUS, %s, %s, %s, %s, %s };\n\n"
+      "static const kr2r_desc desc = { %d, \"%s\", %s, &GENUS, %s };\n\n"
       n name (flops_of tree) 
       (match mode with
       | RDFT -> "RDFT00"
@@ -229,10 +237,6 @@ let generate n mode =
       | RODFT01 -> "RODFT01"
       | RODFT11 -> "RODFT11"
       | _ -> failwith "must specify a transform kind")
-      (stride_to_solverparm !uistride) 
-      (stride_to_solverparm !uostride)
-      (choose_simd "0" (stride_to_solverparm !uivstride))
-      (choose_simd "0" (stride_to_solverparm !uovstride))
 
   and init =
     (declare_register_fcn name) ^
@@ -241,7 +245,7 @@ let generate n mode =
     "}\n"
 
   in
-  (unparse cvsid tree) ^ "\n" ^ (if !Magic.standalone then "" else desc ^ init)
+  (unparse tree) ^ "\n" ^ (if !Magic.standalone then "" else desc ^ init)
 
 
 let main () =

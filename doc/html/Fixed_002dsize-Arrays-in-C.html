@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Fixed-size Arrays in C - FFTW 3.1.2</title>
+<title>Fixed-size Arrays in C - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensional-Array-Format" title="Multi-dimensional Array Format">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -63,15 +63,15 @@ is <em>already</em> in row-major order.  You don't have to do anything
 special to transform it.  For example:
 
 <pre class="example">     {
-          fftw_complex data[NX][NY][NZ];
+          fftw_complex data[N0][N1][N2];
           fftw_plan plan;
           ...
-          plan = fftw_plan_dft_3d(NX, NY, NZ, &amp;data[0][0][0], &amp;data[0][0][0],
+          plan = fftw_plan_dft_3d(N0, N1, N2, &amp;data[0][0][0], &amp;data[0][0][0],
                                   FFTW_FORWARD, FFTW_ESTIMATE);
           ...
      }
 </pre>
-   <p>This will plan a 3d in-place transform of size <code>NX x NY x NZ</code>. 
+   <p>This will plan a 3d in-place transform of size <code>N0 x N1 x N2</code>. 
 Notice how we took the address of the zero-th element to pass to the
 planner (we could also have used a typecast).
 
@@ -80,7 +80,7 @@ arrays in this way, for two reasons.  First, this allocates the array
 on the stack (&ldquo;automatic&rdquo; storage), which has a very limited size on
 most operating systems (declaring an array with more than a few
 thousand elements will often cause a crash).  (You can get around this
-limitation on many systems by declaring the array as
+limitation on man1 systems by declaring the array as
 <code>static</code> and/or global, but that has its own drawbacks.) 
 Second, it may not optimally align the array for use with a SIMD
 FFTW (see <a href="SIMD-alignment-and-fftw_005fmalloc.html#SIMD-alignment-and-fftw_005fmalloc">SIMD alignment and fftw_malloc</a>).  Instead, we recommend

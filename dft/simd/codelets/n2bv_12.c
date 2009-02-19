@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 14:37:24 EDT 2006 */
+/* Generated on Mon Feb  9 19:52:23 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,15 +30,8 @@
 /*
  * This function contains 48 FP additions, 20 FP multiplications,
  * (or, 30 additions, 2 multiplications, 18 fused multiply/add),
- * 61 stack variables, and 30 memory accesses
+ * 61 stack variables, 2 constants, and 30 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_notw_c.ml,v 1.17 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "n2b.h"
 
 static void n2bv_12(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, INT v, INT ivs, INT ovs)
@@ -169,15 +162,8 @@ void X(codelet_n2bv_12) (planner *p) {
 /*
  * This function contains 48 FP additions, 8 FP multiplications,
  * (or, 44 additions, 4 multiplications, 4 fused multiply/add),
- * 33 stack variables, and 30 memory accesses
+ * 33 stack variables, 2 constants, and 30 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_notw_c.ml,v 1.17 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "n2b.h"
 
 static void n2bv_12(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, INT v, INT ivs, INT ovs)

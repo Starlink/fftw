@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Complex DFTs - FFTW 3.1.2</title>
+<title>Complex DFTs - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Basic-Interface.html#Basic-Interface" title="Basic Interface">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -59,10 +59,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Basic-Interface.html#Basic-Interface">B
 <pre class="example">     fftw_plan fftw_plan_dft_1d(int n,
                                 fftw_complex *in, fftw_complex *out,
                                 int sign, unsigned flags);
-     fftw_plan fftw_plan_dft_2d(int nx, int ny,
+     fftw_plan fftw_plan_dft_2d(int n0, int n1,
                                 fftw_complex *in, fftw_complex *out,
                                 int sign, unsigned flags);
-     fftw_plan fftw_plan_dft_3d(int nx, int ny, int nz,
+     fftw_plan fftw_plan_dft_3d(int n0, int n1, int n2,
                                 fftw_complex *in, fftw_complex *out,
                                 int sign, unsigned flags);
      fftw_plan fftw_plan_dft(int rank, const int *n,
@@ -93,13 +93,13 @@ size of the array <code>*n</code>), and can be any non-negative integer.  The
 <code>rank</code> of zero is equivalent to a transform of size 1, i.e. a copy
 of one number from input to output.
 
-     <li><code>n</code>, or <code>nx</code>/<code>ny</code>/<code>nz</code>, or <code>n[rank]</code>,
+     <li><code>n</code>, or <code>n0</code>/<code>n1</code>/<code>n2</code>, or <code>n[rank]</code>,
 respectively, gives the size of the transform dimensions.  They can be
 any positive integer.
 
           <ul>
 <li><a name="index-row_002dmajor-158"></a>Multi-dimensional arrays are stored in row-major order with dimensions:
-<code>nx</code> x <code>ny</code>; or <code>nx</code> x <code>ny</code> x <code>nz</code>; or
+<code>n0</code> x <code>n1</code>; or <code>n0</code> x <code>n1</code> x <code>n2</code>; or
 <code>n[0]</code> x <code>n[1]</code> x ... x <code>n[rank-1]</code>. 
 See <a href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensional-Array-Format">Multi-dimensional Array Format</a>. 
 <li>FFTW is best at handling sizes of the form

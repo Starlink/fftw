@@ -1,38 +1,39 @@
 OPTIONS_AUTOMAKE=gnu
 lib_LTLIBRARIES = libfftw3@PREC_SUFFIX@.la
 
+# pkgincludedir = $(includedir)/fftw3@PREC_SUFFIX@
+# nodist_pkginclude_HEADERS = config.h
+
 # recompile genfft if maintainer mode is true
 if MAINTAINER_MODE
-GENFFT = genfft genfft-k7
+GENFFT = genfft
 else
 GENFFT =
 endif
 
-ACLOCAL_AMFLAGS=-I ./m4
+ACLOCAL_AMFLAGS=-I m4
 
-SUBDIRS=support $(GENFFT) kernel simd dft rdft reodft threads api	\
-libbench2 . tests doc tools
-EXTRA_DIST=COPYRIGHT bootstrap.sh CONVENTIONS fftw.pc.in m4
+SUBDIRS=support $(GENFFT) kernel simd dft rdft reodft api threads \
+cell libbench2 . tests doc tools m4
+EXTRA_DIST=COPYRIGHT bootstrap.sh CONVENTIONS fftw.pc.in README.Cell
 
 if HAVE_SIMD
-SIMD_LIBS=						\
-	simd/libsimd.la					\
-	simd/nonportable/libsimd_nonportable.la		\
-	dft/simd/libdft_simd.la				\
-	dft/simd/codelets/libdft_codelets_simd.la	
-else
-SIMD_LIBS=
+SIMD_LIBS=							\
+	simd/nonportable/libsimd_nonportable.la			\
+	dft/simd/libdft_simd.la					\
+	dft/simd/codelets/libdft_simd_codelets.la		\
+	rdft/simd/librdft_simd.la				\
+	rdft/simd/codelets/librdft_simd_codelets.la	
+SIMD_OR_CELL_LIBS=simd/libsimd.la
 endif
 
-if HAVE_K7
-K7_LIBS=							\
-        dft/k7/libdft_k7.la					\
-	dft/k7/codelets/libdft_codelets_k7.la		
-else
-K7_LIBS=
+if HAVE_CELL
+CELL_LIBS=cell/libcell.la
+SIMD_OR_CELL_LIBS=simd/libsimd.la
 endif
 
-if THREADS
+
+if SMP
 if COMBINED_THREADS
 COMBINED_THREADLIBS=threads/libfftw3@PREC_SUFFIX@_threads.la
 endif
@@ -43,18 +44,20 @@ libfftw3@PREC_SUFFIX@_la_SOURCES =
 libfftw3@PREC_SUFFIX@_la_LIBADD =			\
 	kernel/libkernel.la				\
 	dft/libdft.la					\
-	dft/codelets/libdft_codelets.la			\
-	dft/codelets/standard/libdft_standard.la	\
+	dft/scalar/libdft_scalar.la			\
+	dft/scalar/codelets/libdft_scalar_codelets.la	\
 	rdft/librdft.la					\
-	rdft/codelets/librdft_codelets.la		\
-	rdft/codelets/r2hc/librdft_codelets_r2hc.la	\
-	rdft/codelets/hc2r/librdft_codelets_hc2r.la	\
-	rdft/codelets/r2r/librdft_codelets_r2r.la	\
+	rdft/scalar/librdft_scalar.la			\
+	rdft/scalar/r2cf/librdft_scalar_r2cf.la		\
+	rdft/scalar/r2cb/librdft_scalar_r2cb.la		\
+	rdft/scalar/r2r/librdft_scalar_r2r.la		\
 	reodft/libreodft.la				\
 	api/libapi.la					\
-        $(SIMD_LIBS) $(K7_LIBS) $(COMBINED_THREADLIBS)
+        $(SIMD_LIBS) $(CELL_LIBS) $(SIMD_OR_CELL_LIBS)	\
+	$(COMBINED_THREADLIBS)
 
-libfftw3@PREC_SUFFIX@_la_LDFLAGS = -no-undefined -version-info @SHARED_VERSION_INFO@
+libfftw3@PREC_SUFFIX@_la_LDFLAGS = -no-undefined -version-info	\
+@SHARED_VERSION_INFO@
 
 fftw3@PREC_SUFFIX@.pc: fftw.pc
 	cp -f fftw.pc fftw3@PREC_SUFFIX@.pc

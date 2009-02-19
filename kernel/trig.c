@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: trig.c,v 1.20 2006-01-05 03:04:27 stevenj Exp $ */
 
 /* trigonometric functions */
 #include "ifftw.h"
@@ -116,8 +115,13 @@ static void rotate_sqrtn_table(triggen *p, INT m, R xr, R xi, R *res)
 	  trigreal wr = wr1 * wr0 - wi1 * wi0;
 	  trigreal wi = wi1 * wr0 + wr1 * wi0;
 
-	  res[0] = xr * wr - xi * (FFT_SIGN * wi);
-	  res[1] = xi * wr + xr * (FFT_SIGN * wi);
+#if FFT_SIGN == -1
+	  res[0] = xr * wr + xi * wi;
+	  res[1] = xi * wr - xr * wi;
+#else
+	  res[0] = xr * wr - xi * wi;
+	  res[1] = xi * wr + xr * wi;
+#endif
      }
 }
 

@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: bench-user.h,v 1.21 2006-01-30 16:09:32 athena Exp $ */
 #ifndef __BENCH_USER_H__
 #define __BENCH_USER_H__
 
@@ -114,6 +113,7 @@ typedef struct {
      int iphyssz, ophyssz;
      char *pstring;
      void *userinfo; /* user can store whatever */
+     int scrambled_in, scrambled_out; /* hack for MPI */
 
      /* internal hack so that we can use verifier in FFTW test program */
      void *ini, *outi; /* if nonzero, point to imag. parts for dft */
@@ -123,6 +123,10 @@ typedef struct {
 } bench_problem;
 
 extern int verbose;
+
+extern int no_speed_allocation;
+
+extern int always_pad_real;
 
 #define LIBBENCH_TIMER 0
 #define USER_TIMER 1
@@ -134,6 +138,7 @@ extern int can_do(bench_problem *p);
 extern void setup(bench_problem *p);
 extern void doit(int iter, bench_problem *p);
 extern void done(bench_problem *p);
+extern void main_init(int *argc, char ***argv);
 extern void cleanup(void);
 extern void verify(const char *param, int rounds, double tol);
 extern void useropt(const char *arg);
@@ -162,6 +167,18 @@ typedef struct {
 void verify_dft(bench_problem *p, int rounds, double tol, errors *e);
 void verify_rdft2(bench_problem *p, int rounds, double tol, errors *e);
 void verify_r2r(bench_problem *p, int rounds, double tol, errors *e);
+
+/**************************************************************/
+/* routines to override */
+
+extern void after_problem_ccopy_from(bench_problem *p, bench_real *ri, bench_real *ii);
+extern void after_problem_ccopy_to(bench_problem *p, bench_real *ro, bench_real *io);
+extern void after_problem_hccopy_from(bench_problem *p, bench_real *ri, bench_real *ii);
+extern void after_problem_hccopy_to(bench_problem *p, bench_real *ro, bench_real *io);
+extern void after_problem_rcopy_from(bench_problem *p, bench_real *ri);
+extern void after_problem_rcopy_to(bench_problem *p, bench_real *ro);
+extern void bench_exit(int status);
+extern double bench_cost_postprocess(double cost);
 
 /**************************************************************
  * malloc

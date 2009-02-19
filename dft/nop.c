@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: nop.c,v 1.17 2006-01-05 03:04:26 stevenj Exp $ */
 
 /* plans for vrank -infty DFTs (nothing to do) */
 
@@ -77,7 +76,7 @@ static plan *mkplan(const solver *ego, const problem *p, planner *plnr)
 
 static solver *mksolver(void)
 {
-     static const solver_adt sadt = { PROBLEM_DFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_DFT, mkplan, 0 };
      return MKSOLVER(solver, &sadt);
 }
 

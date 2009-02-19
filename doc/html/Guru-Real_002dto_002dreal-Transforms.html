@@ -1,17 +1,17 @@
 <html lang="en">
 <head>
-<title>Guru Real-to-real Transforms - FFTW 3.1.2</title>
+<title>Guru Real-to-real Transforms - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Guru-Interface.html#Guru-Interface" title="Guru Interface">
 <link rel="prev" href="Guru-Real_002ddata-DFTs.html#Guru-Real_002ddata-DFTs" title="Guru Real-data DFTs">
-<link rel="next" href="Guru-Execution-of-Plans.html#Guru-Execution-of-Plans" title="Guru Execution of Plans">
+<link rel="next" href="64_002dbit-Guru-Interface.html#g_t64_002dbit-Guru-Interface" title="64-bit Guru Interface">
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -49,7 +49,7 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 <p>
 <a name="Guru-Real-to-real-Transforms"></a>
 <a name="Guru-Real_002dto_002dreal-Transforms"></a>
-Next:&nbsp;<a rel="next" accesskey="n" href="Guru-Execution-of-Plans.html#Guru-Execution-of-Plans">Guru Execution of Plans</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="64_002dbit-Guru-Interface.html#g_t64_002dbit-Guru-Interface">64-bit Guru Interface</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Guru-Real_002ddata-DFTs.html#Guru-Real_002ddata-DFTs">Guru Real-data DFTs</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Guru-Interface.html#Guru-Interface">Guru Interface</a>
 <hr>
@@ -64,7 +64,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Guru-Interface.html#Guru-Interface">Gur
                                   const fftw_r2r_kind *kind,
                                   unsigned flags);
 </pre>
-   <p><a name="index-fftw_005fplan_005fguru_005fr2r-247"></a>
+   <p><a name="index-fftw_005fplan_005fguru_005fr2r-250"></a>
 Plan a real-to-real (r2r) multi-dimensional <code>FFTW_FORWARD</code>
 transform with transform dimensions given by (<code>rank</code>, <code>dims</code>)
 over a multi-dimensional vector (loop) of dimensions
@@ -79,7 +79,7 @@ parameter, which should point to an array of length <code>rank</code>.  Valid
    <p><code>in</code> and <code>out</code> point to the real input and output arrays; they
 may be the same, indicating an in-place transform.
 
-   <p><a name="index-flags-248"></a><code>flags</code> is a bitwise OR (`<samp><span class="samp">|</span></samp>') of zero or more planner flags,
+   <p><a name="index-flags-251"></a><code>flags</code> is a bitwise OR (`<samp><span class="samp">|</span></samp>') of zero or more planner flags,
 as defined in <a href="Planner-Flags.html#Planner-Flags">Planner Flags</a>.
 
 <!-- =========> -->

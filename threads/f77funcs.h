@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,17 @@
    f77api.c, possibly multiple times in order to support multiple
    compiler manglings (via redefinition of F77). */
 
-void F77(plan_with_nthreads, PLAN_WITH_NTHREADS)(int *nthreads)
+FFTW_VOIDFUNC F77(plan_with_nthreads, PLAN_WITH_NTHREADS)(int *nthreads)
 {
      X(plan_with_nthreads)(*nthreads);
 }
 
-void F77(init_threads, INIT_THREADS)(void)
+FFTW_VOIDFUNC F77(init_threads, INIT_THREADS)(int *okay)
 {
-     X(init_threads)();
+     *okay = X(init_threads)();
 }
 
-void F77(cleanup_threads, CLEANUP_THREADS)(void)
+FFTW_VOIDFUNC F77(cleanup_threads, CLEANUP_THREADS)(void)
 {
      X(cleanup_threads)();
 }

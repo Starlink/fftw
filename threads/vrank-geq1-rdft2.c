@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: vrank-geq1-rdft2.c,v 1.24 2006-01-27 02:10:50 athena Exp $ */
 
 
 #include "threads.h"
@@ -41,7 +40,7 @@ typedef struct {
 
 typedef struct {
      INT its, ots;
-     R *r, *rio, *iio;
+     R *r0, *r1, *cr, *ci;
      plan **cldrn;
 } PD;
 
@@ -54,12 +53,12 @@ WITH_ALIGNED_STACK({
      plan_rdft2 *cld = (plan_rdft2 *) ego->cldrn[d->thr_num];
 
      cld->apply((plan *) cld,
-		ego->r + thr_num * its,
-		ego->rio + thr_num * ots, ego->iio + thr_num * ots);
+		ego->r0 + thr_num * its, ego->r1 + thr_num * its,
+		ego->cr + thr_num * ots, ego->ci + thr_num * ots);
      return 0;
 })
 
-static void apply(const plan *ego_, R *r, R *rio, R *iio)
+static void apply(const plan *ego_, R *r0, R *r1, R *cr, R *ci)
 {
      const P *ego = (const P *) ego_;
      PD d;
@@ -67,7 +66,7 @@ static void apply(const plan *ego_, R *r, R *rio, R *iio)
      d.its = ego->its;
      d.ots = ego->ots;
      d.cldrn = ego->cldrn;
-     d.r = r; d.rio = rio; d.iio = iio;
+     d.r0 = r0; d.r1 = r1; d.cr = cr; d.ci = ci;
 
      X(spawn_loop)(ego->nthr, ego->nthr, spawn_apply, (void*) &d);
 }
@@ -117,9 +116,8 @@ static int applicable0(const solver *ego_, const problem *p_,
      if (FINITE_RNK(p->vecsz->rnk)
 	 && p->vecsz->rnk > 0
 	 && plnr->nthr > 1
-	 && pickdim(ego, p->vecsz, 
-		    p->r != p->rio && p->r != p->iio, dp)) {
-	  if (p->r != p->rio && p->r != p->iio)
+	 && pickdim(ego, p->vecsz, p->r0 != p->cr, dp)) {
+	  if (p->r0 != p->cr)
 	       return 1;  /* can always operate out-of-place */
 
 	  return(X(rdft2_inplace_strides)(p, *dp));
@@ -179,8 +177,9 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 	  vecsz->dims[vdim].n =
 	       (i == nthr - 1) ? (d->n - i*block_size) : block_size;
 	  cldp = X(mkproblem_rdft2)(p->sz, vecsz,
-				    p->r + i*its,
-				    p->rio + i*ots, p->iio + i*ots, p->kind);
+				    p->r0 + i*its, p->r1 + i*its,
+				    p->cr + i*ots, p->ci + i*ots, 
+				    p->kind);
 	  cldrn[i] = X(mkplan_d)(plnr, cldp);
 	  if (!cldrn[i]) goto nada;
      }
@@ -215,7 +214,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(int vecloop_dim, const int *buddies, int nbuddies)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->vecloop_dim = vecloop_dim;
      slv->buddies = buddies;

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: problem.c,v 1.53 2006-01-13 03:21:57 athena Exp $ */
 
 #include "rdft.h"
 #include <stddef.h>
@@ -59,8 +58,7 @@ static void recur(const iodim *dims, int rnk, R *I)
      else if (rnk == 0)
           I[0] = K(0.0);
      else if (rnk > 0) {
-          int i;
-	  INT n = dims[0].n, is = dims[0].is;
+          INT i, n = dims[0].n, is = dims[0].is;
 
 	  if (rnk == 1) {
 	       /* this case is redundant but faster */
@@ -93,7 +91,7 @@ const char *X(rdft_kind_str)(rdft_kind kind)
      return kstr[kind];
 }
 
-static void print(problem *ego_, printer *p)
+static void print(const problem *ego_, printer *p)
 {
      const problem_rdft *ego = (const problem_rdft *) ego_;
      int i;
@@ -147,6 +145,9 @@ problem *X(mkproblem_rdft)(const tensor *sz, const tensor *vecsz,
 
      if (UNTAINT(I) == UNTAINT(O))
 	  I = O = JOIN_TAINT(I, O);
+
+     if (I == O && !X(tensor_inplace_locations)(sz, vecsz))
+	  return X(mkproblem_unsolvable)();
 
      for (i = rnk = 0; i < sz->rnk; ++i) {
           A(sz->dims[i].n > 0);
@@ -209,8 +210,7 @@ problem *X(mkproblem_rdft)(const tensor *sz, const tensor *vecsz,
 problem *X(mkproblem_rdft_d)(tensor *sz, tensor *vecsz,
 			     R *I, R *O, const rdft_kind *kind)
 {
-     problem *p;
-     p = X(mkproblem_rdft)(sz, vecsz, I, O, kind);
+     problem *p = X(mkproblem_rdft)(sz, vecsz, I, O, kind);
      X(tensor_destroy2)(vecsz, sz);
      return p;
 }

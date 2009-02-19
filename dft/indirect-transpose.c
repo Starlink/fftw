@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,7 +103,8 @@ static int applicable0(const solver *ego_, const problem *p_,
 		       int *pdim0, int *pdim1)
 {
      const problem_dft *p = (const problem_dft *) p_;
-     UNUSED(ego_);
+     UNUSED(ego_); UNUSED(plnr);
+
      return (1
 	     && FINITE_RNK(p->vecsz->rnk) && FINITE_RNK(p->sz->rnk)
 
@@ -146,7 +147,6 @@ static int applicable(const solver *ego_, const problem *p_,
 static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 {
      const problem_dft *p = (const problem_dft *) p_;
-     const S *ego = (const S *) ego_;
      P *pln;
      plan *cld = 0, *cldtrans = 0, *cldrest = 0;
      int pdim0, pdim1;
@@ -223,7 +223,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(void)
 {
-     static const solver_adt sadt = { PROBLEM_DFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_DFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      return slv;
 }

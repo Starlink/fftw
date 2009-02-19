@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,10 @@
  *
  */
 
-/* $Id: kdft-difsq.c,v 1.10 2006-01-05 03:04:26 stevenj Exp $ */
 
 #include "ct.h"
 
 void X(kdft_difsq_register)(planner *p, kdftwsq k, const ct_desc *desc)
 {
-     REGISTER_SOLVER(p, X(mksolver_ctsq)(k, desc, DECDIF));
+     X(regsolver_ct_directwsq)(p, k, desc, DECDIF);
 }

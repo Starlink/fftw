@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 14:26:00 EDT 2006 */
+/* Generated on Mon Feb  9 19:52:05 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,15 +30,8 @@
 /*
  * This function contains 456 FP additions, 258 FP multiplications,
  * (or, 198 additions, 0 multiplications, 258 fused multiply/add),
- * 168 stack variables, and 128 memory accesses
+ * 168 stack variables, 15 constants, and 128 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_notw_c.ml,v 1.17 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "n1f.h"
 
 static void n1fv_64(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, INT v, INT ivs, INT ovs)
@@ -771,15 +764,8 @@ void X(codelet_n1fv_64) (planner *p) {
 /*
  * This function contains 456 FP additions, 124 FP multiplications,
  * (or, 404 additions, 72 multiplications, 52 fused multiply/add),
- * 108 stack variables, and 128 memory accesses
+ * 108 stack variables, 15 constants, and 128 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_notw_c.ml,v 1.17 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "n1f.h"
 
 static void n1fv_64(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, INT v, INT ivs, INT ovs)

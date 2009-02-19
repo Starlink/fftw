@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,7 +23,6 @@
  *
  */
 
-/* $Id: cycle.h,v 1.54.2.1 2006-06-23 08:31:39 stevenj Exp $ */
 
 /* machine-dependent cycle counters code. Needs to be inlined. */
 
@@ -92,7 +91,7 @@
 
 #define INLINE_ELAPSED(INL) static INL double elapsed(ticks t1, ticks t0) \
 {									  \
-     return (double)(t1 - t0);						  \
+     return (double)t1 - (double)t0;					  \
 }
 
 /*----------------------------------------------------------------*/
@@ -112,18 +111,19 @@ INLINE_ELAPSED(inline)
 #if defined(HAVE_READ_REAL_TIME) && defined(HAVE_TIME_BASE_TO_TIME) && !defined(HAVE_TICK_COUNTER)
 typedef timebasestruct_t ticks;
 
-static inline ticks getticks(void)
+static __inline ticks getticks(void)
 {
      ticks t;
      read_real_time(&t, TIMEBASE_SZ);
      return t;
 }
 
-static inline double elapsed(ticks t1, ticks t0) /* time in nanoseconds */
+static __inline double elapsed(ticks t1, ticks t0) /* time in nanoseconds */
 {
      time_base_to_time(&t1, TIMEBASE_SZ);
      time_base_to_time(&t0, TIMEBASE_SZ);
-     return ((t1.tb_high - t0.tb_high) * 1e9 + (t1.tb_low - t0.tb_low));
+     return (((double)t1.tb_high - (double)t0.tb_high) * 1.0e9 + 
+	     ((double)t1.tb_low - (double)t0.tb_low));
 }
 
 #define HAVE_TICK_COUNTER
@@ -206,7 +206,7 @@ static __inline ticks getticks(void)
 
 static __inline double elapsed(ticks t1, ticks t0)
 {  
-     return (double)(t1.QuadPart - t0.QuadPart);
+     return (double)t1.QuadPart - (double)t0.QuadPart;
 }  
 
 #define HAVE_TICK_COUNTER
@@ -217,7 +217,7 @@ static __inline double elapsed(ticks t1, ticks t0)
 /*
  * X86-64 cycle counter
  */
-#if (defined(__GNUC__) || defined(__ICC)) && defined(__x86_64__)  && !defined(HAVE_TICK_COUNTER)
+#if (defined(__GNUC__) || defined(__ICC) || defined(__SUNPRO_C)) && defined(__x86_64__)  && !defined(HAVE_TICK_COUNTER)
 typedef unsigned long long ticks;
 
 static __inline__ ticks getticks(void)
@@ -328,6 +328,8 @@ static __inline ticks getticks(void)
      temp = __getReg(3116);
      return temp;
 }
+
+INLINE_ELAPSED(inline)
 
 #define HAVE_TICK_COUNTER
 #endif
@@ -445,8 +447,8 @@ static inline ticks getticks(void)
 
 static inline double elapsed(ticks t1, ticks t0)
 {
-     return (double)(t1.tv_sec - t0.tv_sec) * 1.0E9 +
-	  (double)(t1.tv_nsec - t0.tv_nsec);
+     return ((double)t1.tv_sec - (double)t0.tv_sec) * 1.0E9 +
+	  ((double)t1.tv_nsec - (double)t0.tv_nsec);
 }
 #define HAVE_TICK_COUNTER
 #endif
@@ -466,4 +468,47 @@ INLINE_ELAPSED(inline)
 
 #define HAVE_TICK_COUNTER
 #endif
+
+/*----------------------------------------------------------------*/
+/* MIPS ZBus */
+#if HAVE_MIPS_ZBUS_TIMER
+#if defined(__mips__) && !defined(HAVE_TICK_COUNTER)
+#include <sys/mman.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+typedef uint64_t ticks;
+
+static inline ticks getticks(void)
+{
+  static uint64_t* addr = 0;
+
+  if (addr == 0)
+  {
+    uint32_t rq_addr = 0x10030000;
+    int fd;
+    int pgsize;
+
+    pgsize = getpagesize();
+    fd = open ("/dev/mem", O_RDONLY | O_SYNC, 0);
+    if (fd < 0) {
+      perror("open");
+      return NULL;
+    }
+    addr = mmap(0, pgsize, PROT_READ, MAP_SHARED, fd, rq_addr);
+    close(fd);
+    if (addr == (uint64_t *)-1) {
+      perror("mmap");
+      return NULL;
+    }
+  }
+
+  return *addr;
+}
+
+INLINE_ELAPSED(inline)
+
+#define HAVE_TICK_COUNTER
+#endif
+#endif /* HAVE_MIPS_ZBUS_TIMER */
 

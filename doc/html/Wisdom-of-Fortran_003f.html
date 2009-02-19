@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Wisdom of Fortran? - FFTW 3.1.2</title>
+<title>Wisdom of Fortran? - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran" title="Calling FFTW from Fortran">
@@ -10,7 +10,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -53,20 +53,20 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Calling-FFTW-from-Fortran.html#Calling-
 <hr>
 </div>
 
-<h3 class="section">6.4 Wisdom of Fortran?</h3>
+<h3 class="section">7.5 Wisdom of Fortran?</h3>
 
 <p>In this section, we discuss how one can import/export FFTW wisdom
 (saved plans) to/from a Fortran program; we assume that the reader is
 already familiar with wisdom, as described in <a href="Words-of-Wisdom_002dSaving-Plans.html#Words-of-Wisdom_002dSaving-Plans">Words of Wisdom-Saving Plans</a>.
 
-   <p><a name="index-portability-336"></a>The basic problem is that is difficult to (portably) pass files and
+   <p><a name="index-portability-352"></a>The basic problem is that is difficult to (portably) pass files and
 strings between Fortran and C, so we cannot provide a direct Fortran
 equivalent to the <code>fftw_export_wisdom_to_file</code>, etcetera,
 functions.  Fortran interfaces <em>are</em> provided for the functions
 that do not take file/string arguments, however:
 <code>dfftw_import_system_wisdom</code>, <code>dfftw_import_wisdom</code>,
 <code>dfftw_export_wisdom</code>, and <code>dfftw_forget_wisdom</code>. 
-<a name="index-dfftw_005fimport_005fsystem_005fwisdom-337"></a><a name="index-dfftw_005fimport_005fwisdom-338"></a><a name="index-dfftw_005fexport_005fwisdom-339"></a><a name="index-dfftw_005fforget_005fwisdom-340"></a>
+<a name="index-dfftw_005fimport_005fsystem_005fwisdom-353"></a><a name="index-dfftw_005fimport_005fwisdom-354"></a><a name="index-dfftw_005fexport_005fwisdom-355"></a><a name="index-dfftw_005fforget_005fwisdom-356"></a>
 So, for example, to import the system-wide wisdom, you would do:
 
 <pre class="example">             integer isuccess

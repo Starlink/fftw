@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,12 @@ X(plan) X(plan_many_dft_r2c)(int rank, const int *n,
 
      if (!X(many_kosherp)(rank, n, howmany)) return 0;
 
-     X(extract_reim)(FFT_SIGN, out, &ro, &io);
+     EXTRACT_REIM(FFT_SIGN, out, &ro, &io);
      inplace = in == ro;
 
      p = X(mkapiplan)(
 	  0, flags, 
-	  X(mkproblem_rdft2_d)(
+	  X(mkproblem_rdft2_d_3pointers)(
 	       X(mktensor_rowmajor)(
 		    rank, n,
 		    X(rdft2_pad)(rank, n, inembed, inplace, 0, &nfi),

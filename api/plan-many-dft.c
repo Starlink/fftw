@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ X(plan) X(plan_many_dft)(int rank, const int *n,
 
      if (!X(many_kosherp)(rank, n, howmany)) return 0;
 
-     X(extract_reim)(sign, in, &ri, &ii);
-     X(extract_reim)(sign, out, &ro, &io);
+     EXTRACT_REIM(sign, in, &ri, &ii);
+     EXTRACT_REIM(sign, out, &ro, &io);
 
      return 
 	  X(mkapiplan)(sign, flags,

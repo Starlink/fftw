@@ -28,8 +28,10 @@ c.cmo: variable.cmi util.cmi to_alist.cmi number.cmi magic.cmo expr.cmi \
     annotate.cmi c.cmi 
 c.cmx: variable.cmx util.cmx to_alist.cmx number.cmx magic.cmx expr.cmx \
     annotate.cmx c.cmi 
-complex.cmo: util.cmi number.cmi littlesimp.cmi expr.cmi complex.cmi 
-complex.cmx: util.cmx number.cmx littlesimp.cmx expr.cmx complex.cmi 
+complex.cmo: util.cmi number.cmi magic.cmo littlesimp.cmi expr.cmi \
+    complex.cmi 
+complex.cmx: util.cmx number.cmx magic.cmx littlesimp.cmx expr.cmx \
+    complex.cmi 
 conv.cmo: util.cmi magic.cmo fft.cmi complex.cmi conv.cmi 
 conv.cmx: util.cmx magic.cmx fft.cmx complex.cmx conv.cmi 
 dag.cmo: variable.cmi util.cmi expr.cmi dag.cmi 
@@ -38,63 +40,59 @@ expr.cmo: variable.cmi number.cmi expr.cmi
 expr.cmx: variable.cmx number.cmx expr.cmi 
 fft.cmo: util.cmi magic.cmo complex.cmi fft.cmi 
 fft.cmx: util.cmx magic.cmx complex.cmx fft.cmi 
-gen_athnotw.cmo: variable.cmi util.cmi unique.cmi magic.cmo genutil.cmo \
-    fft.cmi c.cmi 
-gen_athnotw.cmx: variable.cmx util.cmx unique.cmx magic.cmx genutil.cmx \
-    fft.cmx c.cmx 
-gen_athtw.cmo: variable.cmi util.cmi unique.cmi twiddle.cmi magic.cmo \
-    genutil.cmo fft.cmi c.cmi 
-gen_athtw.cmx: variable.cmx util.cmx unique.cmx twiddle.cmx magic.cmx \
-    genutil.cmx fft.cmx c.cmx 
-gen_conv.cmo: util.cmi magic.cmo genutil.cmo conv.cmi c.cmi 
-gen_conv.cmx: util.cmx magic.cmx genutil.cmx conv.cmx c.cmx 
-gen_hc2hc.cmo: util.cmi twiddle.cmi simd.cmi magic.cmo genutil.cmo fft.cmi \
+gen_hc2cdft_c.cmo: util.cmi unique.cmi twiddle.cmi trig.cmi simdmagic.cmo \
+    magic.cmo genutil.cmo expr.cmi complex.cmi c.cmi 
+gen_hc2cdft_c.cmx: util.cmx unique.cmx twiddle.cmx trig.cmx simdmagic.cmx \
+    magic.cmx genutil.cmx expr.cmx complex.cmx c.cmx 
+gen_hc2cdft.cmo: util.cmi unique.cmi twiddle.cmi magic.cmo genutil.cmo \
+    fft.cmi complex.cmi c.cmi 
+gen_hc2cdft.cmx: util.cmx unique.cmx twiddle.cmx magic.cmx genutil.cmx \
+    fft.cmx complex.cmx c.cmx 
+gen_hc2c.cmo: util.cmi unique.cmi twiddle.cmi magic.cmo genutil.cmo fft.cmi \
     complex.cmi c.cmi 
-gen_hc2hc.cmx: util.cmx twiddle.cmx simd.cmx magic.cmx genutil.cmx fft.cmx \
+gen_hc2c.cmx: util.cmx unique.cmx twiddle.cmx magic.cmx genutil.cmx fft.cmx \
     complex.cmx c.cmx 
-gen_hc2r.cmo: util.cmi trig.cmi simd.cmi magic.cmo genutil.cmo fft.cmi \
-    complex.cmi c.cmi 
-gen_hc2r.cmx: util.cmx trig.cmx simd.cmx magic.cmx genutil.cmx fft.cmx \
-    complex.cmx c.cmx 
-gen_mdct.cmo: variable.cmi util.cmi unique.cmi trig.cmi simd.cmi magic.cmo \
-    genutil.cmo complex.cmi c.cmi 
-gen_mdct.cmx: variable.cmx util.cmx unique.cmx trig.cmx simd.cmx magic.cmx \
-    genutil.cmx complex.cmx c.cmx 
-gen_notw.cmo: util.cmi simdmagic.cmo simd.cmi magic.cmo genutil.cmo fft.cmi \
-    c.cmi annotate.cmi 
-gen_notw.cmx: util.cmx simdmagic.cmx simd.cmx magic.cmx genutil.cmx fft.cmx \
-    c.cmx annotate.cmx 
-gen_notw_c.cmo: util.cmi trig.cmi simdmagic.cmo simd.cmi magic.cmo \
-    genutil.cmo c.cmi annotate.cmi 
-gen_notw_c.cmx: util.cmx trig.cmx simdmagic.cmx simd.cmx magic.cmx \
-    genutil.cmx c.cmx annotate.cmx 
-gen_r2hc.cmo: util.cmi trig.cmi simd.cmi magic.cmo genutil.cmo fft.cmi \
-    complex.cmi c.cmi 
-gen_r2hc.cmx: util.cmx trig.cmx simd.cmx magic.cmx genutil.cmx fft.cmx \
-    complex.cmx c.cmx 
-gen_r2r.cmo: util.cmi trig.cmi simd.cmi magic.cmo genutil.cmo complex.cmi \
+gen_hc2hc.cmo: util.cmi twiddle.cmi magic.cmo genutil.cmo fft.cmi complex.cmi \
     c.cmi 
-gen_r2r.cmx: util.cmx trig.cmx simd.cmx magic.cmx genutil.cmx complex.cmx \
+gen_hc2hc.cmx: util.cmx twiddle.cmx magic.cmx genutil.cmx fft.cmx complex.cmx \
     c.cmx 
-gen_twiddle.cmo: util.cmi twiddle.cmi simd.cmi magic.cmo genutil.cmo fft.cmi \
+gen_mdct.cmo: variable.cmi util.cmi unique.cmi trig.cmi magic.cmo genutil.cmo \
+    complex.cmi c.cmi 
+gen_mdct.cmx: variable.cmx util.cmx unique.cmx trig.cmx magic.cmx genutil.cmx \
+    complex.cmx c.cmx 
+gen_notw_c.cmo: util.cmi trig.cmi simdmagic.cmo magic.cmo genutil.cmo c.cmi \
+    annotate.cmi 
+gen_notw_c.cmx: util.cmx trig.cmx simdmagic.cmx magic.cmx genutil.cmx c.cmx \
+    annotate.cmx 
+gen_notw.cmo: util.cmi simdmagic.cmo magic.cmo genutil.cmo fft.cmi c.cmi \
+    annotate.cmi 
+gen_notw.cmx: util.cmx simdmagic.cmx magic.cmx genutil.cmx fft.cmx c.cmx \
+    annotate.cmx 
+gen_r2cb.cmo: util.cmi trig.cmi magic.cmo genutil.cmo fft.cmi complex.cmi \
     c.cmi 
-gen_twiddle.cmx: util.cmx twiddle.cmx simd.cmx magic.cmx genutil.cmx fft.cmx \
+gen_r2cb.cmx: util.cmx trig.cmx magic.cmx genutil.cmx fft.cmx complex.cmx \
     c.cmx 
-gen_twiddle_c.cmo: util.cmi twiddle.cmi trig.cmi simdmagic.cmo simd.cmi \
-    magic.cmo genutil.cmo c.cmi 
-gen_twiddle_c.cmx: util.cmx twiddle.cmx trig.cmx simdmagic.cmx simd.cmx \
-    magic.cmx genutil.cmx c.cmx 
+gen_r2cf.cmo: util.cmi trig.cmi magic.cmo genutil.cmo fft.cmi complex.cmi \
+    c.cmi 
+gen_r2cf.cmx: util.cmx trig.cmx magic.cmx genutil.cmx fft.cmx complex.cmx \
+    c.cmx 
+gen_r2r.cmo: util.cmi trig.cmi magic.cmo genutil.cmo complex.cmi c.cmi 
+gen_r2r.cmx: util.cmx trig.cmx magic.cmx genutil.cmx complex.cmx c.cmx 
+gen_twiddle_c.cmo: util.cmi twiddle.cmi trig.cmi simdmagic.cmo magic.cmo \
+    genutil.cmo c.cmi 
+gen_twiddle_c.cmx: util.cmx twiddle.cmx trig.cmx simdmagic.cmx magic.cmx \
+    genutil.cmx c.cmx 
+gen_twiddle.cmo: util.cmi twiddle.cmi magic.cmo genutil.cmo fft.cmi c.cmi 
+gen_twiddle.cmx: util.cmx twiddle.cmx magic.cmx genutil.cmx fft.cmx c.cmx 
+gen_twidsq_c.cmo: util.cmi twiddle.cmi trig.cmi magic.cmo genutil.cmo c.cmi 
+gen_twidsq_c.cmx: util.cmx twiddle.cmx trig.cmx magic.cmx genutil.cmx c.cmx 
 gen_twidsq.cmo: util.cmi twiddle.cmi magic.cmo genutil.cmo fft.cmi c.cmi 
 gen_twidsq.cmx: util.cmx twiddle.cmx magic.cmx genutil.cmx fft.cmx c.cmx 
-gen_twidsq_c.cmo: util.cmi twiddle.cmi trig.cmi simd.cmi magic.cmo \
-    genutil.cmo c.cmi 
-gen_twidsq_c.cmx: util.cmx twiddle.cmx trig.cmx simd.cmx magic.cmx \
-    genutil.cmx c.cmx 
 genutil.cmo: variable.cmi util.cmi unique.cmi twiddle.cmi to_alist.cmi \
-    simdmagic.cmo simd.cmi schedule.cmi number.cmi magic.cmo fft.cmi expr.cmi \
+    simdmagic.cmo simd.cmi schedule.cmi number.cmi magic.cmo expr.cmi \
     complex.cmi c.cmi annotate.cmi algsimp.cmi 
 genutil.cmx: variable.cmx util.cmx unique.cmx twiddle.cmx to_alist.cmx \
-    simdmagic.cmx simd.cmx schedule.cmx number.cmx magic.cmx fft.cmx expr.cmx \
+    simdmagic.cmx simd.cmx schedule.cmx number.cmx magic.cmx expr.cmx \
     complex.cmx c.cmx annotate.cmx algsimp.cmx 
 littlesimp.cmo: number.cmi expr.cmi littlesimp.cmi 
 littlesimp.cmx: number.cmx expr.cmx littlesimp.cmi 
@@ -104,12 +102,12 @@ oracle.cmo: variable.cmi number.cmi expr.cmi assoctable.cmi oracle.cmi
 oracle.cmx: variable.cmx number.cmx expr.cmx assoctable.cmx oracle.cmi 
 schedule.cmo: variable.cmi util.cmi magic.cmo expr.cmi dag.cmi schedule.cmi 
 schedule.cmx: variable.cmx util.cmx magic.cmx expr.cmx dag.cmx schedule.cmi 
+simdmagic.cmo: magic.cmo 
+simdmagic.cmx: magic.cmx 
 simd.cmo: variable.cmi util.cmi simdmagic.cmo number.cmi magic.cmo expr.cmi \
     c.cmi annotate.cmi simd.cmi 
 simd.cmx: variable.cmx util.cmx simdmagic.cmx number.cmx magic.cmx expr.cmx \
     c.cmx annotate.cmx simd.cmi 
-simdmagic.cmo: magic.cmo 
-simdmagic.cmx: magic.cmx 
 to_alist.cmo: variable.cmi util.cmi number.cmi monads.cmo magic.cmo expr.cmi \
     assoctable.cmi to_alist.cmi 
 to_alist.cmx: variable.cmx util.cmx number.cmx monads.cmx magic.cmx expr.cmx \

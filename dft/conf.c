@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: conf.c,v 1.31 2006-01-05 03:04:26 stevenj Exp $ */
 
 #include "dft.h"
 
@@ -42,9 +41,6 @@ void X(dft_conf_standard)(planner *p)
 {
      X(solvtab_exec)(s, p);
      X(solvtab_exec)(X(solvtab_dft_standard), p);
-#if HAVE_K7
-     X(solvtab_exec)(X(solvtab_dft_k7), p);
-#endif
 #if HAVE_SIMD
      X(solvtab_exec)(X(solvtab_dft_simd), p);
 #endif

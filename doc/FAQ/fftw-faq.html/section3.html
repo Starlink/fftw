@@ -23,22 +23,23 @@ the algorithm?</a>
 <li><a href="#fortran64" rel=subdocument>Q3.6. My Fortran program crashes when calling FFTW.</a>
 <li><a href="#conventions" rel=subdocument>Q3.7. FFTW gives results different from my old
 FFT.</a>
-<li><a href="#savePlans" rel=subdocument>Q3.8. Can I save FFTW's plans?</a>
-<li><a href="#whyscaled" rel=subdocument>Q3.9. Why does your inverse transform return a scaled
+<li><a href="#nondeterministic" rel=subdocument>Q3.8. FFTW gives different results between runs</a>
+<li><a href="#savePlans" rel=subdocument>Q3.9. Can I save FFTW's plans?</a>
+<li><a href="#whyscaled" rel=subdocument>Q3.10. Why does your inverse transform return a scaled
 result?</a>
-<li><a href="#centerorigin" rel=subdocument>Q3.10. How can I make FFTW put the origin (zero frequency) at the center of
+<li><a href="#centerorigin" rel=subdocument>Q3.11. How can I make FFTW put the origin (zero frequency) at the center of
 its output?</a>
-<li><a href="#imageaudio" rel=subdocument>Q3.11. How do I FFT an image/audio file in <i>foobar</i> format?</a>
-<li><a href="#linkfails" rel=subdocument>Q3.12. My program does not link (on Unix).</a>
-<li><a href="#linkheader" rel=subdocument>Q3.13. I included your header, but linking still
+<li><a href="#imageaudio" rel=subdocument>Q3.12. How do I FFT an image/audio file in <i>foobar</i> format?</a>
+<li><a href="#linkfails" rel=subdocument>Q3.13. My program does not link (on Unix).</a>
+<li><a href="#linkheader" rel=subdocument>Q3.14. I included your header, but linking still
 fails.</a>
-<li><a href="#nostack" rel=subdocument>Q3.14. My program crashes, complaining about stack
+<li><a href="#nostack" rel=subdocument>Q3.15. My program crashes, complaining about stack
 space.</a>
-<li><a href="#leaks" rel=subdocument>Q3.15. FFTW seems to have a memory leak.</a>
-<li><a href="#allzero" rel=subdocument>Q3.16. The output of FFTW's transform is all zeros.</a>
-<li><a href="#vbetalia" rel=subdocument>Q3.17. How do I call FFTW from the Microsoft language du
+<li><a href="#leaks" rel=subdocument>Q3.16. FFTW seems to have a memory leak.</a>
+<li><a href="#allzero" rel=subdocument>Q3.17. The output of FFTW's transform is all zeros.</a>
+<li><a href="#vbetalia" rel=subdocument>Q3.18. How do I call FFTW from the Microsoft language du
 jour?</a>
-<li><a href="#pruned" rel=subdocument>Q3.18. Can I compute only a subset of the DFT outputs?</a>
+<li><a href="#pruned" rel=subdocument>Q3.19. Can I compute only a subset of the DFT outputs?</a>
 </ul><hr>
 
 <h2><A name="fftw2to3">
@@ -76,8 +77,8 @@ should really use the <code>plan_many</code> routines in FFTW's &quot;advanced&q
 interface.  
 <li>If the abovementioned array characteristics are the same, you are
 willing to pay close attention to the documentation, and you really
-need to, we provide a &quot;guru&quot; interface to apply a plan to a
-new array.  
+need to, we provide a &quot;new-array execution&quot; interface to
+apply a plan to a new array.  
 </ul>
 
 <h2><A name="slow">
@@ -99,7 +100,7 @@ planner is significant, you have two options.  First, you can use the
 <code>FFTW_ESTIMATE</code> option in the planner, which uses heuristics
 instead of runtime measurements and produces a good plan in a short
 time.  Second, you can use the wisdom feature to precompute the plan;
-see <A href="#savePlans">Q3.8 `Can I save FFTW's plans?'</A> 
+see <A href="#savePlans">Q3.9 `Can I save FFTW's plans?'</A> 
 <h2><A name="slows">
 Question 3.4.  FFTW slows down after repeated
 calls.
@@ -145,22 +146,36 @@ In particular, you should be aware that the
 <p>
 You should also know that we compute an unnormalized transform.  In
 contrast, Matlab is an example of program that computes a normalized
-transform.  See <A href="#whyscaled">Q3.9 `Why does your inverse transform return a scaled
+transform.  See <A href="#whyscaled">Q3.10 `Why does your inverse transform return a scaled
 result?'</A>.  
 <p>
 Finally, note that floating-point arithmetic is not exact, so
 different FFT algorithms will give slightly different results (on the
 order of the numerical accuracy; typically a fractional difference of
 1e-15 or so in double precision).  
+<h2><A name="nondeterministic">
+Question 3.8.  FFTW gives different results between
+runs
+</A></h2>
+
+If you use <code>FFTW_MEASURE</code> or <code>FFTW_PATIENT</code> mode, then the algorithm FFTW employs is not deterministic: it depends on
+runtime performance measurements.  This will cause the results to vary
+slightly from run to run.  However, the differences should be slight,
+on the order of the floating-point precision, and therefore should
+have no practical impact on most applications. 
+
+<p>
+If you use saved plans (wisdom) or <code>FFTW_ESTIMATE</code> mode, however, then the algorithm is deterministic and the results should be
+identical between runs.  
 <h2><A name="savePlans">
-Question 3.8.  Can I save FFTW's plans?
+Question 3.9.  Can I save FFTW's plans?
 </A></h2>
 
 Yes. Starting with version 1.2, FFTW provides the
 <code>wisdom</code> mechanism for saving plans; see the FFTW manual. 
 
 <h2><A name="whyscaled">
-Question 3.9.  Why does your inverse transform return a scaled
+Question 3.10.  Why does your inverse transform return a scaled
 result?
 </A></h2>
 
@@ -177,7 +192,7 @@ real applications the FFT is followed or preceded by some computation
 on the data, into which the scale factor can typically be absorbed at
 little or no cost.  
 <h2><A name="centerorigin">
-Question 3.10.  How can I make FFTW put the origin (zero frequency) at
+Question 3.11.  How can I make FFTW put the origin (zero frequency) at
 the center of its output?
 </A></h2>
 
@@ -190,7 +205,7 @@ where i, j, etcetera are the indices of the element.  (This trick is a
 general property of the DFT, and is not specific to FFTW.)
 
 <h2><A name="imageaudio">
-Question 3.11.  How do I FFT an image/audio file in
+Question 3.12.  How do I FFT an image/audio file in
 <i>foobar</i> format?
 </A></h2>
 
@@ -200,14 +215,14 @@ but you are responsible for figuring out your data format and
 converting it to the form FFTW requires. 
 
 <h2><A name="linkfails">
-Question 3.12.  My program does not link (on
+Question 3.13.  My program does not link (on
 Unix).
 </A></h2>
 
 The libraries must be listed in the correct order
 (<code>-lfftw3 -lm</code> for FFTW 3.x) and <i>after</i> your program sources/objects.  (The general rule is that if <i>A</i> uses <i>B</i>, then <i>A</i> must be listed before <i>B</i> in the link command.).  
 <h2><A name="linkheader">
-Question 3.13.  I included your header, but linking still
+Question 3.14.  I included your header, but linking still
 fails.
 </A></h2>
 
@@ -215,32 +230,32 @@ You're a C++ programmer, aren't you?  You have to compile the FFTW
 library and link it into your program, not just
 <code>#include &lt;fftw3.h&gt;</code>.  (Yes, this is really a FAQ.) 
 <h2><A name="nostack">
-Question 3.14.  My program crashes, complaining about stack
+Question 3.15.  My program crashes, complaining about stack
 space.
 </A></h2>
 
-You cannot declare large arrays statically (e.g. via
+You cannot declare large arrays with automatic storage (e.g. via
 <code>fftw_complex array[N]</code>); you should use <code>fftw_malloc</code> (or equivalent) to allocate the arrays you want
 to transform if they are larger than a few hundred elements. 
 
 <h2><A name="leaks">
-Question 3.15.  FFTW seems to have a memory
+Question 3.16.  FFTW seems to have a memory
 leak.
 </A></h2>
 
 After you create a plan, FFTW caches the information required to
-quickly recreate the plan.  (See <A href="#savePlans">Q3.8 `Can I save FFTW's plans?'</A>) It also maintains a small amount of other persistent memory.  You can deallocate all of
+quickly recreate the plan.  (See <A href="#savePlans">Q3.9 `Can I save FFTW's plans?'</A>) It also maintains a small amount of other persistent memory.  You can deallocate all of
 FFTW's internally allocated memory, if you wish, by calling
 <code>fftw_cleanup()</code>, as documented in the manual.  
 <h2><A name="allzero">
-Question 3.16.  The output of FFTW's transform is all
+Question 3.17.  The output of FFTW's transform is all
 zeros.
 </A></h2>
 
 You should initialize your input array <i>after</i> creating the plan, unless you use <code>FFTW_ESTIMATE</code>: planning with <code>FFTW_MEASURE</code> or <code>FFTW_PATIENT</code> overwrites the input/output arrays, as described in the manual. 
 
 <h2><A name="vbetalia">
-Question 3.17.  How do I call FFTW from the Microsoft language du
+Question 3.18.  How do I call FFTW from the Microsoft language du
 jour?
 </A></h2>
 
@@ -249,7 +264,7 @@ use Windows.  We know nothing about Visual Basic, Visual C++, or .NET.
  Please find the appropriate Usenet discussion group and ask your
 question there.  See also <A href="section2.html#runOnWindows">Q2.2 `Does FFTW run on Windows?'</A>.  
 <h2><A name="pruned">
-Question 3.18.  Can I compute only a subset of the DFT
+Question 3.19.  Can I compute only a subset of the DFT
 outputs?
 </A></h2>
 
@@ -276,8 +291,8 @@ Back: <a href="section2.html" rev=precedes>Installing FFTW</a>.<br>
 <a href="index.html" rev=subdocument>Return to contents</a>.<p>
 <address>
 <A href="http://www.fftw.org">Matteo Frigo and Steven G. Johnson</A> / <A href="mailto:fftw@fftw.org">fftw@fftw.org</A>
-- 02 July 2006
+- 09 February 2009
 </address><br>
 Extracted from FFTW Frequently Asked Questions with Answers,
-Copyright &copy; 2006 Matteo Frigo and Massachusetts Institute of Technology.
+Copyright &copy; 2009 Matteo Frigo and Massachusetts Institute of Technology.
 </body></html>

@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: gen_mdct.ml,v 1.6 2006-02-12 23:34:12 athena Exp $ *)
 
 (* generation of trigonometric transforms *)
 
@@ -26,7 +25,6 @@ open Util
 open Genutil
 open C
 
-let cvsid = "$Id: gen_mdct.ml,v 1.6 2006-02-12 23:34:12 athena Exp $"
 
 let usage = "Usage: " ^ Sys.argv.(0) ^ " -n <number>"
 
@@ -132,7 +130,7 @@ let load_window_sym w n i = w (if (i < n) then i else (2*n - 1 - i))
 let load_array_mdct window n rarr iarr locations =
   let twon = 2 * n in
   let arr = load_array_c twon 
-      (locative_array_c twon rarr iarr locations) in
+      (locative_array_c twon rarr iarr locations "BUG") in
   let arrw = fun i -> Complex.times (window n i) (arr i) in
   array n
     ((Complex.times Complex.half) @@
@@ -145,10 +143,10 @@ let load_array_mdct window n rarr iarr locations =
 		       Complex.uminus (arrw (n + n/2 - 1 - i))]))
 
 let store_array_mdct window n rarr iarr locations arr =
-  store_array_r n (locative_array_c n rarr iarr locations) arr
+  store_array_r n (locative_array_c n rarr iarr locations "BUG") arr
 
 let load_array_imdct window n rarr iarr locations =
-  load_array_c n (locative_array_c n rarr iarr locations)
+  load_array_c n (locative_array_c n rarr iarr locations "BUG")
 
 let store_array_imdct window n rarr iarr locations arr =
   let n2 = n/2 in
@@ -163,7 +161,7 @@ let store_array_imdct window n rarr iarr locations arr =
   in
   let arr2w = fun i -> Complex.times (window n i) (arr2 i) in
   let twon = 2 * n in
-  store_array_r twon (locative_array_c twon rarr iarr locations) arr2w
+  store_array_r twon (locative_array_c twon rarr iarr locations "BUG") arr2w
 
 let window_param = function
     MDCT_WINDOW -> true
@@ -184,8 +182,8 @@ let generate n mode =
   and vostride = either_stride (!uostride) (C.SVar ostride)
   in
 
-  let _ = Simd.ovs := stride_to_string "ovs" !uovstride in
-  let _ = Simd.ivs := stride_to_string "ivs" !uivstride in
+  let sivs = stride_to_string "ovs" !uovstride in
+  let sovs = stride_to_string "ivs" !uivstride in
 
   let (transform, load_input, store_output) = match mode with
   | MDCT -> Trig.dctIV, load_array_mdct unity_window,
@@ -222,7 +220,7 @@ let generate n mode =
     store_output n
       (C.array_subscript oarray vostride)
       (C.array_subscript "BUG" vostride)
-      locations
+      locations 
       output
   in
   let annot = standard_optimizer odag in
@@ -237,17 +235,17 @@ let generate n mode =
 	       else [Decl (C.stridetype, ostride)])
 	  @ (choose_simd []
 	       (if stride_fixed !uivstride then [] else 
-	       [Decl ("int", !Simd.ivs)]))
+	       [Decl ("int", sivs)]))
 	  @ (choose_simd []
 	       (if stride_fixed !uovstride then [] else 
-	       [Decl ("int", !Simd.ovs)]))
+	       [Decl ("int", sovs)]))
 	  @ (if (not (window_param mode)) then [] 
 	       else [Decl (C.constrealtypep, window)])
 	 ),
 	 add_constants (Asch annot))
 
   in
-  (unparse cvsid tree) ^ "\n"
+  (unparse tree) ^ "\n"
 
 
 let main () =

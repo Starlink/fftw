@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Row-major Format - FFTW 3.1.2</title>
+<title>Row-major Format - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensional-Array-Format" title="Multi-dimensional Array Format">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -66,11 +66,11 @@ dimension's index varies most slowly and the last dimension's index
 varies most quickly.
 
    <p>To be more explicit, let us consider an array of rank d whose
-dimensions are n<sub>1</sub> x n<sub>2</sub> x n<sub>3</sub> x ... x n<sub>d</sub>. Now, we specify a location in the array by a
-sequence of (zero-based) indices, one for each dimension:
-(i<sub>1</sub>, i<sub>2</sub>, i<sub>3</sub>,..., i<sub>d</sub>). If the array is stored in row-major
+dimensions are n<sub>0</sub>&nbsp;&times;&nbsp;n<sub>1</sub>&nbsp;&times;&nbsp;n<sub>2</sub>&nbsp;&times;&nbsp;&hellip;&nbsp;&times;&nbsp;n<sub>d-1</sub>. Now, we specify a location in the array by a
+sequence of d (zero-based) indices, one for each dimension:
+(i<sub>0</sub>, i<sub>1</sub>, i<sub>2</sub>,..., i<sub>d-1</sub>). If the array is stored in row-major
 order, then this element is located at the position
-i<sub>d</sub> + n<sub>d</sub> * (i<sub>d-1</sub> + n<sub>d-1</sub> * (... + n<sub>2</sub> * i<sub>1</sub>)).
+i<sub>d-1</sub> + n<sub>d-1</sub> * (i<sub>d-2</sub> + n<sub>d-2</sub> * (... + n<sub>1</sub> * i<sub>0</sub>)).
 
    <p>Note that, for the ordinary complex DFT, each element of the array
 must be of type <code>fftw_complex</code>; i.e. a (real, imaginary) pair of

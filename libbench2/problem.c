@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: problem.c,v 1.28 2006-01-04 00:34:04 athena Exp $ */
 
 #include "config.h"
 #include "bench.h"
@@ -26,6 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+int always_pad_real = 0; /* by default, only pad in-place case */
 
 typedef enum {
      SAME, PADDED, HALFISH
@@ -71,14 +72,11 @@ static bench_tensor *dwim(bench_tensor *t, bench_iodim **last_iodim,
 
 static void transpose_tensor(bench_tensor *t)
 {
-     int i;
-
-     if (!FINITE_RNK(t->rnk) || t->rnk < 1)
+     if (!FINITE_RNK(t->rnk) || t->rnk < 2)
           return;
 
-     t->dims[0].os = t->dims[t->rnk - 1].os;
-     for (i = 1; i < t->rnk; ++i)
-	  t->dims[i].os = t->dims[i-1].os * t->dims[i-1].n;
+     t->dims[0].os = t->dims[1].os;
+     t->dims[1].os = t->dims[0].os * t->dims[0].n;
 }
 
 static const char *parseint(const char *s, int *n)
@@ -248,6 +246,7 @@ bench_problem *problem_parse(const char *s)
      p->destroy_input = 0;
      p->split = 0;
      p->userinfo = 0;
+     p->scrambled_in = p->scrambled_out = 0;
      p->sz = p->vecsz = 0;
      p->ini = p->outi = 0;
      p->pstring = (char *) bench_malloc(sizeof(char) * (strlen(s) + 1));
@@ -267,6 +266,11 @@ bench_problem *problem_parse(const char *s)
 	 case 'c': p->kind = PROBLEM_COMPLEX; ++s; goto L1;
 	 case 'k': p->kind = PROBLEM_R2R; ++s; goto L1;
 	 case 't': transpose = 1; ++s; goto L1;
+	      
+	 /* hack for MPI: */
+	 case '[': p->scrambled_in = 1; ++s; goto L1;
+	 case ']': p->scrambled_out = 1; ++s; goto L1;
+
 	 default : ;
      }
 
@@ -274,12 +278,12 @@ bench_problem *problem_parse(const char *s)
 
      if (p->kind == PROBLEM_REAL) {
 	  if (p->sign < 0) {
-	       nti = p->in_place ? PADDED : SAME;
+	       nti = p->in_place || always_pad_real ? PADDED : SAME;
 	       nto = HALFISH;
 	  }
 	  else {
 	       nti = HALFISH;
-	       nto = p->in_place ? PADDED : SAME;
+	       nto = p->in_place || always_pad_real ? PADDED : SAME;
 	  }
      }
 

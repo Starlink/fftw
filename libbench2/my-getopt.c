@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@ static const char *scan_pointer = 0;
 void my_usage(const char *progname, const struct my_option *opt)
 {
     int i;
-    int col = 0;
+    size_t col = 0;
 
     fprintf(stdout, "Usage: %s", progname);
     col += (strlen(progname) + 7);
     for (i = 0; opt[i].long_name; i++) {
-	int option_len;
+	size_t option_len;
 
 	option_len = strlen(opt[i].long_name);
 	if (col >= 80 - (option_len + 16)) {
@@ -54,7 +54,7 @@ void my_usage(const char *progname, const struct my_option *opt)
 		 col += 5;
 		 break;
 	    case OPTARG:
-		 fputs(" [arg(s)]]", stdout);
+		 fputs(" [arg]]", stdout);
 		 col += 10;
 		 break;
 	    default:
@@ -84,7 +84,10 @@ int my_getopt(int argc, char *argv[], const struct my_option *optarray)
      
 	  if (*p++ != '-')  
 	       return (-1); /* not an option */
-     
+
+	  if (!*p) 
+	       return (-1); /* string is exactly '-' */
+	       
 	  ++my_optind;
      }
 
@@ -96,7 +99,7 @@ int my_getopt(int argc, char *argv[], const struct my_option *optarray)
 	  ++p;
 	  
 	  for (l = optarray; l->short_name; ++l) {
-	       int len = strlen(l->long_name);
+	       size_t len = strlen(l->long_name);
 	       if (!strncmp(l->long_name, p, len) && 
 		   (!p[len] || p[len] == '=')) {
 		    switch (l->argtype) {

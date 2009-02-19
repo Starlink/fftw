@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: indirect.c,v 1.34 2006-01-27 02:10:50 athena Exp $ */
 
 
 /* solvers/plans for vectors of small RDFT's that cannot be done
@@ -217,7 +216,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(const ndrct_adt *adt)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->adt = adt;
      return &(slv->super);

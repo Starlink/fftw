@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: complex.ml,v 1.9 2006-02-12 23:34:12 athena Exp $ *)
 
 (* abstraction layer for complex operations *)
 open Littlesimp
@@ -49,9 +48,20 @@ let nan x = CE (NaN x, makeNum Number.zero)
 
 let half = inverse_int 2
 
+let times3x3 (CE (a, b)) (CE (c, d)) = 
+  CE (makePlus [makeTimes (c, makePlus [a; makeUminus (b)]);
+	        makeTimes (b, makePlus [c; makeUminus (d)])],
+      makePlus [makeTimes (a, makePlus [c; d]);
+	        makeUminus(makeTimes (c, makePlus [a; makeUminus (b)]))])
+
 let times (CE (a, b)) (CE (c, d)) = 
-  CE (makePlus [makeTimes (a, c); makeUminus (makeTimes (b, d))],
-      makePlus [makeTimes (a, d); makeTimes (b, c)])
+  if not !Magic.threemult then
+    CE (makePlus [makeTimes (a, c); makeUminus (makeTimes (b, d))],
+        makePlus [makeTimes (a, d); makeTimes (b, c)])
+  else if is_constant c && is_constant d then
+    times3x3 (CE (a, b)) (CE (c, d))
+  else (* hope a and b are constant expressions *)
+    times3x3 (CE (c, d)) (CE (a, b))
 
 let ctimes (CE (a, _)) (CE (c, _)) = 
   CE (CTimes (a, c), makeNum Number.zero)

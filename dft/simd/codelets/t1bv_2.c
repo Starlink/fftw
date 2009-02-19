@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 14:59:07 EDT 2006 */
+/* Generated on Mon Feb  9 19:53:05 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,35 +30,27 @@
 /*
  * This function contains 3 FP additions, 2 FP multiplications,
  * (or, 3 additions, 2 multiplications, 0 fused multiply/add),
- * 5 stack variables, and 4 memory accesses
+ * 5 stack variables, 0 constants, and 4 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t1b.h"
 
-static const R *t1bv_2(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1bv_2(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 2), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 2)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 2), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T1, T2, T3;
-	  T1 = LD(&(x[0]), dist, &(x[0]));
-	  T2 = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+	  T1 = LD(&(x[0]), ms, &(x[0]));
+	  T2 = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 	  T3 = BYTW(&(W[0]), T2);
-	  ST(&(x[0]), VADD(T1, T3), dist, &(x[0]));
-	  ST(&(x[WS(ios, 1)]), VSUB(T1, T3), dist, &(x[WS(ios, 1)]));
+	  ST(&(x[0]), VADD(T1, T3), ms, &(x[0]));
+	  ST(&(x[WS(rs, 1)]), VSUB(T1, T3), ms, &(x[WS(rs, 1)]));
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
+     VTW(0, 1),
      {TW_NEXT, VL, 0}
 };
 
@@ -74,35 +66,27 @@ void X(codelet_t1bv_2) (planner *p) {
 /*
  * This function contains 3 FP additions, 2 FP multiplications,
  * (or, 3 additions, 2 multiplications, 0 fused multiply/add),
- * 5 stack variables, and 4 memory accesses
+ * 5 stack variables, 0 constants, and 4 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t1b.h"
 
-static const R *t1bv_2(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1bv_2(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 2), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 2)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 2), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T1, T3, T2;
-	  T1 = LD(&(x[0]), dist, &(x[0]));
-	  T2 = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+	  T1 = LD(&(x[0]), ms, &(x[0]));
+	  T2 = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 	  T3 = BYTW(&(W[0]), T2);
-	  ST(&(x[WS(ios, 1)]), VSUB(T1, T3), dist, &(x[WS(ios, 1)]));
-	  ST(&(x[0]), VADD(T1, T3), dist, &(x[0]));
+	  ST(&(x[WS(rs, 1)]), VSUB(T1, T3), ms, &(x[WS(rs, 1)]));
+	  ST(&(x[0]), VADD(T1, T3), ms, &(x[0]));
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
+     VTW(0, 1),
      {TW_NEXT, VL, 0}
 };
 

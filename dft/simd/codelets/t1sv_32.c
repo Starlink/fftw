@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 22:33:58 EDT 2006 */
+/* Generated on Mon Feb  9 19:53:24 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,18 +30,11 @@
 /*
  * This function contains 434 FP additions, 260 FP multiplications,
  * (or, 236 additions, 62 multiplications, 198 fused multiply/add),
- * 158 stack variables, and 128 memory accesses
+ * 158 stack variables, 7 constants, and 128 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle.ml,v 1.24 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "ts.h"
 
-static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1sv_32(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      DVK(KP831469612, +0.831469612302545237078788377617905756738560812);
      DVK(KP980785280, +0.980785280403230449126182236134239036973933731);
@@ -50,8 +43,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
      DVK(KP923879532, +0.923879532511286756128183189396788286822416626);
      DVK(KP414213562, +0.414213562373095048801688724209698078569671875);
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
-     INT i;
-     for (i = m; i > 0; i = i - (2 * VL), ri = ri + ((2 * VL) * dist), ii = ii + ((2 * VL) * dist), W = W + ((2 * VL) * 62), MAKE_VOLATILE_STRIDE(ios)) {
+     INT m;
+     for (m = mb, W = W + (mb * 62); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 62), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T8Z, T90;
 	  {
 	       V T87, T8x, T3w, T8, T3B, T83, Tl, T8y, T6F, Tz, T3J, T5T, T6G, TM, T3Q;
@@ -64,17 +57,17 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    {
 			 V T1, T86, T3, T6, T5, Ta, Td, Tg, Tj, Tf, T84, T4, Tc, Ti, T3x;
 			 V Tb, T2, T9;
-			 T1 = LD(&(ri[0]), dist, &(ri[0]));
-			 T86 = LD(&(ii[0]), dist, &(ii[0]));
-			 T3 = LD(&(ri[WS(ios, 16)]), dist, &(ri[0]));
-			 T6 = LD(&(ii[WS(ios, 16)]), dist, &(ii[0]));
+			 T1 = LD(&(ri[0]), ms, &(ri[0]));
+			 T86 = LD(&(ii[0]), ms, &(ii[0]));
+			 T3 = LD(&(ri[WS(rs, 16)]), ms, &(ri[0]));
+			 T6 = LD(&(ii[WS(rs, 16)]), ms, &(ii[0]));
 			 T2 = LDW(&(W[TWVL * 30]));
 			 T5 = LDW(&(W[TWVL * 31]));
-			 Ta = LD(&(ri[WS(ios, 8)]), dist, &(ri[0]));
-			 Td = LD(&(ii[WS(ios, 8)]), dist, &(ii[0]));
+			 Ta = LD(&(ri[WS(rs, 8)]), ms, &(ri[0]));
+			 Td = LD(&(ii[WS(rs, 8)]), ms, &(ii[0]));
 			 T9 = LDW(&(W[TWVL * 14]));
-			 Tg = LD(&(ri[WS(ios, 24)]), dist, &(ri[0]));
-			 Tj = LD(&(ii[WS(ios, 24)]), dist, &(ii[0]));
+			 Tg = LD(&(ri[WS(rs, 24)]), ms, &(ri[0]));
+			 Tj = LD(&(ii[WS(rs, 24)]), ms, &(ii[0]));
 			 Tf = LDW(&(W[TWVL * 46]));
 			 T84 = VMUL(T2, T6);
 			 T4 = VMUL(T2, T3);
@@ -90,12 +83,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					V T3y, Te, Tn, T3A, Tk;
 					{
 					     V T3z, Th, T85, T7;
-					     To = LD(&(ri[WS(ios, 4)]), dist, &(ri[0]));
+					     To = LD(&(ri[WS(rs, 4)]), ms, &(ri[0]));
 					     T3z = VMUL(Tf, Tj);
 					     Th = VMUL(Tf, Tg);
 					     T85 = VFNMS(T5, T3, T84);
 					     T7 = VFMA(T5, T6, T4);
-					     Tr = LD(&(ii[WS(ios, 4)]), dist, &(ii[0]));
+					     Tr = LD(&(ii[WS(rs, 4)]), ms, &(ii[0]));
 					     T3y = VFNMS(Tc, Ta, T3x);
 					     Te = VFMA(Tc, Td, Tb);
 					     Tn = LDW(&(W[TWVL * 6]));
@@ -114,8 +107,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					Tl = VADD(Te, Tk);
 					T8y = VSUB(Te, Tk);
 				   }
-				   Tu = LD(&(ri[WS(ios, 20)]), dist, &(ri[0]));
-				   Tx = LD(&(ii[WS(ios, 20)]), dist, &(ii[0]));
+				   Tu = LD(&(ri[WS(rs, 20)]), ms, &(ri[0]));
+				   Tx = LD(&(ii[WS(rs, 20)]), ms, &(ii[0]));
 				   T3F = VFNMS(Tq, To, T3E);
 				   Ts = VFMA(Tq, Tr, Tp);
 				   Tt = LDW(&(W[TWVL * 38]));
@@ -123,12 +116,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 			      }
 			      {
 				   V TB, TE, TD, TH, TK, T3G, Tv, TG, TJ, T3L, TC, TA;
-				   TB = LD(&(ri[WS(ios, 28)]), dist, &(ri[0]));
-				   TE = LD(&(ii[WS(ios, 28)]), dist, &(ii[0]));
+				   TB = LD(&(ri[WS(rs, 28)]), ms, &(ri[0]));
+				   TE = LD(&(ii[WS(rs, 28)]), ms, &(ii[0]));
 				   TA = LDW(&(W[TWVL * 54]));
 				   TD = LDW(&(W[TWVL * 55]));
-				   TH = LD(&(ri[WS(ios, 12)]), dist, &(ri[0]));
-				   TK = LD(&(ii[WS(ios, 12)]), dist, &(ii[0]));
+				   TH = LD(&(ri[WS(rs, 12)]), ms, &(ri[0]));
+				   TK = LD(&(ii[WS(rs, 12)]), ms, &(ii[0]));
 				   T3G = VMUL(Tt, Tx);
 				   Tv = VMUL(Tt, Tu);
 				   TG = LDW(&(W[TWVL * 22]));
@@ -141,8 +134,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     V TQ, TT, T3M, TF, TS, T3I, T3D, T3O, TL, T3T, TR;
 					     {
 						  V T3H, Ty, T3N, TI, TP;
-						  TQ = LD(&(ri[WS(ios, 2)]), dist, &(ri[0]));
-						  TT = LD(&(ii[WS(ios, 2)]), dist, &(ii[0]));
+						  TQ = LD(&(ri[WS(rs, 2)]), ms, &(ri[0]));
+						  TT = LD(&(ii[WS(rs, 2)]), ms, &(ii[0]));
 						  T3H = VFNMS(Tw, Tu, T3G);
 						  Ty = VFMA(Tw, Tx, Tv);
 						  T3N = VMUL(TG, TK);
@@ -160,8 +153,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 						  T3T = VMUL(TP, TT);
 						  TR = VMUL(TP, TQ);
 					     }
-					     T19 = LD(&(ri[WS(ios, 26)]), dist, &(ri[0]));
-					     T1c = LD(&(ii[WS(ios, 26)]), dist, &(ii[0]));
+					     T19 = LD(&(ri[WS(rs, 26)]), ms, &(ri[0]));
+					     T1c = LD(&(ii[WS(rs, 26)]), ms, &(ii[0]));
 					     T3J = VADD(T3D, T3I);
 					     T5T = VSUB(T3I, T3D);
 					     T6G = VADD(T3M, T3O);
@@ -173,16 +166,16 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T18 = LDW(&(W[TWVL * 50]));
 					     T1b = LDW(&(W[TWVL * 51]));
 					}
-					TW = LD(&(ri[WS(ios, 18)]), dist, &(ri[0]));
-					TZ = LD(&(ii[WS(ios, 18)]), dist, &(ii[0]));
+					TW = LD(&(ri[WS(rs, 18)]), ms, &(ri[0]));
+					TZ = LD(&(ii[WS(rs, 18)]), ms, &(ii[0]));
 					T3Q = VSUB(T3K, T3P);
 					T5U = VADD(T3K, T3P);
 					TV = LDW(&(W[TWVL * 34]));
 					TY = LDW(&(W[TWVL * 35]));
 					T43 = VMUL(T18, T1c);
 					T1a = VMUL(T18, T19);
-					T13 = LD(&(ri[WS(ios, 10)]), dist, &(ri[0]));
-					T16 = LD(&(ii[WS(ios, 10)]), dist, &(ii[0]));
+					T13 = LD(&(ri[WS(rs, 10)]), ms, &(ri[0]));
+					T16 = LD(&(ii[WS(rs, 10)]), ms, &(ii[0]));
 					T12 = LDW(&(W[TWVL * 18]));
 					T15 = LDW(&(W[TWVL * 19]));
 					T3V = VMUL(TV, TZ);
@@ -201,8 +194,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   V T1A, T1D, T1C, T4i, T1B, T1m;
 				   {
 					V T1h, T1k, T41, T14, T3W, T10, T1g, T1j;
-					T1h = LD(&(ri[WS(ios, 30)]), dist, &(ri[0]));
-					T1k = LD(&(ii[WS(ios, 30)]), dist, &(ii[0]));
+					T1h = LD(&(ri[WS(rs, 30)]), ms, &(ri[0]));
+					T1k = LD(&(ii[WS(rs, 30)]), ms, &(ii[0]));
 					T41 = VMUL(T12, T16);
 					T14 = VMUL(T12, T13);
 					T3W = VFNMS(TY, TW, T3V);
@@ -211,8 +204,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					T1j = LDW(&(W[TWVL * 59]));
 					{
 					     V T6J, T3X, T11, T40, T48, T1i, T6K, T45, T1e, T3Y, T1z, T42, T17;
-					     T1A = LD(&(ri[WS(ios, 22)]), dist, &(ri[0]));
-					     T1D = LD(&(ii[WS(ios, 22)]), dist, &(ii[0]));
+					     T1A = LD(&(ri[WS(rs, 22)]), ms, &(ri[0]));
+					     T1D = LD(&(ii[WS(rs, 22)]), ms, &(ii[0]));
 					     T42 = VFNMS(T15, T13, T41);
 					     T17 = VFMA(T15, T16, T14);
 					     T6J = VADD(T3U, T3W);
@@ -241,12 +234,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T1B = VMUL(T1z, T1A);
 					}
 				   }
-				   T1n = LD(&(ri[WS(ios, 14)]), dist, &(ri[0]));
-				   T1q = LD(&(ii[WS(ios, 14)]), dist, &(ii[0]));
+				   T1n = LD(&(ri[WS(rs, 14)]), ms, &(ri[0]));
+				   T1q = LD(&(ii[WS(rs, 14)]), ms, &(ii[0]));
 				   T1m = LDW(&(W[TWVL * 26]));
 				   T1p = LDW(&(W[TWVL * 27]));
-				   T1u = LD(&(ri[WS(ios, 6)]), dist, &(ri[0]));
-				   T1x = LD(&(ii[WS(ios, 6)]), dist, &(ii[0]));
+				   T1u = LD(&(ri[WS(rs, 6)]), ms, &(ri[0]));
+				   T1x = LD(&(ii[WS(rs, 6)]), ms, &(ii[0]));
 				   T4j = VFNMS(T1C, T1A, T4i);
 				   T1E = VFMA(T1C, T1D, T1B);
 				   T1t = LDW(&(W[TWVL * 10]));
@@ -258,16 +251,16 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   V T2W, T2Z, T6P, T4c, T1s, T4f, T6Q, T4k, T1F, T4d, T2V, T2Y, T5o, T2X, T2I;
 				   {
 					V T2D, T2G, T2C, T2F, T4g, T1v, T4b, T1r;
-					T2D = LD(&(ri[WS(ios, 31)]), dist, &(ri[WS(ios, 1)]));
-					T2G = LD(&(ii[WS(ios, 31)]), dist, &(ii[WS(ios, 1)]));
+					T2D = LD(&(ri[WS(rs, 31)]), ms, &(ri[WS(rs, 1)]));
+					T2G = LD(&(ii[WS(rs, 31)]), ms, &(ii[WS(rs, 1)]));
 					T2C = LDW(&(W[TWVL * 60]));
 					T2F = LDW(&(W[TWVL * 61]));
 					T4g = VMUL(T1t, T1x);
 					T1v = VMUL(T1t, T1u);
 					T4b = VFNMS(T1p, T1n, T4a);
 					T1r = VFMA(T1p, T1q, T1o);
-					T2W = LD(&(ri[WS(ios, 23)]), dist, &(ri[WS(ios, 1)]));
-					T2Z = LD(&(ii[WS(ios, 23)]), dist, &(ii[WS(ios, 1)]));
+					T2W = LD(&(ri[WS(rs, 23)]), ms, &(ri[WS(rs, 1)]));
+					T2Z = LD(&(ii[WS(rs, 23)]), ms, &(ii[WS(rs, 1)]));
 					{
 					     V T4Y, T2E, T4h, T1y;
 					     T4Y = VMUL(T2C, T2G);
@@ -288,8 +281,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					}
 					T2Y = LDW(&(W[TWVL * 45]));
 				   }
-				   T2J = LD(&(ri[WS(ios, 15)]), dist, &(ri[WS(ios, 1)]));
-				   T2M = LD(&(ii[WS(ios, 15)]), dist, &(ii[WS(ios, 1)]));
+				   T2J = LD(&(ri[WS(rs, 15)]), ms, &(ri[WS(rs, 1)]));
+				   T2M = LD(&(ii[WS(rs, 15)]), ms, &(ii[WS(rs, 1)]));
 				   T4l = VADD(T4f, T4k);
 				   T61 = VSUB(T4f, T4k);
 				   T7E = VADD(T6P, T6Q);
@@ -302,8 +295,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   T2X = VMUL(T2V, T2W);
 				   T2I = LDW(&(W[TWVL * 28]));
 				   T2L = LDW(&(W[TWVL * 29]));
-				   T2Q = LD(&(ri[WS(ios, 7)]), dist, &(ri[WS(ios, 1)]));
-				   T2T = LD(&(ii[WS(ios, 7)]), dist, &(ii[WS(ios, 1)]));
+				   T2Q = LD(&(ri[WS(rs, 7)]), ms, &(ri[WS(rs, 1)]));
+				   T2T = LD(&(ii[WS(rs, 7)]), ms, &(ii[WS(rs, 1)]));
 				   T2P = LDW(&(W[TWVL * 12]));
 				   T2S = LDW(&(W[TWVL * 13]));
 				   T5p = VFNMS(T2Y, T2W, T5o);
@@ -318,8 +311,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   V T23, T26, T25, T4P, T24, T1P;
 				   {
 					V T1K, T1N, T5m, T2R, T1J, T1M, T51, T2N;
-					T1K = LD(&(ri[WS(ios, 1)]), dist, &(ri[WS(ios, 1)]));
-					T1N = LD(&(ii[WS(ios, 1)]), dist, &(ii[WS(ios, 1)]));
+					T1K = LD(&(ri[WS(rs, 1)]), ms, &(ri[WS(rs, 1)]));
+					T1N = LD(&(ii[WS(rs, 1)]), ms, &(ii[WS(rs, 1)]));
 					T5m = VMUL(T2P, T2T);
 					T2R = VMUL(T2P, T2Q);
 					T1J = LDW(&(W[0]));
@@ -328,8 +321,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					T2N = VFMA(T2L, T2M, T2K);
 					{
 					     V T76, T52, T2O, T5l, T77, T5q, T31, T53, T22;
-					     T23 = LD(&(ri[WS(ios, 25)]), dist, &(ri[WS(ios, 1)]));
-					     T26 = LD(&(ii[WS(ios, 25)]), dist, &(ii[WS(ios, 1)]));
+					     T23 = LD(&(ri[WS(rs, 25)]), ms, &(ri[WS(rs, 1)]));
+					     T26 = LD(&(ii[WS(rs, 25)]), ms, &(ii[WS(rs, 1)]));
 					     {
 						  V T5n, T2U, T4p, T1L;
 						  T5n = VFNMS(T2S, T2Q, T5m);
@@ -361,12 +354,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T24 = VMUL(T22, T23);
 					}
 				   }
-				   T1Q = LD(&(ri[WS(ios, 17)]), dist, &(ri[WS(ios, 1)]));
-				   T1T = LD(&(ii[WS(ios, 17)]), dist, &(ii[WS(ios, 1)]));
+				   T1Q = LD(&(ri[WS(rs, 17)]), ms, &(ri[WS(rs, 1)]));
+				   T1T = LD(&(ii[WS(rs, 17)]), ms, &(ii[WS(rs, 1)]));
 				   T1P = LDW(&(W[TWVL * 32]));
 				   T1S = LDW(&(W[TWVL * 33]));
-				   T1X = LD(&(ri[WS(ios, 9)]), dist, &(ri[WS(ios, 1)]));
-				   T20 = LD(&(ii[WS(ios, 9)]), dist, &(ii[WS(ios, 1)]));
+				   T1X = LD(&(ri[WS(rs, 9)]), ms, &(ri[WS(rs, 1)]));
+				   T20 = LD(&(ii[WS(rs, 9)]), ms, &(ii[WS(rs, 1)]));
 				   T4Q = VFNMS(T25, T23, T4P);
 				   T27 = VFMA(T25, T26, T24);
 				   T1W = LDW(&(W[TWVL * 16]));
@@ -380,16 +373,16 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					V T3n, T3q, T6V, T4t, T1V, T4M, T6W, T4R, T28, T4u, T3m, T3p, T5f, T3o, T39;
 					{
 					     V T34, T37, T33, T36, T4N, T1Y, T4s, T1U;
-					     T34 = LD(&(ri[WS(ios, 3)]), dist, &(ri[WS(ios, 1)]));
-					     T37 = LD(&(ii[WS(ios, 3)]), dist, &(ii[WS(ios, 1)]));
+					     T34 = LD(&(ri[WS(rs, 3)]), ms, &(ri[WS(rs, 1)]));
+					     T37 = LD(&(ii[WS(rs, 3)]), ms, &(ii[WS(rs, 1)]));
 					     T33 = LDW(&(W[TWVL * 4]));
 					     T36 = LDW(&(W[TWVL * 5]));
 					     T4N = VMUL(T1W, T20);
 					     T1Y = VMUL(T1W, T1X);
 					     T4s = VFNMS(T1S, T1Q, T4r);
 					     T1U = VFMA(T1S, T1T, T1R);
-					     T3n = LD(&(ri[WS(ios, 11)]), dist, &(ri[WS(ios, 1)]));
-					     T3q = LD(&(ii[WS(ios, 11)]), dist, &(ii[WS(ios, 1)]));
+					     T3n = LD(&(ri[WS(rs, 11)]), ms, &(ri[WS(rs, 1)]));
+					     T3q = LD(&(ii[WS(rs, 11)]), ms, &(ii[WS(rs, 1)]));
 					     {
 						  V T55, T35, T4O, T21;
 						  T55 = VMUL(T33, T37);
@@ -410,8 +403,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     }
 					     T3p = LDW(&(W[TWVL * 21]));
 					}
-					T3a = LD(&(ri[WS(ios, 19)]), dist, &(ri[WS(ios, 1)]));
-					T3d = LD(&(ii[WS(ios, 19)]), dist, &(ii[WS(ios, 1)]));
+					T3a = LD(&(ri[WS(rs, 19)]), ms, &(ri[WS(rs, 1)]));
+					T3d = LD(&(ii[WS(rs, 19)]), ms, &(ii[WS(rs, 1)]));
 					T4S = VADD(T4M, T4R);
 					T65 = VSUB(T4M, T4R);
 					T6X = VSUB(T6V, T6W);
@@ -424,8 +417,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					T3o = VMUL(T3m, T3n);
 					T39 = LDW(&(W[TWVL * 36]));
 					T3c = LDW(&(W[TWVL * 37]));
-					T3h = LD(&(ri[WS(ios, 27)]), dist, &(ri[WS(ios, 1)]));
-					T3k = LD(&(ii[WS(ios, 27)]), dist, &(ii[WS(ios, 1)]));
+					T3h = LD(&(ri[WS(rs, 27)]), ms, &(ri[WS(rs, 1)]));
+					T3k = LD(&(ii[WS(rs, 27)]), ms, &(ii[WS(rs, 1)]));
 					T3g = LDW(&(W[TWVL * 52]));
 					T3j = LDW(&(W[TWVL * 53]));
 					T5g = VFNMS(T3p, T3n, T5f);
@@ -437,16 +430,16 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					V T2u, T2x, T2w, T4G, T2v, T2g;
 					{
 					     V T2b, T2e, T5d, T3i, T2a, T2d, T58, T3e, T2t;
-					     T2b = LD(&(ri[WS(ios, 5)]), dist, &(ri[WS(ios, 1)]));
-					     T2e = LD(&(ii[WS(ios, 5)]), dist, &(ii[WS(ios, 1)]));
+					     T2b = LD(&(ri[WS(rs, 5)]), ms, &(ri[WS(rs, 1)]));
+					     T2e = LD(&(ii[WS(rs, 5)]), ms, &(ii[WS(rs, 1)]));
 					     T5d = VMUL(T3g, T3k);
 					     T3i = VMUL(T3g, T3h);
 					     T2a = LDW(&(W[TWVL * 8]));
 					     T2d = LDW(&(W[TWVL * 9]));
 					     T58 = VFNMS(T3c, T3a, T57);
 					     T3e = VFMA(T3c, T3d, T3b);
-					     T2u = LD(&(ri[WS(ios, 13)]), dist, &(ri[WS(ios, 1)]));
-					     T2x = LD(&(ii[WS(ios, 13)]), dist, &(ii[WS(ios, 1)]));
+					     T2u = LD(&(ri[WS(rs, 13)]), ms, &(ri[WS(rs, 1)]));
+					     T2x = LD(&(ii[WS(rs, 13)]), ms, &(ii[WS(rs, 1)]));
 					     {
 						  V T5e, T3l, T4w, T2c;
 						  T5e = VFNMS(T3j, T3h, T5d);
@@ -483,12 +476,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T4G = VMUL(T2t, T2x);
 					     T2v = VMUL(T2t, T2u);
 					}
-					T2h = LD(&(ri[WS(ios, 21)]), dist, &(ri[WS(ios, 1)]));
-					T2k = LD(&(ii[WS(ios, 21)]), dist, &(ii[WS(ios, 1)]));
+					T2h = LD(&(ri[WS(rs, 21)]), ms, &(ri[WS(rs, 1)]));
+					T2k = LD(&(ii[WS(rs, 21)]), ms, &(ii[WS(rs, 1)]));
 					T2g = LDW(&(W[TWVL * 40]));
 					T2j = LDW(&(W[TWVL * 41]));
-					T2o = LD(&(ri[WS(ios, 29)]), dist, &(ri[WS(ios, 1)]));
-					T2r = LD(&(ii[WS(ios, 29)]), dist, &(ii[WS(ios, 1)]));
+					T2o = LD(&(ri[WS(rs, 29)]), ms, &(ri[WS(rs, 1)]));
+					T2r = LD(&(ii[WS(rs, 29)]), ms, &(ii[WS(rs, 1)]));
 					T4H = VFNMS(T2w, T2u, T4G);
 					T2y = VFMA(T2w, T2x, T2v);
 					T2n = LDW(&(W[TWVL * 56]));
@@ -574,8 +567,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   T7T = VSUB(T7K, T7H);
 				   T3v = VADD(T2B, T3u);
 				   T8b = VSUB(T3u, T2B);
-				   ST(&(ri[WS(ios, 24)]), VSUB(T7W, T7Z), dist, &(ri[0]));
-				   ST(&(ri[WS(ios, 8)]), VADD(T7W, T7Z), dist, &(ri[0]));
+				   ST(&(ri[WS(rs, 24)]), VSUB(T7W, T7Z), ms, &(ri[0]));
+				   ST(&(ri[WS(rs, 8)]), VADD(T7W, T7Z), ms, &(ri[0]));
 				   T8c = VSUB(T89, T81);
 				   T8a = VADD(T81, T89);
 				   {
@@ -586,18 +579,18 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					T8i = VSUB(T7Q, T7L);
 					T8h = VSUB(T8e, T8d);
 					T8f = VADD(T8d, T8e);
-					ST(&(ri[0]), VADD(T1I, T3v), dist, &(ri[0]));
-					ST(&(ri[WS(ios, 16)]), VSUB(T1I, T3v), dist, &(ri[0]));
+					ST(&(ri[0]), VADD(T1I, T3v), ms, &(ri[0]));
+					ST(&(ri[WS(rs, 16)]), VSUB(T1I, T3v), ms, &(ri[0]));
 					T8g = VADD(T7T, T7U);
 					T7V = VSUB(T7T, T7U);
-					ST(&(ii[WS(ios, 16)]), VSUB(T8a, T80), dist, &(ii[0]));
-					ST(&(ii[0]), VADD(T80, T8a), dist, &(ii[0]));
-					ST(&(ii[WS(ios, 24)]), VSUB(T8c, T8b), dist, &(ii[0]));
-					ST(&(ii[WS(ios, 8)]), VADD(T8b, T8c), dist, &(ii[0]));
-					ST(&(ri[WS(ios, 4)]), VFMA(LDK(KP707106781), T7R, T7G), dist, &(ri[0]));
-					ST(&(ri[WS(ios, 20)]), VFNMS(LDK(KP707106781), T7R, T7G), dist, &(ri[0]));
-					ST(&(ii[WS(ios, 20)]), VFNMS(LDK(KP707106781), T8g, T8f), dist, &(ii[0]));
-					ST(&(ii[WS(ios, 4)]), VFMA(LDK(KP707106781), T8g, T8f), dist, &(ii[0]));
+					ST(&(ii[WS(rs, 16)]), VSUB(T8a, T80), ms, &(ii[0]));
+					ST(&(ii[0]), VADD(T80, T8a), ms, &(ii[0]));
+					ST(&(ii[WS(rs, 24)]), VSUB(T8c, T8b), ms, &(ii[0]));
+					ST(&(ii[WS(rs, 8)]), VADD(T8b, T8c), ms, &(ii[0]));
+					ST(&(ri[WS(rs, 4)]), VFMA(LDK(KP707106781), T7R, T7G), ms, &(ri[0]));
+					ST(&(ri[WS(rs, 20)]), VFNMS(LDK(KP707106781), T7R, T7G), ms, &(ri[0]));
+					ST(&(ii[WS(rs, 20)]), VFNMS(LDK(KP707106781), T8g, T8f), ms, &(ii[0]));
+					ST(&(ii[WS(rs, 4)]), VFMA(LDK(KP707106781), T8g, T8f), ms, &(ii[0]));
 				   }
 			      }
 			 }
@@ -609,10 +602,10 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 				   T7u = VADD(T7b, T7e);
 				   T7v = VADD(T78, T79);
 				   T7a = VSUB(T78, T79);
-				   ST(&(ri[WS(ios, 12)]), VFMA(LDK(KP707106781), T7V, T7S), dist, &(ri[0]));
-				   ST(&(ri[WS(ios, 28)]), VFNMS(LDK(KP707106781), T7V, T7S), dist, &(ri[0]));
-				   ST(&(ii[WS(ios, 28)]), VFNMS(LDK(KP707106781), T8i, T8h), dist, &(ii[0]));
-				   ST(&(ii[WS(ios, 12)]), VFMA(LDK(KP707106781), T8i, T8h), dist, &(ii[0]));
+				   ST(&(ri[WS(rs, 12)]), VFMA(LDK(KP707106781), T7V, T7S), ms, &(ri[0]));
+				   ST(&(ri[WS(rs, 28)]), VFNMS(LDK(KP707106781), T7V, T7S), ms, &(ri[0]));
+				   ST(&(ii[WS(rs, 28)]), VFNMS(LDK(KP707106781), T8i, T8h), ms, &(ii[0]));
+				   ST(&(ii[WS(rs, 12)]), VFMA(LDK(KP707106781), T8i, T8h), ms, &(ii[0]));
 				   T7m = VADD(T6E, T6H);
 				   T6I = VSUB(T6E, T6H);
 				   T7A = VFMA(LDK(KP414213562), T7u, T7v);
@@ -671,22 +664,22 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T7l = VADD(T7j, T7k);
 					     T7h = VSUB(T75, T7g);
 					     T8w = VADD(T75, T7g);
-					     ST(&(ri[WS(ios, 10)]), VFMA(LDK(KP923879532), T7B, T7y), dist, &(ri[0]));
-					     ST(&(ri[WS(ios, 26)]), VFNMS(LDK(KP923879532), T7B, T7y), dist, &(ri[0]));
-					     ST(&(ii[WS(ios, 18)]), VFNMS(LDK(KP923879532), T8o, T8n), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 2)]), VFMA(LDK(KP923879532), T8o, T8n), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 26)]), VFNMS(LDK(KP923879532), T8q, T8p), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 10)]), VFMA(LDK(KP923879532), T8q, T8p), dist, &(ii[0]));
-					     ST(&(ri[WS(ios, 2)]), VFMA(LDK(KP923879532), T7x, T7q), dist, &(ri[0]));
-					     ST(&(ri[WS(ios, 18)]), VFNMS(LDK(KP923879532), T7x, T7q), dist, &(ri[0]));
-					     ST(&(ri[WS(ios, 30)]), VFMA(LDK(KP923879532), T7l, T7i), dist, &(ri[0]));
-					     ST(&(ri[WS(ios, 14)]), VFNMS(LDK(KP923879532), T7l, T7i), dist, &(ri[0]));
-					     ST(&(ii[WS(ios, 22)]), VFNMS(LDK(KP923879532), T8u, T8t), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 6)]), VFMA(LDK(KP923879532), T8u, T8t), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 30)]), VFMA(LDK(KP923879532), T8w, T8v), dist, &(ii[0]));
-					     ST(&(ii[WS(ios, 14)]), VFNMS(LDK(KP923879532), T8w, T8v), dist, &(ii[0]));
-					     ST(&(ri[WS(ios, 6)]), VFMA(LDK(KP923879532), T7h, T6U), dist, &(ri[0]));
-					     ST(&(ri[WS(ios, 22)]), VFNMS(LDK(KP923879532), T7h, T6U), dist, &(ri[0]));
+					     ST(&(ri[WS(rs, 10)]), VFMA(LDK(KP923879532), T7B, T7y), ms, &(ri[0]));
+					     ST(&(ri[WS(rs, 26)]), VFNMS(LDK(KP923879532), T7B, T7y), ms, &(ri[0]));
+					     ST(&(ii[WS(rs, 18)]), VFNMS(LDK(KP923879532), T8o, T8n), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 2)]), VFMA(LDK(KP923879532), T8o, T8n), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 26)]), VFNMS(LDK(KP923879532), T8q, T8p), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 10)]), VFMA(LDK(KP923879532), T8q, T8p), ms, &(ii[0]));
+					     ST(&(ri[WS(rs, 2)]), VFMA(LDK(KP923879532), T7x, T7q), ms, &(ri[0]));
+					     ST(&(ri[WS(rs, 18)]), VFNMS(LDK(KP923879532), T7x, T7q), ms, &(ri[0]));
+					     ST(&(ri[WS(rs, 30)]), VFMA(LDK(KP923879532), T7l, T7i), ms, &(ri[0]));
+					     ST(&(ri[WS(rs, 14)]), VFNMS(LDK(KP923879532), T7l, T7i), ms, &(ri[0]));
+					     ST(&(ii[WS(rs, 22)]), VFNMS(LDK(KP923879532), T8u, T8t), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 6)]), VFMA(LDK(KP923879532), T8u, T8t), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 30)]), VFMA(LDK(KP923879532), T8w, T8v), ms, &(ii[0]));
+					     ST(&(ii[WS(rs, 14)]), VFNMS(LDK(KP923879532), T8w, T8v), ms, &(ii[0]));
+					     ST(&(ri[WS(rs, 6)]), VFMA(LDK(KP923879532), T7h, T6U), ms, &(ri[0]));
+					     ST(&(ri[WS(rs, 22)]), VFNMS(LDK(KP923879532), T7h, T6U), ms, &(ri[0]));
 					     T5C = VFMA(LDK(KP707106781), T3R, T3C);
 					     T3S = VFNMS(LDK(KP707106781), T3R, T3C);
 					}
@@ -763,22 +756,22 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					     T5W = VFMA(LDK(KP707106781), T5V, T5S);
 					     T8W = VADD(T5Z, T62);
 					     T63 = VSUB(T5Z, T62);
-					     ST(&(ii[WS(ios, 25)]), VFNMS(LDK(KP980785280), T8G, T8F), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 9)]), VFMA(LDK(KP980785280), T8G, T8F), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 1)]), VFMA(LDK(KP980785280), T5N, T5G), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 17)]), VFNMS(LDK(KP980785280), T5N, T5G), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 9)]), VFMA(LDK(KP980785280), T5R, T5O), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 25)]), VFNMS(LDK(KP980785280), T5R, T5O), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 17)]), VFNMS(LDK(KP980785280), T8E, T8D), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 1)]), VFMA(LDK(KP980785280), T8E, T8D), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 29)]), VFMA(LDK(KP831469612), T5B, T5y), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 13)]), VFNMS(LDK(KP831469612), T5B, T5y), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 21)]), VFNMS(LDK(KP831469612), T8K, T8J), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 5)]), VFMA(LDK(KP831469612), T8K, T8J), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 29)]), VFMA(LDK(KP831469612), T8M, T8L), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ii[WS(ios, 13)]), VFNMS(LDK(KP831469612), T8M, T8L), dist, &(ii[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 5)]), VFMA(LDK(KP831469612), T5x, T4o), dist, &(ri[WS(ios, 1)]));
-					     ST(&(ri[WS(ios, 21)]), VFNMS(LDK(KP831469612), T5x, T4o), dist, &(ri[WS(ios, 1)]));
+					     ST(&(ii[WS(rs, 25)]), VFNMS(LDK(KP980785280), T8G, T8F), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 9)]), VFMA(LDK(KP980785280), T8G, T8F), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 1)]), VFMA(LDK(KP980785280), T5N, T5G), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 17)]), VFNMS(LDK(KP980785280), T5N, T5G), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 9)]), VFMA(LDK(KP980785280), T5R, T5O), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 25)]), VFNMS(LDK(KP980785280), T5R, T5O), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 17)]), VFNMS(LDK(KP980785280), T8E, T8D), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 1)]), VFMA(LDK(KP980785280), T8E, T8D), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 29)]), VFMA(LDK(KP831469612), T5B, T5y), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 13)]), VFNMS(LDK(KP831469612), T5B, T5y), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 21)]), VFNMS(LDK(KP831469612), T8K, T8J), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 5)]), VFMA(LDK(KP831469612), T8K, T8J), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 29)]), VFMA(LDK(KP831469612), T8M, T8L), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ii[WS(rs, 13)]), VFNMS(LDK(KP831469612), T8M, T8L), ms, &(ii[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 5)]), VFMA(LDK(KP831469612), T5x, T4o), ms, &(ri[WS(rs, 1)]));
+					     ST(&(ri[WS(rs, 21)]), VFNMS(LDK(KP831469612), T5x, T4o), ms, &(ri[WS(rs, 1)]));
 					}
 				   }
 			      }
@@ -826,64 +819,63 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 					T8S = VADD(T6l, T6m);
 					T8U = VSUB(T6i, T6b);
 					T6j = VADD(T6b, T6i);
-					ST(&(ri[WS(ios, 7)]), VFMA(LDK(KP980785280), T6z, T6s), dist, &(ri[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 23)]), VFNMS(LDK(KP980785280), T6z, T6s), dist, &(ri[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 23)]), VFNMS(LDK(KP980785280), T8Y, T8X), dist, &(ii[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 7)]), VFMA(LDK(KP980785280), T8Y, T8X), dist, &(ii[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 11)]), VFMA(LDK(KP831469612), T6n, T6k), dist, &(ri[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 27)]), VFNMS(LDK(KP831469612), T6n, T6k), dist, &(ri[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 19)]), VFNMS(LDK(KP831469612), T8S, T8R), dist, &(ii[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 3)]), VFMA(LDK(KP831469612), T8S, T8R), dist, &(ii[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 27)]), VFNMS(LDK(KP831469612), T8U, T8T), dist, &(ii[WS(ios, 1)]));
-					ST(&(ii[WS(ios, 11)]), VFMA(LDK(KP831469612), T8U, T8T), dist, &(ii[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 3)]), VFMA(LDK(KP831469612), T6j, T64), dist, &(ri[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 19)]), VFNMS(LDK(KP831469612), T6j, T64), dist, &(ri[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 31)]), VFMA(LDK(KP980785280), T6D, T6A), dist, &(ri[WS(ios, 1)]));
-					ST(&(ri[WS(ios, 15)]), VFNMS(LDK(KP980785280), T6D, T6A), dist, &(ri[WS(ios, 1)]));
+					ST(&(ri[WS(rs, 7)]), VFMA(LDK(KP980785280), T6z, T6s), ms, &(ri[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 23)]), VFNMS(LDK(KP980785280), T6z, T6s), ms, &(ri[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 23)]), VFNMS(LDK(KP980785280), T8Y, T8X), ms, &(ii[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 7)]), VFMA(LDK(KP980785280), T8Y, T8X), ms, &(ii[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 11)]), VFMA(LDK(KP831469612), T6n, T6k), ms, &(ri[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 27)]), VFNMS(LDK(KP831469612), T6n, T6k), ms, &(ri[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 19)]), VFNMS(LDK(KP831469612), T8S, T8R), ms, &(ii[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 3)]), VFMA(LDK(KP831469612), T8S, T8R), ms, &(ii[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 27)]), VFNMS(LDK(KP831469612), T8U, T8T), ms, &(ii[WS(rs, 1)]));
+					ST(&(ii[WS(rs, 11)]), VFMA(LDK(KP831469612), T8U, T8T), ms, &(ii[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 3)]), VFMA(LDK(KP831469612), T6j, T64), ms, &(ri[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 19)]), VFNMS(LDK(KP831469612), T6j, T64), ms, &(ri[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 31)]), VFMA(LDK(KP980785280), T6D, T6A), ms, &(ri[WS(rs, 1)]));
+					ST(&(ri[WS(rs, 15)]), VFNMS(LDK(KP980785280), T6D, T6A), ms, &(ri[WS(rs, 1)]));
 				   }
 			      }
 			 }
 		    }
 	       }
 	  }
-	  ST(&(ii[WS(ios, 31)]), VFMA(LDK(KP980785280), T90, T8Z), dist, &(ii[WS(ios, 1)]));
-	  ST(&(ii[WS(ios, 15)]), VFNMS(LDK(KP980785280), T90, T8Z), dist, &(ii[WS(ios, 1)]));
+	  ST(&(ii[WS(rs, 31)]), VFMA(LDK(KP980785280), T90, T8Z), ms, &(ii[WS(rs, 1)]));
+	  ST(&(ii[WS(rs, 15)]), VFNMS(LDK(KP980785280), T90, T8Z), ms, &(ii[WS(rs, 1)]));
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(2),
-     VTW(3),
-     VTW(4),
-     VTW(5),
-     VTW(6),
-     VTW(7),
-     VTW(8),
-     VTW(9),
-     VTW(10),
-     VTW(11),
-     VTW(12),
-     VTW(13),
-     VTW(14),
-     VTW(15),
-     VTW(16),
-     VTW(17),
-     VTW(18),
-     VTW(19),
-     VTW(20),
-     VTW(21),
-     VTW(22),
-     VTW(23),
-     VTW(24),
-     VTW(25),
-     VTW(26),
-     VTW(27),
-     VTW(28),
-     VTW(29),
-     VTW(30),
-     VTW(31),
+     VTW(0, 1),
+     VTW(0, 2),
+     VTW(0, 3),
+     VTW(0, 4),
+     VTW(0, 5),
+     VTW(0, 6),
+     VTW(0, 7),
+     VTW(0, 8),
+     VTW(0, 9),
+     VTW(0, 10),
+     VTW(0, 11),
+     VTW(0, 12),
+     VTW(0, 13),
+     VTW(0, 14),
+     VTW(0, 15),
+     VTW(0, 16),
+     VTW(0, 17),
+     VTW(0, 18),
+     VTW(0, 19),
+     VTW(0, 20),
+     VTW(0, 21),
+     VTW(0, 22),
+     VTW(0, 23),
+     VTW(0, 24),
+     VTW(0, 25),
+     VTW(0, 26),
+     VTW(0, 27),
+     VTW(0, 28),
+     VTW(0, 29),
+     VTW(0, 30),
+     VTW(0, 31),
      {TW_NEXT, (2 * VL), 0}
 };
 
@@ -899,18 +891,11 @@ void X(codelet_t1sv_32) (planner *p) {
 /*
  * This function contains 434 FP additions, 208 FP multiplications,
  * (or, 340 additions, 114 multiplications, 94 fused multiply/add),
- * 96 stack variables, and 128 memory accesses
+ * 96 stack variables, 7 constants, and 128 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle.ml,v 1.24 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "ts.h"
 
-static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1sv_32(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      DVK(KP195090322, +0.195090322016128267848284868477022240927691618);
      DVK(KP980785280, +0.980785280403230449126182236134239036973933731);
@@ -919,8 +904,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
      DVK(KP382683432, +0.382683432365089771728459984030398866761344562);
      DVK(KP923879532, +0.923879532511286756128183189396788286822416626);
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
-     INT i;
-     for (i = m; i > 0; i = i - (2 * VL), ri = ri + ((2 * VL) * dist), ii = ii + ((2 * VL) * dist), W = W + ((2 * VL) * 62), MAKE_VOLATILE_STRIDE(ios)) {
+     INT m;
+     for (m = mb, W = W + (mb * 62); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 62), MAKE_VOLATILE_STRIDE(rs)) {
 	  V Tj, T5F, T7C, T7Q, T35, T4T, T78, T7m, T1Q, T61, T5Y, T6J, T3K, T59, T41;
 	  V T56, T2B, T67, T6e, T6O, T4b, T5d, T4s, T5g, TG, T7l, T5I, T73, T3a, T4U;
 	  V T3f, T4V, T14, T5N, T5M, T6E, T3m, T4Y, T3r, T4Z, T1r, T5P, T5S, T6F, T3x;
@@ -928,12 +913,12 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	  V T4m, T5h, T4v, T5e;
 	  {
 	       V T1, T76, T6, T75, Tc, T32, Th, T33;
-	       T1 = LD(&(ri[0]), dist, &(ri[0]));
-	       T76 = LD(&(ii[0]), dist, &(ii[0]));
+	       T1 = LD(&(ri[0]), ms, &(ri[0]));
+	       T76 = LD(&(ii[0]), ms, &(ii[0]));
 	       {
 		    V T3, T5, T2, T4;
-		    T3 = LD(&(ri[WS(ios, 16)]), dist, &(ri[0]));
-		    T5 = LD(&(ii[WS(ios, 16)]), dist, &(ii[0]));
+		    T3 = LD(&(ri[WS(rs, 16)]), ms, &(ri[0]));
+		    T5 = LD(&(ii[WS(rs, 16)]), ms, &(ii[0]));
 		    T2 = LDW(&(W[TWVL * 30]));
 		    T4 = LDW(&(W[TWVL * 31]));
 		    T6 = VFMA(T2, T3, VMUL(T4, T5));
@@ -941,8 +926,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T9, Tb, T8, Ta;
-		    T9 = LD(&(ri[WS(ios, 8)]), dist, &(ri[0]));
-		    Tb = LD(&(ii[WS(ios, 8)]), dist, &(ii[0]));
+		    T9 = LD(&(ri[WS(rs, 8)]), ms, &(ri[0]));
+		    Tb = LD(&(ii[WS(rs, 8)]), ms, &(ii[0]));
 		    T8 = LDW(&(W[TWVL * 14]));
 		    Ta = LDW(&(W[TWVL * 15]));
 		    Tc = VFMA(T8, T9, VMUL(Ta, Tb));
@@ -950,8 +935,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V Te, Tg, Td, Tf;
-		    Te = LD(&(ri[WS(ios, 24)]), dist, &(ri[0]));
-		    Tg = LD(&(ii[WS(ios, 24)]), dist, &(ii[0]));
+		    Te = LD(&(ri[WS(rs, 24)]), ms, &(ri[0]));
+		    Tg = LD(&(ii[WS(rs, 24)]), ms, &(ii[0]));
 		    Td = LDW(&(W[TWVL * 46]));
 		    Tf = LDW(&(W[TWVL * 47]));
 		    Th = VFMA(Td, Te, VMUL(Tf, Tg));
@@ -984,8 +969,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V T1y, T3G, T1O, T3Z, T1D, T3H, T1J, T3Y;
 	       {
 		    V T1v, T1x, T1u, T1w;
-		    T1v = LD(&(ri[WS(ios, 1)]), dist, &(ri[WS(ios, 1)]));
-		    T1x = LD(&(ii[WS(ios, 1)]), dist, &(ii[WS(ios, 1)]));
+		    T1v = LD(&(ri[WS(rs, 1)]), ms, &(ri[WS(rs, 1)]));
+		    T1x = LD(&(ii[WS(rs, 1)]), ms, &(ii[WS(rs, 1)]));
 		    T1u = LDW(&(W[0]));
 		    T1w = LDW(&(W[TWVL * 1]));
 		    T1y = VFMA(T1u, T1v, VMUL(T1w, T1x));
@@ -993,8 +978,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1L, T1N, T1K, T1M;
-		    T1L = LD(&(ri[WS(ios, 25)]), dist, &(ri[WS(ios, 1)]));
-		    T1N = LD(&(ii[WS(ios, 25)]), dist, &(ii[WS(ios, 1)]));
+		    T1L = LD(&(ri[WS(rs, 25)]), ms, &(ri[WS(rs, 1)]));
+		    T1N = LD(&(ii[WS(rs, 25)]), ms, &(ii[WS(rs, 1)]));
 		    T1K = LDW(&(W[TWVL * 48]));
 		    T1M = LDW(&(W[TWVL * 49]));
 		    T1O = VFMA(T1K, T1L, VMUL(T1M, T1N));
@@ -1002,8 +987,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1A, T1C, T1z, T1B;
-		    T1A = LD(&(ri[WS(ios, 17)]), dist, &(ri[WS(ios, 1)]));
-		    T1C = LD(&(ii[WS(ios, 17)]), dist, &(ii[WS(ios, 1)]));
+		    T1A = LD(&(ri[WS(rs, 17)]), ms, &(ri[WS(rs, 1)]));
+		    T1C = LD(&(ii[WS(rs, 17)]), ms, &(ii[WS(rs, 1)]));
 		    T1z = LDW(&(W[TWVL * 32]));
 		    T1B = LDW(&(W[TWVL * 33]));
 		    T1D = VFMA(T1z, T1A, VMUL(T1B, T1C));
@@ -1011,8 +996,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1G, T1I, T1F, T1H;
-		    T1G = LD(&(ri[WS(ios, 9)]), dist, &(ri[WS(ios, 1)]));
-		    T1I = LD(&(ii[WS(ios, 9)]), dist, &(ii[WS(ios, 1)]));
+		    T1G = LD(&(ri[WS(rs, 9)]), ms, &(ri[WS(rs, 1)]));
+		    T1I = LD(&(ii[WS(rs, 9)]), ms, &(ii[WS(rs, 1)]));
 		    T1F = LDW(&(W[TWVL * 16]));
 		    T1H = LDW(&(W[TWVL * 17]));
 		    T1J = VFMA(T1F, T1G, VMUL(T1H, T1I));
@@ -1045,8 +1030,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V T2j, T4o, T2z, T49, T2o, T4p, T2u, T48;
 	       {
 		    V T2g, T2i, T2f, T2h;
-		    T2g = LD(&(ri[WS(ios, 31)]), dist, &(ri[WS(ios, 1)]));
-		    T2i = LD(&(ii[WS(ios, 31)]), dist, &(ii[WS(ios, 1)]));
+		    T2g = LD(&(ri[WS(rs, 31)]), ms, &(ri[WS(rs, 1)]));
+		    T2i = LD(&(ii[WS(rs, 31)]), ms, &(ii[WS(rs, 1)]));
 		    T2f = LDW(&(W[TWVL * 60]));
 		    T2h = LDW(&(W[TWVL * 61]));
 		    T2j = VFMA(T2f, T2g, VMUL(T2h, T2i));
@@ -1054,8 +1039,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T2w, T2y, T2v, T2x;
-		    T2w = LD(&(ri[WS(ios, 23)]), dist, &(ri[WS(ios, 1)]));
-		    T2y = LD(&(ii[WS(ios, 23)]), dist, &(ii[WS(ios, 1)]));
+		    T2w = LD(&(ri[WS(rs, 23)]), ms, &(ri[WS(rs, 1)]));
+		    T2y = LD(&(ii[WS(rs, 23)]), ms, &(ii[WS(rs, 1)]));
 		    T2v = LDW(&(W[TWVL * 44]));
 		    T2x = LDW(&(W[TWVL * 45]));
 		    T2z = VFMA(T2v, T2w, VMUL(T2x, T2y));
@@ -1063,8 +1048,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T2l, T2n, T2k, T2m;
-		    T2l = LD(&(ri[WS(ios, 15)]), dist, &(ri[WS(ios, 1)]));
-		    T2n = LD(&(ii[WS(ios, 15)]), dist, &(ii[WS(ios, 1)]));
+		    T2l = LD(&(ri[WS(rs, 15)]), ms, &(ri[WS(rs, 1)]));
+		    T2n = LD(&(ii[WS(rs, 15)]), ms, &(ii[WS(rs, 1)]));
 		    T2k = LDW(&(W[TWVL * 28]));
 		    T2m = LDW(&(W[TWVL * 29]));
 		    T2o = VFMA(T2k, T2l, VMUL(T2m, T2n));
@@ -1072,8 +1057,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T2r, T2t, T2q, T2s;
-		    T2r = LD(&(ri[WS(ios, 7)]), dist, &(ri[WS(ios, 1)]));
-		    T2t = LD(&(ii[WS(ios, 7)]), dist, &(ii[WS(ios, 1)]));
+		    T2r = LD(&(ri[WS(rs, 7)]), ms, &(ri[WS(rs, 1)]));
+		    T2t = LD(&(ii[WS(rs, 7)]), ms, &(ii[WS(rs, 1)]));
 		    T2q = LDW(&(W[TWVL * 12]));
 		    T2s = LDW(&(W[TWVL * 13]));
 		    T2u = VFMA(T2q, T2r, VMUL(T2s, T2t));
@@ -1106,8 +1091,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V To, T36, TE, T3d, Tt, T37, Tz, T3c;
 	       {
 		    V Tl, Tn, Tk, Tm;
-		    Tl = LD(&(ri[WS(ios, 4)]), dist, &(ri[0]));
-		    Tn = LD(&(ii[WS(ios, 4)]), dist, &(ii[0]));
+		    Tl = LD(&(ri[WS(rs, 4)]), ms, &(ri[0]));
+		    Tn = LD(&(ii[WS(rs, 4)]), ms, &(ii[0]));
 		    Tk = LDW(&(W[TWVL * 6]));
 		    Tm = LDW(&(W[TWVL * 7]));
 		    To = VFMA(Tk, Tl, VMUL(Tm, Tn));
@@ -1115,8 +1100,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V TB, TD, TA, TC;
-		    TB = LD(&(ri[WS(ios, 12)]), dist, &(ri[0]));
-		    TD = LD(&(ii[WS(ios, 12)]), dist, &(ii[0]));
+		    TB = LD(&(ri[WS(rs, 12)]), ms, &(ri[0]));
+		    TD = LD(&(ii[WS(rs, 12)]), ms, &(ii[0]));
 		    TA = LDW(&(W[TWVL * 22]));
 		    TC = LDW(&(W[TWVL * 23]));
 		    TE = VFMA(TA, TB, VMUL(TC, TD));
@@ -1124,8 +1109,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V Tq, Ts, Tp, Tr;
-		    Tq = LD(&(ri[WS(ios, 20)]), dist, &(ri[0]));
-		    Ts = LD(&(ii[WS(ios, 20)]), dist, &(ii[0]));
+		    Tq = LD(&(ri[WS(rs, 20)]), ms, &(ri[0]));
+		    Ts = LD(&(ii[WS(rs, 20)]), ms, &(ii[0]));
 		    Tp = LDW(&(W[TWVL * 38]));
 		    Tr = LDW(&(W[TWVL * 39]));
 		    Tt = VFMA(Tp, Tq, VMUL(Tr, Ts));
@@ -1133,8 +1118,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V Tw, Ty, Tv, Tx;
-		    Tw = LD(&(ri[WS(ios, 28)]), dist, &(ri[0]));
-		    Ty = LD(&(ii[WS(ios, 28)]), dist, &(ii[0]));
+		    Tw = LD(&(ri[WS(rs, 28)]), ms, &(ri[0]));
+		    Ty = LD(&(ii[WS(rs, 28)]), ms, &(ii[0]));
 		    Tv = LDW(&(W[TWVL * 54]));
 		    Tx = LDW(&(W[TWVL * 55]));
 		    Tz = VFMA(Tv, Tw, VMUL(Tx, Ty));
@@ -1167,8 +1152,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V TM, T3i, T12, T3p, TR, T3j, TX, T3o;
 	       {
 		    V TJ, TL, TI, TK;
-		    TJ = LD(&(ri[WS(ios, 2)]), dist, &(ri[0]));
-		    TL = LD(&(ii[WS(ios, 2)]), dist, &(ii[0]));
+		    TJ = LD(&(ri[WS(rs, 2)]), ms, &(ri[0]));
+		    TL = LD(&(ii[WS(rs, 2)]), ms, &(ii[0]));
 		    TI = LDW(&(W[TWVL * 2]));
 		    TK = LDW(&(W[TWVL * 3]));
 		    TM = VFMA(TI, TJ, VMUL(TK, TL));
@@ -1176,8 +1161,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V TZ, T11, TY, T10;
-		    TZ = LD(&(ri[WS(ios, 26)]), dist, &(ri[0]));
-		    T11 = LD(&(ii[WS(ios, 26)]), dist, &(ii[0]));
+		    TZ = LD(&(ri[WS(rs, 26)]), ms, &(ri[0]));
+		    T11 = LD(&(ii[WS(rs, 26)]), ms, &(ii[0]));
 		    TY = LDW(&(W[TWVL * 50]));
 		    T10 = LDW(&(W[TWVL * 51]));
 		    T12 = VFMA(TY, TZ, VMUL(T10, T11));
@@ -1185,8 +1170,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V TO, TQ, TN, TP;
-		    TO = LD(&(ri[WS(ios, 18)]), dist, &(ri[0]));
-		    TQ = LD(&(ii[WS(ios, 18)]), dist, &(ii[0]));
+		    TO = LD(&(ri[WS(rs, 18)]), ms, &(ri[0]));
+		    TQ = LD(&(ii[WS(rs, 18)]), ms, &(ii[0]));
 		    TN = LDW(&(W[TWVL * 34]));
 		    TP = LDW(&(W[TWVL * 35]));
 		    TR = VFMA(TN, TO, VMUL(TP, TQ));
@@ -1194,8 +1179,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V TU, TW, TT, TV;
-		    TU = LD(&(ri[WS(ios, 10)]), dist, &(ri[0]));
-		    TW = LD(&(ii[WS(ios, 10)]), dist, &(ii[0]));
+		    TU = LD(&(ri[WS(rs, 10)]), ms, &(ri[0]));
+		    TW = LD(&(ii[WS(rs, 10)]), ms, &(ii[0]));
 		    TT = LDW(&(W[TWVL * 18]));
 		    TV = LDW(&(W[TWVL * 19]));
 		    TX = VFMA(TT, TU, VMUL(TV, TW));
@@ -1228,8 +1213,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V T19, T3t, T1p, T3A, T1e, T3u, T1k, T3z;
 	       {
 		    V T16, T18, T15, T17;
-		    T16 = LD(&(ri[WS(ios, 30)]), dist, &(ri[0]));
-		    T18 = LD(&(ii[WS(ios, 30)]), dist, &(ii[0]));
+		    T16 = LD(&(ri[WS(rs, 30)]), ms, &(ri[0]));
+		    T18 = LD(&(ii[WS(rs, 30)]), ms, &(ii[0]));
 		    T15 = LDW(&(W[TWVL * 58]));
 		    T17 = LDW(&(W[TWVL * 59]));
 		    T19 = VFMA(T15, T16, VMUL(T17, T18));
@@ -1237,8 +1222,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1m, T1o, T1l, T1n;
-		    T1m = LD(&(ri[WS(ios, 22)]), dist, &(ri[0]));
-		    T1o = LD(&(ii[WS(ios, 22)]), dist, &(ii[0]));
+		    T1m = LD(&(ri[WS(rs, 22)]), ms, &(ri[0]));
+		    T1o = LD(&(ii[WS(rs, 22)]), ms, &(ii[0]));
 		    T1l = LDW(&(W[TWVL * 42]));
 		    T1n = LDW(&(W[TWVL * 43]));
 		    T1p = VFMA(T1l, T1m, VMUL(T1n, T1o));
@@ -1246,8 +1231,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1b, T1d, T1a, T1c;
-		    T1b = LD(&(ri[WS(ios, 14)]), dist, &(ri[0]));
-		    T1d = LD(&(ii[WS(ios, 14)]), dist, &(ii[0]));
+		    T1b = LD(&(ri[WS(rs, 14)]), ms, &(ri[0]));
+		    T1d = LD(&(ii[WS(rs, 14)]), ms, &(ii[0]));
 		    T1a = LDW(&(W[TWVL * 26]));
 		    T1c = LDW(&(W[TWVL * 27]));
 		    T1e = VFMA(T1a, T1b, VMUL(T1c, T1d));
@@ -1255,8 +1240,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1h, T1j, T1g, T1i;
-		    T1h = LD(&(ri[WS(ios, 6)]), dist, &(ri[0]));
-		    T1j = LD(&(ii[WS(ios, 6)]), dist, &(ii[0]));
+		    T1h = LD(&(ri[WS(rs, 6)]), ms, &(ri[0]));
+		    T1j = LD(&(ii[WS(rs, 6)]), ms, &(ii[0]));
 		    T1g = LDW(&(W[TWVL * 10]));
 		    T1i = LDW(&(W[TWVL * 11]));
 		    T1k = VFMA(T1g, T1h, VMUL(T1i, T1j));
@@ -1289,8 +1274,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V T1V, T3R, T20, T3S, T3Q, T3T, T26, T3M, T2b, T3N, T3L, T3O;
 	       {
 		    V T1S, T1U, T1R, T1T;
-		    T1S = LD(&(ri[WS(ios, 5)]), dist, &(ri[WS(ios, 1)]));
-		    T1U = LD(&(ii[WS(ios, 5)]), dist, &(ii[WS(ios, 1)]));
+		    T1S = LD(&(ri[WS(rs, 5)]), ms, &(ri[WS(rs, 1)]));
+		    T1U = LD(&(ii[WS(rs, 5)]), ms, &(ii[WS(rs, 1)]));
 		    T1R = LDW(&(W[TWVL * 8]));
 		    T1T = LDW(&(W[TWVL * 9]));
 		    T1V = VFMA(T1R, T1S, VMUL(T1T, T1U));
@@ -1298,8 +1283,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T1X, T1Z, T1W, T1Y;
-		    T1X = LD(&(ri[WS(ios, 21)]), dist, &(ri[WS(ios, 1)]));
-		    T1Z = LD(&(ii[WS(ios, 21)]), dist, &(ii[WS(ios, 1)]));
+		    T1X = LD(&(ri[WS(rs, 21)]), ms, &(ri[WS(rs, 1)]));
+		    T1Z = LD(&(ii[WS(rs, 21)]), ms, &(ii[WS(rs, 1)]));
 		    T1W = LDW(&(W[TWVL * 40]));
 		    T1Y = LDW(&(W[TWVL * 41]));
 		    T20 = VFMA(T1W, T1X, VMUL(T1Y, T1Z));
@@ -1309,8 +1294,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       T3T = VSUB(T3R, T3S);
 	       {
 		    V T23, T25, T22, T24;
-		    T23 = LD(&(ri[WS(ios, 29)]), dist, &(ri[WS(ios, 1)]));
-		    T25 = LD(&(ii[WS(ios, 29)]), dist, &(ii[WS(ios, 1)]));
+		    T23 = LD(&(ri[WS(rs, 29)]), ms, &(ri[WS(rs, 1)]));
+		    T25 = LD(&(ii[WS(rs, 29)]), ms, &(ii[WS(rs, 1)]));
 		    T22 = LDW(&(W[TWVL * 56]));
 		    T24 = LDW(&(W[TWVL * 57]));
 		    T26 = VFMA(T22, T23, VMUL(T24, T25));
@@ -1318,8 +1303,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T28, T2a, T27, T29;
-		    T28 = LD(&(ri[WS(ios, 13)]), dist, &(ri[WS(ios, 1)]));
-		    T2a = LD(&(ii[WS(ios, 13)]), dist, &(ii[WS(ios, 1)]));
+		    T28 = LD(&(ri[WS(rs, 13)]), ms, &(ri[WS(rs, 1)]));
+		    T2a = LD(&(ii[WS(rs, 13)]), ms, &(ii[WS(rs, 1)]));
 		    T27 = LDW(&(W[TWVL * 24]));
 		    T29 = LDW(&(W[TWVL * 25]));
 		    T2b = VFMA(T27, T28, VMUL(T29, T2a));
@@ -1354,8 +1339,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       V T2G, T4c, T2L, T4d, T4e, T4f, T2R, T4i, T2W, T4j, T4h, T4k;
 	       {
 		    V T2D, T2F, T2C, T2E;
-		    T2D = LD(&(ri[WS(ios, 3)]), dist, &(ri[WS(ios, 1)]));
-		    T2F = LD(&(ii[WS(ios, 3)]), dist, &(ii[WS(ios, 1)]));
+		    T2D = LD(&(ri[WS(rs, 3)]), ms, &(ri[WS(rs, 1)]));
+		    T2F = LD(&(ii[WS(rs, 3)]), ms, &(ii[WS(rs, 1)]));
 		    T2C = LDW(&(W[TWVL * 4]));
 		    T2E = LDW(&(W[TWVL * 5]));
 		    T2G = VFMA(T2C, T2D, VMUL(T2E, T2F));
@@ -1363,8 +1348,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T2I, T2K, T2H, T2J;
-		    T2I = LD(&(ri[WS(ios, 19)]), dist, &(ri[WS(ios, 1)]));
-		    T2K = LD(&(ii[WS(ios, 19)]), dist, &(ii[WS(ios, 1)]));
+		    T2I = LD(&(ri[WS(rs, 19)]), ms, &(ri[WS(rs, 1)]));
+		    T2K = LD(&(ii[WS(rs, 19)]), ms, &(ii[WS(rs, 1)]));
 		    T2H = LDW(&(W[TWVL * 36]));
 		    T2J = LDW(&(W[TWVL * 37]));
 		    T2L = VFMA(T2H, T2I, VMUL(T2J, T2K));
@@ -1374,8 +1359,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       T4f = VSUB(T2G, T2L);
 	       {
 		    V T2O, T2Q, T2N, T2P;
-		    T2O = LD(&(ri[WS(ios, 27)]), dist, &(ri[WS(ios, 1)]));
-		    T2Q = LD(&(ii[WS(ios, 27)]), dist, &(ii[WS(ios, 1)]));
+		    T2O = LD(&(ri[WS(rs, 27)]), ms, &(ri[WS(rs, 1)]));
+		    T2Q = LD(&(ii[WS(rs, 27)]), ms, &(ii[WS(rs, 1)]));
 		    T2N = LDW(&(W[TWVL * 52]));
 		    T2P = LDW(&(W[TWVL * 53]));
 		    T2R = VFMA(T2N, T2O, VMUL(T2P, T2Q));
@@ -1383,8 +1368,8 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       }
 	       {
 		    V T2T, T2V, T2S, T2U;
-		    T2T = LD(&(ri[WS(ios, 11)]), dist, &(ri[WS(ios, 1)]));
-		    T2V = LD(&(ii[WS(ios, 11)]), dist, &(ii[WS(ios, 1)]));
+		    T2T = LD(&(ri[WS(rs, 11)]), ms, &(ri[WS(rs, 1)]));
+		    T2V = LD(&(ii[WS(rs, 11)]), ms, &(ii[WS(rs, 1)]));
 		    T2S = LDW(&(W[TWVL * 20]));
 		    T2U = LDW(&(W[TWVL * 21]));
 		    T2W = VFMA(T2S, T2T, VMUL(T2U, T2V));
@@ -1439,14 +1424,14 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    T70 = VSUB(T6Y, T6Z);
 		    T71 = VADD(T6Y, T6Z);
 	       }
-	       ST(&(ri[WS(ios, 16)]), VSUB(T1t, T30), dist, &(ri[0]));
-	       ST(&(ii[WS(ios, 16)]), VSUB(T7a, T71), dist, &(ii[0]));
-	       ST(&(ri[0]), VADD(T1t, T30), dist, &(ri[0]));
-	       ST(&(ii[0]), VADD(T71, T7a), dist, &(ii[0]));
-	       ST(&(ri[WS(ios, 24)]), VSUB(T6X, T70), dist, &(ri[0]));
-	       ST(&(ii[WS(ios, 24)]), VSUB(T7c, T7b), dist, &(ii[0]));
-	       ST(&(ri[WS(ios, 8)]), VADD(T6X, T70), dist, &(ri[0]));
-	       ST(&(ii[WS(ios, 8)]), VADD(T7b, T7c), dist, &(ii[0]));
+	       ST(&(ri[WS(rs, 16)]), VSUB(T1t, T30), ms, &(ri[0]));
+	       ST(&(ii[WS(rs, 16)]), VSUB(T7a, T71), ms, &(ii[0]));
+	       ST(&(ri[0]), VADD(T1t, T30), ms, &(ri[0]));
+	       ST(&(ii[0]), VADD(T71, T7a), ms, &(ii[0]));
+	       ST(&(ri[WS(rs, 24)]), VSUB(T6X, T70), ms, &(ri[0]));
+	       ST(&(ii[WS(rs, 24)]), VSUB(T7c, T7b), ms, &(ii[0]));
+	       ST(&(ri[WS(rs, 8)]), VADD(T6X, T70), ms, &(ri[0]));
+	       ST(&(ii[WS(rs, 8)]), VADD(T7b, T7c), ms, &(ii[0]));
 	  }
 	  {
 	       V T6H, T6T, T7g, T7i, T6M, T6U, T6R, T6V;
@@ -1475,17 +1460,17 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	       {
 		    V T6S, T7d, T6W, T7h;
 		    T6S = VMUL(LDK(KP707106781), VADD(T6M, T6R));
-		    ST(&(ri[WS(ios, 20)]), VSUB(T6H, T6S), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 4)]), VADD(T6H, T6S), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 20)]), VSUB(T6H, T6S), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 4)]), VADD(T6H, T6S), ms, &(ri[0]));
 		    T7d = VMUL(LDK(KP707106781), VADD(T6U, T6V));
-		    ST(&(ii[WS(ios, 4)]), VADD(T7d, T7g), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 20)]), VSUB(T7g, T7d), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 4)]), VADD(T7d, T7g), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 20)]), VSUB(T7g, T7d), ms, &(ii[0]));
 		    T6W = VMUL(LDK(KP707106781), VSUB(T6U, T6V));
-		    ST(&(ri[WS(ios, 28)]), VSUB(T6T, T6W), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 12)]), VADD(T6T, T6W), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 28)]), VSUB(T6T, T6W), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 12)]), VADD(T6T, T6W), ms, &(ri[0]));
 		    T7h = VMUL(LDK(KP707106781), VSUB(T6R, T6M));
-		    ST(&(ii[WS(ios, 12)]), VADD(T7h, T7i), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 28)]), VSUB(T7i, T7h), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 12)]), VADD(T7h, T7i), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 28)]), VSUB(T7i, T7h), ms, &(ii[0]));
 	       }
 	  }
 	  {
@@ -1532,45 +1517,45 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    V T5V, T6i, T7r, T7u;
 		    T5V = VADD(T5J, T5U);
 		    T6i = VADD(T66, T6h);
-		    ST(&(ri[WS(ios, 22)]), VSUB(T5V, T6i), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 6)]), VADD(T5V, T6i), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 22)]), VSUB(T5V, T6i), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 6)]), VADD(T5V, T6i), ms, &(ri[0]));
 		    T7r = VADD(T6k, T6l);
 		    T7u = VADD(T7s, T7t);
-		    ST(&(ii[WS(ios, 6)]), VADD(T7r, T7u), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 22)]), VSUB(T7u, T7r), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 6)]), VADD(T7r, T7u), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 22)]), VSUB(T7u, T7r), ms, &(ii[0]));
 	       }
 	       {
 		    V T6j, T6m, T7v, T7w;
 		    T6j = VSUB(T5J, T5U);
 		    T6m = VSUB(T6k, T6l);
-		    ST(&(ri[WS(ios, 30)]), VSUB(T6j, T6m), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 14)]), VADD(T6j, T6m), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 30)]), VSUB(T6j, T6m), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 14)]), VADD(T6j, T6m), ms, &(ri[0]));
 		    T7v = VSUB(T6h, T66);
 		    T7w = VSUB(T7t, T7s);
-		    ST(&(ii[WS(ios, 14)]), VADD(T7v, T7w), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 30)]), VSUB(T7w, T7v), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 14)]), VADD(T7v, T7w), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 30)]), VSUB(T7w, T7v), ms, &(ii[0]));
 	       }
 	       {
 		    V T6r, T6y, T7j, T7o;
 		    T6r = VADD(T6n, T6q);
 		    T6y = VADD(T6u, T6x);
-		    ST(&(ri[WS(ios, 18)]), VSUB(T6r, T6y), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 2)]), VADD(T6r, T6y), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 18)]), VSUB(T6r, T6y), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 2)]), VADD(T6r, T6y), ms, &(ri[0]));
 		    T7j = VADD(T6A, T6B);
 		    T7o = VADD(T7k, T7n);
-		    ST(&(ii[WS(ios, 2)]), VADD(T7j, T7o), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 18)]), VSUB(T7o, T7j), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 2)]), VADD(T7j, T7o), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 18)]), VSUB(T7o, T7j), ms, &(ii[0]));
 	       }
 	       {
 		    V T6z, T6C, T7p, T7q;
 		    T6z = VSUB(T6n, T6q);
 		    T6C = VSUB(T6A, T6B);
-		    ST(&(ri[WS(ios, 26)]), VSUB(T6z, T6C), dist, &(ri[0]));
-		    ST(&(ri[WS(ios, 10)]), VADD(T6z, T6C), dist, &(ri[0]));
+		    ST(&(ri[WS(rs, 26)]), VSUB(T6z, T6C), ms, &(ri[0]));
+		    ST(&(ri[WS(rs, 10)]), VADD(T6z, T6C), ms, &(ri[0]));
 		    T7p = VSUB(T6x, T6u);
 		    T7q = VSUB(T7n, T7k);
-		    ST(&(ii[WS(ios, 10)]), VADD(T7p, T7q), dist, &(ii[0]));
-		    ST(&(ii[WS(ios, 26)]), VSUB(T7q, T7p), dist, &(ii[0]));
+		    ST(&(ii[WS(rs, 10)]), VADD(T7p, T7q), ms, &(ii[0]));
+		    ST(&(ii[WS(rs, 26)]), VSUB(T7q, T7p), ms, &(ii[0]));
 	       }
 	  }
 	  {
@@ -1619,45 +1604,45 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    V T3F, T4y, T7V, T7Y;
 		    T3F = VADD(T3h, T3E);
 		    T4y = VADD(T46, T4x);
-		    ST(&(ri[WS(ios, 23)]), VSUB(T3F, T4y), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 7)]), VADD(T3F, T4y), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 23)]), VSUB(T3F, T4y), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 7)]), VADD(T3F, T4y), ms, &(ri[WS(rs, 1)]));
 		    T7V = VADD(T4A, T4B);
 		    T7Y = VADD(T7W, T7X);
-		    ST(&(ii[WS(ios, 7)]), VADD(T7V, T7Y), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 23)]), VSUB(T7Y, T7V), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 7)]), VADD(T7V, T7Y), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 23)]), VSUB(T7Y, T7V), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T4z, T4C, T7Z, T80;
 		    T4z = VSUB(T3h, T3E);
 		    T4C = VSUB(T4A, T4B);
-		    ST(&(ri[WS(ios, 31)]), VSUB(T4z, T4C), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 15)]), VADD(T4z, T4C), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 31)]), VSUB(T4z, T4C), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 15)]), VADD(T4z, T4C), ms, &(ri[WS(rs, 1)]));
 		    T7Z = VSUB(T4x, T46);
 		    T80 = VSUB(T7X, T7W);
-		    ST(&(ii[WS(ios, 15)]), VADD(T7Z, T80), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 31)]), VSUB(T80, T7Z), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 15)]), VADD(T7Z, T80), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 31)]), VSUB(T80, T7Z), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T4H, T4O, T7N, T7S;
 		    T4H = VADD(T4D, T4G);
 		    T4O = VADD(T4K, T4N);
-		    ST(&(ri[WS(ios, 19)]), VSUB(T4H, T4O), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 3)]), VADD(T4H, T4O), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 19)]), VSUB(T4H, T4O), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 3)]), VADD(T4H, T4O), ms, &(ri[WS(rs, 1)]));
 		    T7N = VADD(T4Q, T4R);
 		    T7S = VADD(T7O, T7R);
-		    ST(&(ii[WS(ios, 3)]), VADD(T7N, T7S), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 19)]), VSUB(T7S, T7N), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 3)]), VADD(T7N, T7S), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 19)]), VSUB(T7S, T7N), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T4P, T4S, T7T, T7U;
 		    T4P = VSUB(T4D, T4G);
 		    T4S = VSUB(T4Q, T4R);
-		    ST(&(ri[WS(ios, 27)]), VSUB(T4P, T4S), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 11)]), VADD(T4P, T4S), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 27)]), VSUB(T4P, T4S), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 11)]), VADD(T4P, T4S), ms, &(ri[WS(rs, 1)]));
 		    T7T = VSUB(T4N, T4K);
 		    T7U = VSUB(T7R, T7O);
-		    ST(&(ii[WS(ios, 11)]), VADD(T7T, T7U), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 27)]), VSUB(T7U, T7T), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 11)]), VADD(T7T, T7U), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 27)]), VSUB(T7U, T7T), ms, &(ii[WS(rs, 1)]));
 	       }
 	  }
 	  {
@@ -1706,83 +1691,82 @@ static const R *t1sv_32(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    V T55, T5k, T7H, T7K;
 		    T55 = VADD(T4X, T54);
 		    T5k = VADD(T5c, T5j);
-		    ST(&(ri[WS(ios, 21)]), VSUB(T55, T5k), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 5)]), VADD(T55, T5k), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 21)]), VSUB(T55, T5k), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 5)]), VADD(T55, T5k), ms, &(ri[WS(rs, 1)]));
 		    T7H = VADD(T5m, T5n);
 		    T7K = VADD(T7I, T7J);
-		    ST(&(ii[WS(ios, 5)]), VADD(T7H, T7K), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 21)]), VSUB(T7K, T7H), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 5)]), VADD(T7H, T7K), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 21)]), VSUB(T7K, T7H), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T5l, T5o, T7L, T7M;
 		    T5l = VSUB(T4X, T54);
 		    T5o = VSUB(T5m, T5n);
-		    ST(&(ri[WS(ios, 29)]), VSUB(T5l, T5o), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 13)]), VADD(T5l, T5o), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 29)]), VSUB(T5l, T5o), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 13)]), VADD(T5l, T5o), ms, &(ri[WS(rs, 1)]));
 		    T7L = VSUB(T5j, T5c);
 		    T7M = VSUB(T7J, T7I);
-		    ST(&(ii[WS(ios, 13)]), VADD(T7L, T7M), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 29)]), VSUB(T7M, T7L), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 13)]), VADD(T7L, T7M), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 29)]), VSUB(T7M, T7L), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T5t, T5A, T7x, T7E;
 		    T5t = VADD(T5p, T5s);
 		    T5A = VADD(T5w, T5z);
-		    ST(&(ri[WS(ios, 17)]), VSUB(T5t, T5A), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 1)]), VADD(T5t, T5A), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 17)]), VSUB(T5t, T5A), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 1)]), VADD(T5t, T5A), ms, &(ri[WS(rs, 1)]));
 		    T7x = VADD(T5C, T5D);
 		    T7E = VADD(T7y, T7D);
-		    ST(&(ii[WS(ios, 1)]), VADD(T7x, T7E), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 17)]), VSUB(T7E, T7x), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 1)]), VADD(T7x, T7E), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 17)]), VSUB(T7E, T7x), ms, &(ii[WS(rs, 1)]));
 	       }
 	       {
 		    V T5B, T5E, T7F, T7G;
 		    T5B = VSUB(T5p, T5s);
 		    T5E = VSUB(T5C, T5D);
-		    ST(&(ri[WS(ios, 25)]), VSUB(T5B, T5E), dist, &(ri[WS(ios, 1)]));
-		    ST(&(ri[WS(ios, 9)]), VADD(T5B, T5E), dist, &(ri[WS(ios, 1)]));
+		    ST(&(ri[WS(rs, 25)]), VSUB(T5B, T5E), ms, &(ri[WS(rs, 1)]));
+		    ST(&(ri[WS(rs, 9)]), VADD(T5B, T5E), ms, &(ri[WS(rs, 1)]));
 		    T7F = VSUB(T5z, T5w);
 		    T7G = VSUB(T7D, T7y);
-		    ST(&(ii[WS(ios, 9)]), VADD(T7F, T7G), dist, &(ii[WS(ios, 1)]));
-		    ST(&(ii[WS(ios, 25)]), VSUB(T7G, T7F), dist, &(ii[WS(ios, 1)]));
+		    ST(&(ii[WS(rs, 9)]), VADD(T7F, T7G), ms, &(ii[WS(rs, 1)]));
+		    ST(&(ii[WS(rs, 25)]), VSUB(T7G, T7F), ms, &(ii[WS(rs, 1)]));
 	       }
 	  }
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(2),
-     VTW(3),
-     VTW(4),
-     VTW(5),
-     VTW(6),
-     VTW(7),
-     VTW(8),
-     VTW(9),
-     VTW(10),
-     VTW(11),
-     VTW(12),
-     VTW(13),
-     VTW(14),
-     VTW(15),
-     VTW(16),
-     VTW(17),
-     VTW(18),
-     VTW(19),
-     VTW(20),
-     VTW(21),
-     VTW(22),
-     VTW(23),
-     VTW(24),
-     VTW(25),
-     VTW(26),
-     VTW(27),
-     VTW(28),
-     VTW(29),
-     VTW(30),
-     VTW(31),
+     VTW(0, 1),
+     VTW(0, 2),
+     VTW(0, 3),
+     VTW(0, 4),
+     VTW(0, 5),
+     VTW(0, 6),
+     VTW(0, 7),
+     VTW(0, 8),
+     VTW(0, 9),
+     VTW(0, 10),
+     VTW(0, 11),
+     VTW(0, 12),
+     VTW(0, 13),
+     VTW(0, 14),
+     VTW(0, 15),
+     VTW(0, 16),
+     VTW(0, 17),
+     VTW(0, 18),
+     VTW(0, 19),
+     VTW(0, 20),
+     VTW(0, 21),
+     VTW(0, 22),
+     VTW(0, 23),
+     VTW(0, 24),
+     VTW(0, 25),
+     VTW(0, 26),
+     VTW(0, 27),
+     VTW(0, 28),
+     VTW(0, 29),
+     VTW(0, 30),
+     VTW(0, 31),
      {TW_NEXT, (2 * VL), 0}
 };
 

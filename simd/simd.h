@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,16 @@
 #include "simd-altivec.h"
 #endif
 
+#if defined(HAVE_CELL) && !defined(ALIGNMENT)
+/* align Cell data in the same way as Altivec */
+#define ALIGNMENT 8 
+#define ALIGNMENTA 16
+#endif
+
+#ifdef HAVE_MIPS_PS
+#include "simd-mips_ps.h"
+#endif
+
 /* TAINT_BIT is set if pointers are not guaranteed to be multiples of
    ALIGNMENT */
 #define TAINT_BIT 1    
@@ -50,6 +60,3 @@
 #define SIMD_STRIDE_OKA(x) (!(((x) * sizeof(R)) % ALIGNMENTA))
 #define SIMD_VSTRIDE_OK SIMD_STRIDE_OK
 
-#define LDW(x) LDA(x, 0, 0) /* load twiddle factor */
-
-#define SIMD_ALIGNMENT ALIGNMENTA

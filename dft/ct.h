@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,16 @@
 
 #include "dft.h"
 
-typedef void (*dftwapply) (const plan *ego, R *rio, R *iio);
+typedef void (*dftwapply)(const plan *ego, R *rio, R *iio);
 typedef struct ct_solver_s ct_solver;
 typedef plan *(*ct_mkinferior)(const ct_solver *ego,
-			    int dec, INT r, INT m, INT s, INT vl, INT vs, 
-			    INT mstart, INT mcount,
-			    R *rio, R *iio,
-			    planner *plnr);
+			       INT r, INT irs, INT ors,
+			       INT m, INT ms,
+			       INT v, INT ivs, INT ovs,
+			       INT mstart, INT mcount,
+			       R *rio, R *iio, planner *plnr);
+typedef int (*ct_force_vrecursion)(const ct_solver *ego, 
+				   const problem_dft *p);
 
 typedef struct {
      plan super;
@@ -44,16 +47,22 @@ struct ct_solver_s {
      int dec;
 #    define DECDIF 0
 #    define DECDIT 1
-
+#    define TRANSPOSE 2
      ct_mkinferior mkcldw;
+     ct_force_vrecursion force_vrecursionp;
 };
 
 int X(ct_applicable)(const ct_solver *, const problem *, planner *);
-ct_solver *X(mksolver_ct)(size_t size, INT r, int dec, ct_mkinferior mkcldw);
-extern ct_solver *(*X(mksolver_ct_hook))(size_t, INT, int, ct_mkinferior);
+ct_solver *X(mksolver_ct)(size_t size, INT r, int dec, 
+			  ct_mkinferior mkcldw, 
+			  ct_force_vrecursion force_vrecursionp);
+extern ct_solver *(*X(mksolver_ct_hook))(size_t, INT, int, 
+					 ct_mkinferior, ct_force_vrecursion);
 
 void X(regsolver_ct_directw)(planner *plnr,
      kdftw codelet, const ct_desc *desc, int dec);
 void X(regsolver_ct_directwbuf)(planner *plnr,
      kdftw codelet, const ct_desc *desc, int dec);
 solver *X(mksolver_ctsq)(kdftwsq codelet, const ct_desc *desc, int dec);
+void X(regsolver_ct_directwsq)(planner *plnr, kdftwsq codelet, 
+			       const ct_desc *desc, int dec);

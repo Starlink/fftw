@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>The Halfcomplex-format DFT - FFTW 3.1.2</title>
+<title>The Halfcomplex-format DFT - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="More-DFTs-of-Real-Data.html#More-DFTs-of-Real-Data" title="More DFTs of Real Data">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -93,11 +93,11 @@ like the c2r transform, an out-of-place hc2r transform will
    <p>Although these halfcomplex transforms can be used with the
 multi-dimensional r2r interface, the interpretation of such a separable
 product of transforms along each dimension is problematic.  For example,
-consider a two-dimensional <code>nx</code> by <code>ny</code>, r2hc by r2hc
-transform planned by <code>fftw_plan_r2r_2d(nx, ny, in, out, FFTW_R2HC,
+consider a two-dimensional <code>n0</code> by <code>n1</code>, r2hc by r2hc
+transform planned by <code>fftw_plan_r2r_2d(n0, n1, in, out, FFTW_R2HC,
 FFTW_R2HC, FFTW_MEASURE)</code>.  Conceptually, FFTW first transforms the rows
-(of size <code>ny</code>) to produce halfcomplex rows, and then transforms the
-columns (of size <code>nx</code>).  Half of these column transforms, however,
+(of size <code>n1</code>) to produce halfcomplex rows, and then transforms the
+columns (of size <code>n0</code>).  Half of these column transforms, however,
 are of imaginary parts, and should therefore be multiplied by i
 and combined with the r2hc transforms of the real columns to produce the
 2d DFT amplitudes; FFTW's r2r transform does <em>not</em> perform this

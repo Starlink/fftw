@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: report.c,v 1.10 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "bench.h"
 #include <stdio.h>
@@ -91,16 +90,22 @@ void report_benchmark(const bench_problem *p, double *t, int st)
      ovtpvt("%.5g %.8g %g\n", mflops(p, s.min), s.min, p->setup_time);
 }
 
-static void sprintf_time(double x, char *buf)
+static void sprintf_time(double x, char *buf, int buflen)
 {
+#ifdef HAVE_SNPRINTF
+#  define MY_SPRINTF(a, b) snprintf(buf, buflen, a, b)
+#else
+#  define MY_SPRINTF(a, b) sprintf(buf, a, b)
+#endif
      if (x < 1.0E-6)
-	  sprintf(buf, "%.2f ns", x * 1.0E9);
+	  MY_SPRINTF("%.2f ns", x * 1.0E9);
      else if (x < 1.0E-3)
-	  sprintf(buf, "%.2f us", x * 1.0E6);
+	  MY_SPRINTF("%.2f us", x * 1.0E6);
      else if (x < 1.0)
-	  sprintf(buf, "%.2f ms", x * 1.0E3);
+	  MY_SPRINTF("%.2f ms", x * 1.0E3);
      else
-	  sprintf(buf, "%.2f s", x);
+	  MY_SPRINTF("%.2f s", x);
+#undef MY_SPRINTF
 }
 
 void report_verbose(const bench_problem *p, double *t, int st)
@@ -112,12 +117,12 @@ void report_verbose(const bench_problem *p, double *t, int st)
 
      mkstat(t, st, &s);
 
-     sprintf_time(s.min, bmin);
-     sprintf_time(s.max, bmax);
-     sprintf_time(s.avg, bavg);
-     sprintf_time(s.median, bmedian);
-     sprintf_time(time_min, btmin);
-     sprintf_time(p->setup_time, bsetup);
+     sprintf_time(s.min, bmin, 64);
+     sprintf_time(s.max, bmax, 64);
+     sprintf_time(s.avg, bavg, 64);
+     sprintf_time(s.median, bmedian, 64);
+     sprintf_time(time_min, btmin, 64);
+     sprintf_time(p->setup_time, bsetup, 64);
 
      ovtpvt("Problem: %s, setup: %s, time: %s, %s: %.5g\n",
 	    p->pstring, bsetup, bmin, 

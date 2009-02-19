@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Multi-dimensional Transforms - FFTW 3.1.2</title>
+<title>Multi-dimensional Transforms - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes" title="What FFTW Really Computes">
@@ -10,7 +10,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -53,7 +53,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="What-FFTW-Really-Computes.html#What-FFT
 <hr>
 </div>
 
-<h4 class="subsection">4.7.6 Multi-dimensional Transforms</h4>
+<h4 class="subsection">4.8.6 Multi-dimensional Transforms</h4>
 
 <p>The multi-dimensional transforms of FFTW, in general, compute simply the
 separable product of the given 1d transform along each dimension of the
@@ -63,19 +63,19 @@ will result in the original array scaled by the product of the
 normalization factors for each dimension (e.g. the product of the
 dimension sizes, for a multi-dimensional DFT).
 
-   <p><a name="index-r2c-306"></a>The definition of FFTW's multi-dimensional DFT of real data (r2c)
+   <p><a name="index-r2c-315"></a>The definition of FFTW's multi-dimensional DFT of real data (r2c)
 deserves special attention.  In this case, we logically compute the full
 multi-dimensional DFT of the input data; since the input data are purely
 real, the output data have the Hermitian symmetry and therefore only one
-non-redundant half need be stored.  More specifically, for an n<sub>1</sub> x n<sub>2</sub> x n<sub>3</sub> x ... x n<sub>d</sub> multi-dimensional real-input DFT, the full (logical) complex output array
-<i>Y</i>[<i>k</i><sub>1</sub>, <i>k</i><sub>2</sub>, ...,
-<i>k</i><sub><i>d</i></sub>]has the symmetry:
-<i>Y</i>[<i>k</i><sub>1</sub>, <i>k</i><sub>2</sub>, ...,
-<i>k</i><sub><i>d</i></sub>] = <i>Y</i>[<i>n</i><sub>1</sub> -
-<i>k</i><sub>1</sub>, <i>n</i><sub>2</sub> - <i>k</i><sub>2</sub>, ...,
-<i>n</i><sub><i>d</i></sub> - <i>k</i><sub><i>d</i></sub>]<sup>*</sup>(where each dimension is periodic).  Because of this symmetry, we only
+non-redundant half need be stored.  More specifically, for an n<sub>0</sub>&nbsp;&times;&nbsp;n<sub>1</sub>&nbsp;&times;&nbsp;n<sub>2</sub>&nbsp;&times;&nbsp;&hellip;&nbsp;&times;&nbsp;n<sub>d-1</sub> multi-dimensional real-input DFT, the full (logical) complex output array
+<i>Y</i>[<i>k</i><sub>0</sub>, <i>k</i><sub>1</sub>, ...,
+<i>k</i><sub><i>d-1</i></sub>]has the symmetry:
+<i>Y</i>[<i>k</i><sub>0</sub>, <i>k</i><sub>1</sub>, ...,
+<i>k</i><sub><i>d-1</i></sub>] = <i>Y</i>[<i>n</i><sub>0</sub> -
+<i>k</i><sub>0</sub>, <i>n</i><sub>1</sub> - <i>k</i><sub>1</sub>, ...,
+<i>n</i><sub><i>d-1</i></sub> - <i>k</i><sub><i>d-1</i></sub>]<sup>*</sup>(where each dimension is periodic).  Because of this symmetry, we only
 store the
-<i>k</i><sub><i>d</i></sub> = 0...<i>n</i><sub><i>d</i></sub>/2+1elements of the <em>last</em> dimension (division by 2 is rounded
+<i>k</i><sub><i>d-1</i></sub> = 0...<i>n</i><sub><i>d-1</i></sub>/2+1elements of the <em>last</em> dimension (division by 2 is rounded
 down).  (We could instead have cut any other dimension in half, but the
 last dimension proved computationally convenient.)  This results in the
 peculiar array format described in more detail by <a href="Real_002ddata-DFT-Array-Format.html#Real_002ddata-DFT-Array-Format">Real-data DFT Array Format</a>.

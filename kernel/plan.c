@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: plan.c,v 1.23 2006-01-10 13:56:55 athena Exp $ */
 
 #include "ifftw.h"
 
@@ -61,9 +60,11 @@ void X(plan_null_destroy)(plan *ego)
 
 void X(plan_awake)(plan *ego, enum wakefulness wakefulness)
 {
-     A(((wakefulness == SLEEPY) ^ (ego->wakefulness == SLEEPY)));
+     if (ego) {
+	  A(((wakefulness == SLEEPY) ^ (ego->wakefulness == SLEEPY)));
 	  
-     ego->adt->awake(ego, wakefulness);
-     ego->wakefulness = wakefulness;
+	  ego->adt->awake(ego, wakefulness);
+	  ego->wakefulness = wakefulness;
+     }
 }
 

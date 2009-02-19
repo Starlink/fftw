@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ typedef struct X(plan_s) apiplan;
 /* complex type for internal use */
 typedef R C[2];
 
-void X(extract_reim)(int sign, C *c, R **r, R **i);
+#define EXTRACT_REIM(sign, c, r, i) X(extract_reim)(sign, (c)[0], r, i)
 
 #define TAINT_UNALIGNED(p, flg) TAINT(p, ((flg) & FFTW_UNALIGNED) != 0)
 
@@ -74,12 +74,15 @@ tensor *X(mktensor_rowmajor)(int rnk, const int *n,
 			     int is, int os);
 
 tensor *X(mktensor_iodims)(int rank, const X(iodim) *dims, int is, int os);
+tensor *X(mktensor_iodims64)(int rank, const X(iodim64) *dims, int is, int os);
 const int *X(rdft2_pad)(int rnk, const int *n, const int *nembed,
 			int inplace, int cmplx, int **nfree);
 
 int X(many_kosherp)(int rnk, const int *n, int howmany);
 int X(guru_kosherp)(int rank, const X(iodim) *dims,
 		    int howmany_rank, const X(iodim) *howmany_dims);
+int X(guru64_kosherp)(int rank, const X(iodim64) *dims,
+		    int howmany_rank, const X(iodim64) *howmany_dims);
 
 /* Note: FFTW_EXTERN is used for "internal" functions used in tests/hook.c */
 

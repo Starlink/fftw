@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: solver.c,v 1.6 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "ifftw.h"
 
@@ -38,8 +37,11 @@ void X(solver_use)(solver *ego)
 
 void X(solver_destroy)(solver *ego)
 {
-     if ((--ego->refcnt) == 0)
+     if ((--ego->refcnt) == 0) {
+	  if (ego->adt->destroy)
+	       ego->adt->destroy(ego);
           X(ifree)(ego);
+     }
 }
 
 void X(solver_register)(planner *plnr, solver *s)

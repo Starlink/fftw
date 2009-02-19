@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Installation on non-Unix systems - FFTW 3.1.2</title>
+<title>Installation on non-Unix systems - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Installation-and-Customization.html#Installation-and-Customization" title="Installation and Customization">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -55,7 +55,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Installation-and-Customization.html#Ins
 <hr>
 </div>
 
-<h3 class="section">8.2 Installation on non-Unix systems</h3>
+<h3 class="section">9.2 Installation on non-Unix systems</h3>
 
 <p>It should be relatively straightforward to compile FFTW even on non-Unix
 systems lacking the niceties of a <code>configure</code> script.  Basically,
@@ -77,20 +77,14 @@ have to hand-create a configuration file (and/or a pre-compiled binary)
 that you want to share.
 
    <p>To create the FFTW library, you will then need to compile all of the
-`<samp><span class="samp">.c</span></samp>' files in the <code>kernel</code>, <code>dft</code>, <code>dft/codelets</code>,
-<code>dft/codelets/standard</code>, <code>rdft</code>, <code>rdft/codelets</code>,
-<code>rdft/codelets/r2hc</code>, <code>rdft/codelets/hc2r</code>,
-<code>rdft/codelets/r2r</code>, <code>reodft</code>, and <code>api</code> directories. 
+`<samp><span class="samp">.c</span></samp>' files in the <code>kernel</code>, <code>dft</code>, <code>dft/scalar</code>,
+<code>dft/scalar/codelets</code>, <code>rdft</code>, <code>rdft/scalar</code>,
+<code>rdft/scalar/r2cf</code>, <code>rdft/scalar/r2cb</code>,
+<code>rdft/scalar/r2r</code>, <code>reodft</code>, and <code>api</code> directories. 
 If you are compiling with SIMD support (e.g. you defined
 <code>HAVE_SSE2</code> in <code>config.h</code>), then you also need to compile
 the <code>.c</code> files in the <code>simd</code>, <code>simd/nonportable</code>,
-<code>dft/simd</code>, and <code>dft/simd/codelets</code> directories.  If you are
-compiling with AMD K7 optimizations (i.e. you defined <code>HAVE_K7</code>),
-then you also need to include the <code>dft/k7</code> and
-<code>dft/k7/codelets</code> directories.  (See the previous section for
-more information on configuration options like SIMD and K7
-optimization; each Unix configuration option has a corresponding
-<code>#define</code> in <code>config.h</code>.)
+<code>dft/simd</code>, and <code>dft/simd/codelets</code> directories.
 
    <p>Once these files are all compiled, link them into a library, or a shared
 library, or directly into your program.

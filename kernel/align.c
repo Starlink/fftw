@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,11 @@
  *
  */
 
-/* $Id: align.c,v 1.29 2006-01-15 20:12:08 athena Exp $ */
 
 #include "ifftw.h"
 
-#if HAVE_SIMD
+#if HAVE_SIMD || HAVE_CELL
 #  define ALGN 16
-#elif HAVE_K7
-#  define ALGN 8
 #else
    /* disable the alignment machinery, because it will break,
       e.g., if sizeof(R) == 12 (as in long-double/x86) */
@@ -35,8 +32,10 @@
 /* NONPORTABLE */
 int X(alignment_of)(R *p)
 {
-     if (ALGN > 0)
-	  return (int)(((uintptr_t) p) % ALGN);
-     else
-	  return 0;
+#if ALGN == 0
+     UNUSED(p);
+     return 0;
+#else
+     return (int)(((uintptr_t) p) % ALGN);
+#endif
 }
