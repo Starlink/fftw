@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: verify.c,v 1.17 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,6 +27,7 @@
 void verify_problem(bench_problem *p, int rounds, double tol)
 {
      errors e;
+     const char *pstring = p->pstring ? p->pstring : "<unknown problem>";
 
      switch (p->kind) {
 	 case PROBLEM_COMPLEX: verify_dft(p, rounds, tol, &e); break;
@@ -36,7 +36,7 @@ void verify_problem(bench_problem *p, int rounds, double tol)
      }
 
      if (verbose)
-	  ovtpvt("%g %g %g\n", e.l, e.i, e.s);
+	  ovtpvt("%s %g %g %g\n", pstring, e.l, e.i, e.s);
 }
 
 void verify(const char *param, int rounds, double tol)
@@ -44,8 +44,13 @@ void verify(const char *param, int rounds, double tol)
      bench_problem *p;
 
      p = problem_parse(param);
-     BENCH_ASSERT(can_do(p));
      problem_alloc(p);
+
+     if (!can_do(p)) {
+	  ovtpvt_err("No can_do for %s\n", p->pstring);
+	  BENCH_ASSERT(0);
+     }
+
      problem_zero(p);
      setup(p);
 

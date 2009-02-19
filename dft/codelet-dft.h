@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: codelet-dft.h,v 1.10 2006-01-06 03:19:09 athena Exp $ */
 
 /*
  * This header file must include every file or define every
@@ -68,7 +67,7 @@ typedef struct {
      int (*okp)(
 	  const struct ct_desc_s *desc,
 	  const R *rio, const R *iio, 
-	  INT ios, INT vs, INT m, INT mb, INT me, INT dist,
+	  INT rs, INT vs, INT m, INT mb, INT me, INT ms,
 	  const planner *plnr);
      INT vl;
 } ct_genus;
@@ -79,28 +78,24 @@ struct ct_desc_s {
      const tw_instr *tw;
      const ct_genus *genus;
      opcnt ops;
-     INT s1;
-     INT s2;
-     INT dist;
+     INT rs;
+     INT vs;
+     INT ms;
 };
 
-typedef const R *(*kdftw) (R *rioarray, R *iioarray, const R *W,
-			   stride ios, INT m, INT dist);
+typedef void (*kdftw) (R *rioarray, R *iioarray, const R *W,
+		       stride ios, INT mb, INT me, INT ms);
 void X(kdft_dit_register)(planner *p, kdftw codelet, const ct_desc *desc);
 void X(kdft_dif_register)(planner *p, kdftw codelet, const ct_desc *desc);
 
 
-typedef const R *(*kdftwsq) (R *rioarray, R *iioarray,
-			     const R *W, stride is, stride vs,
-			     INT m, INT dist);
+typedef void (*kdftwsq) (R *rioarray, R *iioarray,
+			 const R *W, stride is, stride vs,
+			 INT mb, INT me, INT ms);
 void X(kdft_difsq_register)(planner *p, kdftwsq codelet, const ct_desc *desc);
 
 
 extern const solvtab X(solvtab_dft_standard);
-
-#if HAVE_K7
-extern const solvtab X(solvtab_dft_k7);
-#endif
 
 #if HAVE_SIMD
 extern const solvtab X(solvtab_dft_simd);

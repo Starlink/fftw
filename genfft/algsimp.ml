@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
  *
  *)
 
-(* $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $ *)
-let cvsid = "$Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $"
 
 open Util
 open Expr
@@ -117,6 +115,10 @@ end = struct
   and stimesM = function 
     | (Uminus a, b) -> stimesM (a, b) >>= suminusM
     | (a, Uminus b) -> stimesM (a, b) >>= suminusM
+    | (NaN I, CTimes (a, b)) -> stimesM (NaN I, b) >>= 
+	fun ib -> sctimesM (a, ib)
+    | (NaN I, CTimesJ (a, b)) -> stimesM (NaN I, b) >>= 
+	fun ib -> sctimesjM (a, ib)
     | (Num a, Num b) -> snumM (Number.mul a b)
     | (Num a, Times (Num b, c)) -> 
 	snumM (Number.mul a b) >>= fun x -> stimesM (x, c)
@@ -126,6 +128,16 @@ end = struct
     | (a, b) when is_known_constant b && not (is_known_constant a) -> 
 	stimesM (b, a)
     | (a, b) -> makeNode (Times (a, b))
+
+  and sctimesM = function 
+    | (Uminus a, b) -> sctimesM (a, b) >>= suminusM
+    | (a, Uminus b) -> sctimesM (a, b) >>= suminusM
+    | (a, b) -> makeNode (CTimes (a, b))
+
+  and sctimesjM = function 
+    | (Uminus a, b) -> sctimesjM (a, b) >>= suminusM
+    | (a, Uminus b) -> sctimesjM (a, b) >>= suminusM
+    | (a, b) -> makeNode (CTimesJ (a, b))
 
   and reduce_sumM x = match x with
     [] -> returnM []
@@ -361,11 +373,11 @@ end = struct
  	| CTimes (a, b) -> 
  	    (algsimpM a >>= fun a' ->
  	      algsimpM b >>= fun b' ->
- 		makeNode (CTimes (a', b')))
+		sctimesM (a', b'))
  	| CTimesJ (a, b) -> 
  	    (algsimpM a >>= fun a' ->
  	      algsimpM b >>= fun b' ->
- 		makeNode (CTimesJ (a', b')))
+		sctimesjM (a', b'))
  	| Uminus a -> 
  	    algsimpM a >>= suminusM 
  	| Store (v, a) ->

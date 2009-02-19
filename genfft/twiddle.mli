@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: twiddle.mli,v 1.8 2006-02-12 23:34:12 athena Exp $ *)
 
 val speclist : (string * Arg.spec * string) list
 
 type twinstr
 
 val twiddle_policy :
-  bool ->
+  int -> bool ->
   (int -> int -> (int -> Complex.expr) -> (int -> Complex.expr) ->
      int -> Complex.expr) *(int -> int) * (int -> twinstr list)
 

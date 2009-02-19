@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: planner.c,v 1.189 2006-01-17 05:17:27 athena Exp $ */
 #include "ifftw.h"
 #include <string.h>
 
@@ -387,19 +386,22 @@ static void invoke_hook(planner *ego, plan *pln, const problem *p,
 	  ego->hook(ego, pln, p, optimalp);
 }
 
-double X(iestimate_cost)(const plan *pln)
+double X(iestimate_cost)(const planner *ego, const plan *pln, const problem *p)
 {
-     return 0.0
+     double cost =
 	  + pln->ops.add
 	  + pln->ops.mul
-
+	  
 #if HAVE_FMA
 	  + pln->ops.fma
 #else
 	  + 2 * pln->ops.fma
 #endif
-
+	  
 	  + pln->ops.other;
+     if (ego->cost_hook)
+	  cost = ego->cost_hook(p, cost, COST_MAX);
+     return cost;
 }
 
 static void evaluate_plan(planner *ego, plan *pln, const problem *p)
@@ -410,11 +412,11 @@ static void evaluate_plan(planner *ego, plan *pln, const problem *p)
 	  if (ESTIMATEP(ego)) {
 	  estimate:
 	       /* heuristic */
-	       pln->pcost = X(iestimate_cost)(pln);
+	       pln->pcost = X(iestimate_cost)(ego, pln, p);
 	       ego->epcost += pln->pcost;
 	  } else {
-	       double t = X(measure_execution_time)(pln, p);
-
+	       double t = X(measure_execution_time)(ego, pln, p);
+	       
 	       if (t < 0) {  /* unavailable cycle counter */
 		    /* Real programmers can write FORTRAN in any language */
 		    goto estimate;
@@ -430,7 +432,7 @@ static void evaluate_plan(planner *ego, plan *pln, const problem *p)
 }
 
 /* maintain dynamic scoping of flags, nthr: */
-static plan *invoke_solver(planner *ego, problem *p, solver *s, 
+static plan *invoke_solver(planner *ego, const problem *p, solver *s, 
 			   const flags_t *nflags)
 {
      flags_t flags = ego->flags;
@@ -446,7 +448,7 @@ static plan *invoke_solver(planner *ego, problem *p, solver *s,
 }
 
 /* maintain the invariant TIMED_OUT ==> NEED_TIMEOUT_CHECK */
-static int timeout_p(planner *ego)
+static int timeout_p(planner *ego, const problem *p)
 {
      /* do not timeout when estimating.  First, the estimator is the
 	planner of last resort.  Second, calling X(elapsed_since)() is
@@ -459,7 +461,7 @@ static int timeout_p(planner *ego)
 	  }
 
 	  if (ego->timelimit >= 0 &&
-	      X(elapsed_since)(ego->start_time) >= ego->timelimit) {
+	      X(elapsed_since)(ego, p, ego->start_time) >= ego->timelimit) {
 	       ego->timed_out = 1;
 	       ego->need_timeout_check = 1;
 	       return 1;
@@ -471,7 +473,7 @@ static int timeout_p(planner *ego)
      return 0;
 }
 
-static plan *search0(planner *ego, problem *p, unsigned *slvndx, 
+static plan *search0(planner *ego, const problem *p, unsigned *slvndx, 
 		     const flags_t *flagsp)
 {
      plan *best = 0;
@@ -479,7 +481,7 @@ static plan *search0(planner *ego, problem *p, unsigned *slvndx,
 
      /* Do not start a search if the planner timed out. This check is
 	necessary, lest the relaxation mechanism kick in */
-     if (timeout_p(ego))
+     if (timeout_p(ego, p))
 	  return 0;
 
      FORALL_SOLVERS_OF_KIND(p->adt->problem_kind, ego, s, sp, {
@@ -488,7 +490,7 @@ static plan *search0(planner *ego, problem *p, unsigned *slvndx,
 	  pln = invoke_solver(ego, p, s, flagsp);
 
 	  if (ego->need_timeout_check) 
-	       if (timeout_p(ego)) {
+	       if (timeout_p(ego, p)) {
 		    X(plan_destroy_internal)(pln);
 		    X(plan_destroy_internal)(best);
 		    return 0;
@@ -525,7 +527,7 @@ static plan *search0(planner *ego, problem *p, unsigned *slvndx,
      return best;
 }
 
-static plan *search(planner *ego, problem *p, unsigned *slvndx, 
+static plan *search(planner *ego, const problem *p, unsigned *slvndx, 
 		    flags_t *flagsp)
 {
      plan *pln = 0;
@@ -574,7 +576,7 @@ static plan *search(planner *ego, problem *p, unsigned *slvndx,
      if (ego->wisdom_state == WISDOM_IS_BOGUS)	\
 	  goto wisdom_is_bogus
 
-static plan *mkplan(planner *ego, problem *p)
+static plan *mkplan(planner *ego, const problem *p)
 {
      plan *pln;
      md5 m;
@@ -820,7 +822,8 @@ static int imprt(planner *ego, scanner *sc)
 	  CK(flags.u == u);
 	  CK(flags.timelimit_impatience == timelimit_impatience);
 
-	  hinsert(ego, sig, &flags, slvndx);
+	  if (!hlookup(ego, sig, &flags))
+	       hinsert(ego, sig, &flags, slvndx);
      }
 
      X(ifree0)(old.solutions);
@@ -850,6 +853,7 @@ planner *X(mkplanner)(void)
      p->nplan = p->nprob = 0;
      p->pcost = p->epcost = 0.0;
      p->hook = 0;
+     p->cost_hook = 0;
      p->cur_reg_nam = 0;
      p->wisdom_state = WISDOM_NORMAL;
 

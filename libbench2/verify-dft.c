@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: verify-dft.c,v 1.16 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "verify.h"
 
@@ -61,11 +60,10 @@ static void dft_apply(dofft_closure *k_, bench_complex *in, bench_complex *out)
      bench_tensor *totalsz, *pckdsz;
      bench_tensor *totalsz_swap, *pckdsz_swap;
      bench_real *ri, *ii, *ro, *io;
-     int n, totalscale;
+     int totalscale;
 
      totalsz = tensor_append(p->vecsz, p->sz);
      pckdsz = verify_pack(totalsz, 2);
-     n = tensor_sz(totalsz);
      ri = (bench_real *) p->in;
      ro = (bench_real *) p->out;
 
@@ -76,8 +74,8 @@ static void dft_apply(dofft_closure *k_, bench_complex *in, bench_complex *out)
 	when using interleaved format, but it is the distance between
 	real elements when using split format */
      if (p->split) {
-	  ii = p->ini ? (bench_real *) p->ini : ri + n;
-	  io = p->outi ? (bench_real *) p->outi : ro + n;
+	  ii = p->ini ? (bench_real *) p->ini : ri + p->iphyssz;
+	  io = p->outi ? (bench_real *) p->outi : ro + p->ophyssz;
 	  totalscale = 1;
      } else {
 	  ii = p->ini ? (bench_real *) p->ini : ri + 1;
@@ -87,7 +85,9 @@ static void dft_apply(dofft_closure *k_, bench_complex *in, bench_complex *out)
 
      cpy(&c_re(in[0]), &c_im(in[0]), pckdsz, 1,
 	    ri, ii, totalsz, totalscale);
+     after_problem_ccopy_from(p, ri, ii);
      doit(1, p);
+     after_problem_ccopy_to(p, ro, io);
      if (k->k.recopy_input)
 	  cpy(ri, ii, totalsz_swap, totalscale,
 	      &c_re(in[0]), &c_im(in[0]), pckdsz_swap, 1);

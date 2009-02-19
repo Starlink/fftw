@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,23 +22,60 @@
 
 #include "ifftw.h"
 
-INT X(compute_nbuf)(INT n, INT vl, INT nbuf, INT maxbufsz)
-{
-     INT i; 
+#define DEFAULT_MAXNBUF ((INT)256)
 
-     if (nbuf * n > maxbufsz)
-          nbuf = X(imax)((INT)1, maxbufsz / n);
+/* approx. 512KB of buffers for complex data */
+#define MAXBUFSZ (256 * 1024 / (INT)(sizeof(R)))
+
+INT X(nbuf)(INT n, INT vl, INT maxnbuf)
+{
+     INT i, nbuf, lb; 
+
+     if (!maxnbuf) 
+	  maxnbuf = DEFAULT_MAXNBUF;
+
+     nbuf = X(imin)(maxnbuf,
+		    X(imin)(vl, X(imax)((INT)1, MAXBUFSZ / n)));
 
      /*
-      * Look for a buffer number (not too big) that divides the
+      * Look for a buffer number (not too small) that divides the
       * vector length, in order that we only need one child plan:
       */
-     for (i = nbuf; i < vl && i < 2 * nbuf; ++i)
+     lb = X(imax)(1, nbuf / 4);
+     for (i = nbuf; i >= lb; --i)
           if (vl % i == 0)
                return i;
 
      /* whatever... */
-     nbuf = X(imin)(nbuf, vl);
      return nbuf;
 }
 
+#define SKEW 6 /* need to be even for SIMD */
+#define SKEWMOD 8 
+
+INT X(bufdist)(INT n, INT vl)
+{
+     if (vl == 1)
+	  return n;
+     else 
+	  /* return smallest X such that X >= N and X == SKEW (mod SKEWMOD) */
+	  return n + X(modulo)(SKEW - n, SKEWMOD);
+}
+
+int X(toobig)(INT n)
+{
+     return n > MAXBUFSZ;
+}
+
+/* TRUE if there exists i < which such that maxnbuf[i] and
+   maxnbuf[which] yield the same value, in which case we canonicalize
+   on the minimum value */
+int X(nbuf_redundant)(INT n, INT vl, int which, 
+		      const INT *maxnbuf, int nmaxnbuf)
+{
+     int i;
+     for (i = 0; i < which; ++i)
+	  if (X(nbuf)(n, vl, maxnbuf[i]) == X(nbuf)(n, vl, maxnbuf[which]))
+	       return 1;
+     return 0;
+}

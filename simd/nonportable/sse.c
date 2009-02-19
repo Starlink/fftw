@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,20 @@
  *
  */
 
-/* $Id: sse.c,v 1.2 2006-01-05 03:04:28 stevenj Exp $ */
 
 #include "ifftw.h"
 #include "simd.h"
 
 #if HAVE_SSE
 
-#if 0
-/* apparently, MSVC converts -0.0 to 0.0 */
-const union fvec X(sse_mpmp) = {{-0.0, 0.0, -0.0, 0.0}};
-#endif
-
-const union uvec X(sse_mpmp) = {
-     { 0x80000000, 0x00000000, 0x80000000, 0x00000000 }
+const union uvec X(sse_pmpm) = {
+     { 0x00000000, 0x80000000, 0x00000000, 0x80000000 }
 };
 
 /* paranoia because of past compiler bugs */
-void X(check_alignment_of_sse_mpmp)(void)
+void X(check_alignment_of_sse_pmpm)(void)
 {
-     CK(ALIGNED(&X(sse_mpmp)));
+     CK(ALIGNED(&X(sse_pmpm)));
 }
 
 #endif

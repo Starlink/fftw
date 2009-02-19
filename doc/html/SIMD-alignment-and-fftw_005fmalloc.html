@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>SIMD alignment and fftw_malloc - FFTW 3.1.2</title>
+<title>SIMD alignment and fftw_malloc - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Data-Alignment.html#Data-Alignment" title="Data Alignment">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -57,15 +57,15 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Data-Alignment.html#Data-Alignment">Dat
 
 <h4 class="subsection">3.1.1 SIMD alignment and fftw_malloc</h4>
 
-<p>SIMD, which stands for &ldquo;Single Instruction Multiple Data,&rdquo; is a set
-of special operations supported by some processors to perform a single
+<p>SIMD, which stands for &ldquo;Single Instruction Multiple Data,&rdquo; is a set of
+special operations supported by some processors to perform a single
 operation on several numbers (usually 2 or 4) simultaneously.  SIMD
 floating-point instructions are available on several popular CPUs:
-SSE/SSE2 (single/double precision) on Pentium III/IV and higher,
-3DNow! (single precision) on the AMD K7 and higher, and AltiVec
-(single precision) on the PowerPC G4 and higher.  FFTW can be compiled
-to support the SIMD instructions on any of these systems. 
-<a name="index-SIMD-102"></a><a name="index-SSE-103"></a><a name="index-SSE2-104"></a><a name="index-g_t3DNow_0021-105"></a><a name="index-AltiVec-106"></a><a name="index-precision-107"></a>
+SSE/SSE2 (single/double precision) on Pentium III and higher and on
+AMD64, AltiVec (single precision) on some PowerPCs (Apple G4 and
+higher), and MIPS Paired Single.  FFTW can be compiled to support the
+SIMD instructions on any of these systems. 
+<a name="index-SIMD-102"></a><a name="index-SSE-103"></a><a name="index-SSE2-104"></a><a name="index-AltiVec-105"></a><a name="index-MIPS-PS-106"></a><a name="index-precision-107"></a>
 A program linking to an FFTW library compiled with SIMD support can
 obtain a nonnegligible speedup for most complex and r2c/c2r
 transforms.  In order to obtain this speedup, however, the arrays of

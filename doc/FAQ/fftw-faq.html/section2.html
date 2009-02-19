@@ -45,7 +45,7 @@ Question 2.2.  Does FFTW run on Windows?
 Yes, many people have reported successfully using FFTW on Windows with
 various compilers.  FFTW was not developed on Windows, but the source
 code is essentially straight ANSI C.  See also the
-<A href="http://www.fftw.org/install/windows.html">FFTW Windows installation notes</A>, <A href="#compilerCrashes">Q2.3 `My compiler has trouble with FFTW.'</A>, and <A href="section3.html#vbetalia">Q3.17 `How do I call FFTW from the Microsoft language du
+<A href="http://www.fftw.org/install/windows.html">FFTW Windows installation notes</A>, <A href="#compilerCrashes">Q2.3 `My compiler has trouble with FFTW.'</A>, and <A href="section3.html#vbetalia">Q3.18 `How do I call FFTW from the Microsoft language du
 jour?'</A>.  
 <h2><A name="compilerCrashes">
 Question 2.3.  My compiler has trouble with
@@ -91,7 +91,8 @@ problems may appear:
 <p>
 <code>gcc</code> 3.4.[0123] for x86 produces incorrect SSE2 code for
 FFTW when <code>-O2</code> (the best choice for FFTW) is used, causing
-FFTW to crash (<code>make check</code> crashes).  This bug is fixed in <code>gcc</code> 3.4.4.  
+FFTW to crash (<code>make check</code> crashes).  This bug is fixed in <code>gcc</code> 3.4.4.  On x86_64 (amd64/em64t), <code>gcc</code> 3.4.4 reportedly still has a similar problem, but this is fixed as of
+<code>gcc</code> 3.4.6.  
 <p>
 <code>gcc-3.2</code> for x86 produces incorrect SIMD code if
 <code>-O3</code> is used.  The same compiler produces incorrect SIMD
@@ -117,6 +118,15 @@ reportedly produces incorrect code for the file
 later versions).  <code>gcc</code> 3.2.x miscompiles AltiVec permutations, but FFTW has a workaround. 
 <code>gcc</code> 4.0.1 on MacOS for Intel crashes when compiling FFTW; a workaround is to
 compile one file without optimization: <code>cd kernel; make CFLAGS=&quot; &quot; trig.lo</code>.  
+<p>
+<code>gcc</code> 4.1.1 reportedly crashes when compiling FFTW for MIPS;
+the workaround is to compile the file it crashes on
+(<code>t2_64.c</code>) with a lower optimization level.  
+<p>
+<code>gcc</code> versions 4.1.2 to 4.2.0 for x86 reportedly miscompile
+FFTW 3.1's test program, causing <code>make check</code> to crash (<code>gcc</code> bug #26528).  The bug was reportedly fixed in
+<code>gcc</code> version 4.2.1 and later.  A workaround is to compile
+<code>libbench2/verify-lib.c</code> without optimization.  
 <h2><A name="solarisSucks">
 Question 2.4.  FFTW does not compile on Solaris, complaining about
 <code>const</code>.
@@ -179,11 +189,13 @@ The FFTW 3.1 <code>configure</code> script enables fma by default on PowerPC, It
 force one or the other by using the <code>--enable-fma</code> or <code>--disable-fma</code> flag for <code>configure</code>.  
 <p>
 Definitely use fma if you have a PowerPC-based system with
-<code>gcc</code> (or IBM <code>xlc</code>).  This includes all GNU/Linux systems for PowerPC and all MacOS X systems.  Also use it on PA-RISC
-and Itanium with the HP/UX compiler.  
+<code>gcc</code> (or IBM <code>xlc</code>).  This includes all GNU/Linux systems for PowerPC and the older PowerPC-based MacOS systems.  Also
+use it on PA-RISC and Itanium with the HP/UX compiler. 
+
 <p>
 Definitely do not use the fma version if you have an ia-32 processor
-(Intel, AMD, etcetera).  
+(Intel, AMD, MacOS on Intel, etcetera). 
+
 <p>
 For other architectures/compilers, the situation is not so clear.  For
 example, ia-64 has the fma instruction, but
@@ -261,8 +273,8 @@ Back: <a href="section1.html" rev=precedes>Introduction and General Information<
 <a href="index.html" rev=subdocument>Return to contents</a>.<p>
 <address>
 <A href="http://www.fftw.org">Matteo Frigo and Steven G. Johnson</A> / <A href="mailto:fftw@fftw.org">fftw@fftw.org</A>
-- 02 July 2006
+- 09 February 2009
 </address><br>
 Extracted from FFTW Frequently Asked Questions with Answers,
-Copyright &copy; 2006 Matteo Frigo and Massachusetts Institute of Technology.
+Copyright &copy; 2009 Matteo Frigo and Massachusetts Institute of Technology.
 </body></html>

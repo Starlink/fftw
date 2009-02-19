@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,11 @@
  *
  */
 
-/* $Id: taint.c,v 1.5 2006-01-05 03:04:28 stevenj Exp $ */
 
 #include "ifftw.h"
 #include "simd.h"
 
-#if HAVE_SIMD
+#if HAVE_SIMD || HAVE_CELL
 
 R *X(taint)(R *p, INT s)
 {

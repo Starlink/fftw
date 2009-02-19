@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: sse2.c,v 1.17 2006-02-08 03:01:36 athena Exp $ */
 
 #include "ifftw.h"
 #include "simd.h"
@@ -65,7 +64,7 @@
        }
   }
 
-  extern void X(check_alignment_of_sse2_mp)(void);
+  extern void X(check_alignment_of_sse2_pm)(void);
 
   int RIGHT_CPU(void)
   {
@@ -77,7 +76,7 @@
 		 && (cpuid_edx(1) & (1 << 26))
 		 && sse2_works();
 	    init = 1;
-	    X(check_alignment_of_sse2_mp)();
+	    X(check_alignment_of_sse2_pm)();
        }
        return res;
   }

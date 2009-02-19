@@ -17,6 +17,8 @@ extern void X(codelet_n1fv_15)(planner *);
 extern void X(codelet_n1fv_16)(planner *);
 extern void X(codelet_n1fv_32)(planner *);
 extern void X(codelet_n1fv_64)(planner *);
+extern void X(codelet_n1fv_20)(planner *);
+extern void X(codelet_n1fv_25)(planner *);
 extern void X(codelet_n1bv_2)(planner *);
 extern void X(codelet_n1bv_3)(planner *);
 extern void X(codelet_n1bv_4)(planner *);
@@ -34,6 +36,8 @@ extern void X(codelet_n1bv_15)(planner *);
 extern void X(codelet_n1bv_16)(planner *);
 extern void X(codelet_n1bv_32)(planner *);
 extern void X(codelet_n1bv_64)(planner *);
+extern void X(codelet_n1bv_20)(planner *);
+extern void X(codelet_n1bv_25)(planner *);
 extern void X(codelet_n2fv_2)(planner *);
 extern void X(codelet_n2fv_4)(planner *);
 extern void X(codelet_n2fv_6)(planner *);
@@ -44,6 +48,7 @@ extern void X(codelet_n2fv_14)(planner *);
 extern void X(codelet_n2fv_16)(planner *);
 extern void X(codelet_n2fv_32)(planner *);
 extern void X(codelet_n2fv_64)(planner *);
+extern void X(codelet_n2fv_20)(planner *);
 extern void X(codelet_n2bv_2)(planner *);
 extern void X(codelet_n2bv_4)(planner *);
 extern void X(codelet_n2bv_6)(planner *);
@@ -54,11 +59,21 @@ extern void X(codelet_n2bv_14)(planner *);
 extern void X(codelet_n2bv_16)(planner *);
 extern void X(codelet_n2bv_32)(planner *);
 extern void X(codelet_n2bv_64)(planner *);
+extern void X(codelet_n2bv_20)(planner *);
 extern void X(codelet_n2sv_4)(planner *);
 extern void X(codelet_n2sv_8)(planner *);
 extern void X(codelet_n2sv_16)(planner *);
 extern void X(codelet_n2sv_32)(planner *);
 extern void X(codelet_n2sv_64)(planner *);
+extern void X(codelet_t1fuv_2)(planner *);
+extern void X(codelet_t1fuv_3)(planner *);
+extern void X(codelet_t1fuv_4)(planner *);
+extern void X(codelet_t1fuv_5)(planner *);
+extern void X(codelet_t1fuv_6)(planner *);
+extern void X(codelet_t1fuv_7)(planner *);
+extern void X(codelet_t1fuv_8)(planner *);
+extern void X(codelet_t1fuv_9)(planner *);
+extern void X(codelet_t1fuv_10)(planner *);
 extern void X(codelet_t1fv_2)(planner *);
 extern void X(codelet_t1fv_3)(planner *);
 extern void X(codelet_t1fv_4)(planner *);
@@ -73,16 +88,35 @@ extern void X(codelet_t1fv_15)(planner *);
 extern void X(codelet_t1fv_16)(planner *);
 extern void X(codelet_t1fv_32)(planner *);
 extern void X(codelet_t1fv_64)(planner *);
+extern void X(codelet_t1fv_20)(planner *);
+extern void X(codelet_t1fv_25)(planner *);
 extern void X(codelet_t2fv_2)(planner *);
 extern void X(codelet_t2fv_4)(planner *);
 extern void X(codelet_t2fv_8)(planner *);
 extern void X(codelet_t2fv_16)(planner *);
 extern void X(codelet_t2fv_32)(planner *);
 extern void X(codelet_t2fv_64)(planner *);
+extern void X(codelet_t2fv_5)(planner *);
+extern void X(codelet_t2fv_10)(planner *);
+extern void X(codelet_t2fv_20)(planner *);
+extern void X(codelet_t2fv_25)(planner *);
 extern void X(codelet_t3fv_4)(planner *);
 extern void X(codelet_t3fv_8)(planner *);
 extern void X(codelet_t3fv_16)(planner *);
 extern void X(codelet_t3fv_32)(planner *);
+extern void X(codelet_t3fv_5)(planner *);
+extern void X(codelet_t3fv_10)(planner *);
+extern void X(codelet_t3fv_20)(planner *);
+extern void X(codelet_t3fv_25)(planner *);
+extern void X(codelet_t1buv_2)(planner *);
+extern void X(codelet_t1buv_3)(planner *);
+extern void X(codelet_t1buv_4)(planner *);
+extern void X(codelet_t1buv_5)(planner *);
+extern void X(codelet_t1buv_6)(planner *);
+extern void X(codelet_t1buv_7)(planner *);
+extern void X(codelet_t1buv_8)(planner *);
+extern void X(codelet_t1buv_9)(planner *);
+extern void X(codelet_t1buv_10)(planner *);
 extern void X(codelet_t1bv_2)(planner *);
 extern void X(codelet_t1bv_3)(planner *);
 extern void X(codelet_t1bv_4)(planner *);
@@ -97,16 +131,26 @@ extern void X(codelet_t1bv_15)(planner *);
 extern void X(codelet_t1bv_16)(planner *);
 extern void X(codelet_t1bv_32)(planner *);
 extern void X(codelet_t1bv_64)(planner *);
+extern void X(codelet_t1bv_20)(planner *);
+extern void X(codelet_t1bv_25)(planner *);
 extern void X(codelet_t2bv_2)(planner *);
 extern void X(codelet_t2bv_4)(planner *);
 extern void X(codelet_t2bv_8)(planner *);
 extern void X(codelet_t2bv_16)(planner *);
 extern void X(codelet_t2bv_32)(planner *);
 extern void X(codelet_t2bv_64)(planner *);
+extern void X(codelet_t2bv_5)(planner *);
+extern void X(codelet_t2bv_10)(planner *);
+extern void X(codelet_t2bv_20)(planner *);
+extern void X(codelet_t2bv_25)(planner *);
 extern void X(codelet_t3bv_4)(planner *);
 extern void X(codelet_t3bv_8)(planner *);
 extern void X(codelet_t3bv_16)(planner *);
 extern void X(codelet_t3bv_32)(planner *);
+extern void X(codelet_t3bv_5)(planner *);
+extern void X(codelet_t3bv_10)(planner *);
+extern void X(codelet_t3bv_20)(planner *);
+extern void X(codelet_t3bv_25)(planner *);
 extern void X(codelet_t1sv_2)(planner *);
 extern void X(codelet_t1sv_4)(planner *);
 extern void X(codelet_t1sv_8)(planner *);
@@ -118,9 +162,11 @@ extern void X(codelet_t2sv_16)(planner *);
 extern void X(codelet_t2sv_32)(planner *);
 extern void X(codelet_q1fv_2)(planner *);
 extern void X(codelet_q1fv_4)(planner *);
+extern void X(codelet_q1fv_5)(planner *);
 extern void X(codelet_q1fv_8)(planner *);
 extern void X(codelet_q1bv_2)(planner *);
 extern void X(codelet_q1bv_4)(planner *);
+extern void X(codelet_q1bv_5)(planner *);
 extern void X(codelet_q1bv_8)(planner *);
 
 
@@ -143,6 +189,8 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_n1fv_16)),
    SOLVTAB(X(codelet_n1fv_32)),
    SOLVTAB(X(codelet_n1fv_64)),
+   SOLVTAB(X(codelet_n1fv_20)),
+   SOLVTAB(X(codelet_n1fv_25)),
    SOLVTAB(X(codelet_n1bv_2)),
    SOLVTAB(X(codelet_n1bv_3)),
    SOLVTAB(X(codelet_n1bv_4)),
@@ -160,6 +208,8 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_n1bv_16)),
    SOLVTAB(X(codelet_n1bv_32)),
    SOLVTAB(X(codelet_n1bv_64)),
+   SOLVTAB(X(codelet_n1bv_20)),
+   SOLVTAB(X(codelet_n1bv_25)),
    SOLVTAB(X(codelet_n2fv_2)),
    SOLVTAB(X(codelet_n2fv_4)),
    SOLVTAB(X(codelet_n2fv_6)),
@@ -170,6 +220,7 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_n2fv_16)),
    SOLVTAB(X(codelet_n2fv_32)),
    SOLVTAB(X(codelet_n2fv_64)),
+   SOLVTAB(X(codelet_n2fv_20)),
    SOLVTAB(X(codelet_n2bv_2)),
    SOLVTAB(X(codelet_n2bv_4)),
    SOLVTAB(X(codelet_n2bv_6)),
@@ -180,11 +231,21 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_n2bv_16)),
    SOLVTAB(X(codelet_n2bv_32)),
    SOLVTAB(X(codelet_n2bv_64)),
+   SOLVTAB(X(codelet_n2bv_20)),
    SOLVTAB(X(codelet_n2sv_4)),
    SOLVTAB(X(codelet_n2sv_8)),
    SOLVTAB(X(codelet_n2sv_16)),
    SOLVTAB(X(codelet_n2sv_32)),
    SOLVTAB(X(codelet_n2sv_64)),
+   SOLVTAB(X(codelet_t1fuv_2)),
+   SOLVTAB(X(codelet_t1fuv_3)),
+   SOLVTAB(X(codelet_t1fuv_4)),
+   SOLVTAB(X(codelet_t1fuv_5)),
+   SOLVTAB(X(codelet_t1fuv_6)),
+   SOLVTAB(X(codelet_t1fuv_7)),
+   SOLVTAB(X(codelet_t1fuv_8)),
+   SOLVTAB(X(codelet_t1fuv_9)),
+   SOLVTAB(X(codelet_t1fuv_10)),
    SOLVTAB(X(codelet_t1fv_2)),
    SOLVTAB(X(codelet_t1fv_3)),
    SOLVTAB(X(codelet_t1fv_4)),
@@ -199,16 +260,35 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_t1fv_16)),
    SOLVTAB(X(codelet_t1fv_32)),
    SOLVTAB(X(codelet_t1fv_64)),
+   SOLVTAB(X(codelet_t1fv_20)),
+   SOLVTAB(X(codelet_t1fv_25)),
    SOLVTAB(X(codelet_t2fv_2)),
    SOLVTAB(X(codelet_t2fv_4)),
    SOLVTAB(X(codelet_t2fv_8)),
    SOLVTAB(X(codelet_t2fv_16)),
    SOLVTAB(X(codelet_t2fv_32)),
    SOLVTAB(X(codelet_t2fv_64)),
+   SOLVTAB(X(codelet_t2fv_5)),
+   SOLVTAB(X(codelet_t2fv_10)),
+   SOLVTAB(X(codelet_t2fv_20)),
+   SOLVTAB(X(codelet_t2fv_25)),
    SOLVTAB(X(codelet_t3fv_4)),
    SOLVTAB(X(codelet_t3fv_8)),
    SOLVTAB(X(codelet_t3fv_16)),
    SOLVTAB(X(codelet_t3fv_32)),
+   SOLVTAB(X(codelet_t3fv_5)),
+   SOLVTAB(X(codelet_t3fv_10)),
+   SOLVTAB(X(codelet_t3fv_20)),
+   SOLVTAB(X(codelet_t3fv_25)),
+   SOLVTAB(X(codelet_t1buv_2)),
+   SOLVTAB(X(codelet_t1buv_3)),
+   SOLVTAB(X(codelet_t1buv_4)),
+   SOLVTAB(X(codelet_t1buv_5)),
+   SOLVTAB(X(codelet_t1buv_6)),
+   SOLVTAB(X(codelet_t1buv_7)),
+   SOLVTAB(X(codelet_t1buv_8)),
+   SOLVTAB(X(codelet_t1buv_9)),
+   SOLVTAB(X(codelet_t1buv_10)),
    SOLVTAB(X(codelet_t1bv_2)),
    SOLVTAB(X(codelet_t1bv_3)),
    SOLVTAB(X(codelet_t1bv_4)),
@@ -223,16 +303,26 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_t1bv_16)),
    SOLVTAB(X(codelet_t1bv_32)),
    SOLVTAB(X(codelet_t1bv_64)),
+   SOLVTAB(X(codelet_t1bv_20)),
+   SOLVTAB(X(codelet_t1bv_25)),
    SOLVTAB(X(codelet_t2bv_2)),
    SOLVTAB(X(codelet_t2bv_4)),
    SOLVTAB(X(codelet_t2bv_8)),
    SOLVTAB(X(codelet_t2bv_16)),
    SOLVTAB(X(codelet_t2bv_32)),
    SOLVTAB(X(codelet_t2bv_64)),
+   SOLVTAB(X(codelet_t2bv_5)),
+   SOLVTAB(X(codelet_t2bv_10)),
+   SOLVTAB(X(codelet_t2bv_20)),
+   SOLVTAB(X(codelet_t2bv_25)),
    SOLVTAB(X(codelet_t3bv_4)),
    SOLVTAB(X(codelet_t3bv_8)),
    SOLVTAB(X(codelet_t3bv_16)),
    SOLVTAB(X(codelet_t3bv_32)),
+   SOLVTAB(X(codelet_t3bv_5)),
+   SOLVTAB(X(codelet_t3bv_10)),
+   SOLVTAB(X(codelet_t3bv_20)),
+   SOLVTAB(X(codelet_t3bv_25)),
    SOLVTAB(X(codelet_t1sv_2)),
    SOLVTAB(X(codelet_t1sv_4)),
    SOLVTAB(X(codelet_t1sv_8)),
@@ -244,9 +334,11 @@ const solvtab X(solvtab_dft_simd) = {
    SOLVTAB(X(codelet_t2sv_32)),
    SOLVTAB(X(codelet_q1fv_2)),
    SOLVTAB(X(codelet_q1fv_4)),
+   SOLVTAB(X(codelet_q1fv_5)),
    SOLVTAB(X(codelet_q1fv_8)),
    SOLVTAB(X(codelet_q1bv_2)),
    SOLVTAB(X(codelet_q1bv_4)),
+   SOLVTAB(X(codelet_q1bv_5)),
    SOLVTAB(X(codelet_q1bv_8)),
    SOLVTAB_END
 };

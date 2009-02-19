@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>More DFTs of Real Data - FFTW 3.1.2</title>
+<title>More DFTs of Real Data - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Tutorial.html#Tutorial" title="Tutorial">
@@ -10,7 +10,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -77,14 +77,14 @@ r2r transforms share the same planner interface:
 
 <pre class="example">     fftw_plan fftw_plan_r2r_1d(int n, double *in, double *out,
                                 fftw_r2r_kind kind, unsigned flags);
-     fftw_plan fftw_plan_r2r_2d(int nx, int ny, double *in, double *out,
-                                fftw_r2r_kind kindx, fftw_r2r_kind kindy,
+     fftw_plan fftw_plan_r2r_2d(int n0, int n1, double *in, double *out,
+                                fftw_r2r_kind kind0, fftw_r2r_kind kind1,
                                 unsigned flags);
-     fftw_plan fftw_plan_r2r_3d(int nx, int ny, int nz,
+     fftw_plan fftw_plan_r2r_3d(int n0, int n1, int n2,
                                 double *in, double *out,
-                                fftw_r2r_kind kindx,
-                                fftw_r2r_kind kindy,
-                                fftw_r2r_kind kindz,
+                                fftw_r2r_kind kind0,
+                                fftw_r2r_kind kind1,
+                                fftw_r2r_kind kind2,
                                 unsigned flags);
      fftw_plan fftw_plan_r2r(int rank, const int *n, double *in, double *out,
                              const fftw_r2r_kind *kind, unsigned flags);

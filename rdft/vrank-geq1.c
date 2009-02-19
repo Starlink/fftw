@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: vrank-geq1.c,v 1.40 2006-01-27 02:10:50 athena Exp $ */
 
 
 /* Plans for handling vector transform loops.  These are *just* the
@@ -99,8 +98,7 @@ static int applicable0(const solver *ego_, const problem *p_, int *dp)
 	     && FINITE_RNK(p->vecsz->rnk)
 	     && p->vecsz->rnk > 0
 
-	     /* the rank-0 solver deals with the general case */
-	     && p->sz->rnk > 0
+	     && p->sz->rnk >= 0
 
 	     && pickdim(ego, p->vecsz, p->I != p->O, dp)
 	  );
@@ -118,8 +116,13 @@ static int applicable(const solver *ego_, const problem *p_,
      if (NO_VRANK_SPLITSP(plnr) && (ego->vecloop_dim != ego->buddies[0]))
 	  return 0;
 
+     p = (const problem_rdft *) p_;
+
      if (NO_UGLYP(plnr)) {
-	  p = (const problem_rdft *) p_;
+	  /* the rank-0 solver deals with the general case most of the
+	     time (an exception is loops of non-square transposes) */
+	  if (NO_SLOWP(plnr) && p->sz->rnk == 0)
+	       return 0;
 
 	  /* Heuristic: if the transform is multi-dimensional, and the
 	     vector stride is less than the transform size, then we
@@ -196,7 +199,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(int vecloop_dim, const int *buddies, int nbuddies)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->vecloop_dim = vecloop_dim;
      slv->buddies = buddies;

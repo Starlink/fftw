@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: dft.h,v 1.46 2006-01-05 03:04:26 stevenj Exp $ */
 
 #ifndef __DFT_H__
 #define __DFT_H__
@@ -35,9 +34,9 @@ typedef struct {
 
 void X(dft_zerotens)(tensor *sz, R *ri, R *ii);
 problem *X(mkproblem_dft)(const tensor *sz, const tensor *vecsz,
-                          R *ri, R *ii, R *ro, R *io);
+				R *ri, R *ii, R *ro, R *io);
 problem *X(mkproblem_dft_d)(tensor *sz, tensor *vecsz,
-                            R *ri, R *ii, R *ro, R *io);
+			    R *ri, R *ii, R *ro, R *io);
 
 /* solve.c: */
 void X(dft_solve)(const plan *ego_, const problem *p_);
@@ -76,5 +75,9 @@ void X(ct_genericbuf_register)(planner *p);
 
 /* configurations */
 void X(dft_conf_standard)(planner *p);
+
+#if HAVE_CELL
+  void X(dft_conf_cell)(planner *p);
+#endif
 
 #endif /* __DFT_H__ */

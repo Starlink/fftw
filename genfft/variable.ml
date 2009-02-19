@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: variable.ml,v 1.7 2006-01-05 03:04:27 stevenj Exp $ *)
 
 type variable = 
       (* temporary variables generated automatically *)
   | Temporary of int
       (* memory locations, e.g., array elements *)
-  | Locative of (Unique.unique * Unique.unique * (int -> string) * int)
+  | Locative of (Unique.unique * Unique.unique *
+		   (int -> string) * int * string)
       (* constant values, e.g., twiddle factors *)
   | Constant of (Unique.unique * string)
 
@@ -46,13 +46,13 @@ let is_locative = function
 
 let same_location a b = 
   match (a, b) with
-  | (Locative (location_a, _, _, _), Locative (location_b, _, _, _)) ->
+  | (Locative (location_a, _, _, _, _), Locative (location_b, _, _, _, _)) ->
       Unique.same location_a location_b
   | _ -> false
 
 let same_class a b = 
   match (a, b) with
-  | (Locative (_, class_a, _, _), Locative (_, class_b, _, _)) ->
+  | (Locative (_, class_a, _, _, _), Locative (_, class_b, _, _, _)) ->
       Unique.same class_a class_b
   | (Constant (class_a, _), Constant (class_b, _)) ->
       Unique.same class_a class_b
@@ -68,8 +68,12 @@ let make_temporary =
 let make_constant class_token name = 
   Constant (class_token, name)
 
-let make_locative location_token class_token name i =
-  Locative (location_token, class_token, name, i)
+let make_locative location_token class_token name i vs =
+  Locative (location_token, class_token, name, i, vs)
+
+let vstride_of_locative = function
+  | Locative (_, _, _, _, vs) -> vs
+  | _ -> failwith "vstride_of_locative"
 
 (* special naming conventions for variables *)
 let rec base62_of_int k = 
@@ -96,9 +100,9 @@ let varname_of_int k =
 let unparse = function
   | Temporary k -> "T" ^ (varname_of_int k)
   | Constant (_, name) -> name
-  | Locative (_, _, name, i) -> name i
+  | Locative (_, _, name, i, _) -> name i
 
 let unparse_for_alignment m = function
-  | Locative (_, _, name, i) -> name (i mod m)
+  | Locative (_, _, name, i, _) -> name (i mod m)
   | _ -> failwith "unparse_for_alignment"
 

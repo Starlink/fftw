@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: nop2.c,v 1.12 2006-01-05 03:04:27 stevenj Exp $ */
 
 /* plans for vrank -infty RDFT2s (nothing to do), as well as in-place
    rank-0 HC2R.  Note that in-place rank-0 R2HC is *not* a no-op, because
@@ -26,12 +25,13 @@
 
 #include "rdft.h"
 
-static void apply(const plan *ego_, R *r, R *rio, R *iio)
+static void apply(const plan *ego_, R *r0, R *r1, R *cr, R *ci)
 {
      UNUSED(ego_);
-     UNUSED(r);
-     UNUSED(rio);
-     UNUSED(iio);
+     UNUSED(r0);
+     UNUSED(r1);
+     UNUSED(cr);
+     UNUSED(ci);
 }
 
 static int applicable(const solver *ego_, const problem *p_)
@@ -43,12 +43,14 @@ static int applicable(const solver *ego_, const problem *p_)
 	    /* case 1 : -infty vector rank */
 	    || (p->vecsz->rnk == RNK_MINFTY)
 		 
-	    /* case 2 : rank-0 in-place HC2R rdft */
+	    /* case 2 : rank-0 in-place rdft, except that
+	       R2HC is not a no-op because it sets the imaginary
+	       part to 0 */
 	    || (1
-		&& p->kind == HC2R
+		&& p->kind != R2HC
 		&& p->sz->rnk == 0
 		&& FINITE_RNK(p->vecsz->rnk)
-		&& (p->r == p->rio || p->r == p->iio)
+		&& (p->r0 == p->cr)
 		&& X(rdft2_inplace_strides)(p, RNK_MINFTY)
 		 ));
 }
@@ -78,7 +80,7 @@ static plan *mkplan(const solver *ego, const problem *p, planner *plnr)
 
 static solver *mksolver(void)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan, 0 };
      return MKSOLVER(solver, &sadt);
 }
 

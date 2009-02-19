@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: c.ml,v 1.30 2006-02-12 23:34:12 athena Exp $ *)
 
 (*
  * This module contains the definition of a C-like abstract
@@ -349,6 +348,7 @@ let rec count_flops_expr_func (adds, mults, fmas) = function
   | Times (NaN MULTI_A,_)  -> (adds, mults, fmas)
   | Times (NaN MULTI_B,_)  -> (adds, mults, fmas)
   | Times (NaN I,b) -> count_flops_expr_func (adds, mults, fmas) b
+  | Times (NaN CONJ,b) -> count_flops_expr_func (adds, mults, fmas) b
   | Times (a,b) -> fold_left count_flops_expr_func (adds, mults+1, fmas) [a; b]
   | CTimes (a,b) -> 
       fold_left count_flops_expr_func (adds+1, mults+2, fmas) [a; b]
@@ -360,16 +360,20 @@ let rec count_flops_expr_func (adds, mults, fmas) = function
 let count_flops f = 
     fold_left count_flops_expr_func (0, 0, 0) (fcn_to_expr_list f)
 
+let count_constants f = 
+    length (unique_constants (flatten (map expr_to_constants (fcn_to_expr_list f))))
+
 let arith_complexity f =
   let (a, m, fmas) = count_flops f
   and v = count_stack_vars f
+  and c = count_constants f
   and mem = count_memory_acc f
-  in (a, m, fmas, v, mem)
+  in (a, m, fmas, v, c, mem)
 
 (* print the operation costs *)
 let print_cost f =
   let Fcn (_, _, _, _) = f 
-  and (a, m, fmas, v, mem) = arith_complexity f
+  and (a, m, fmas, v, c, mem) = arith_complexity f
   in
   "/*\n"^
   " * This function contains " ^
@@ -379,7 +383,8 @@ let print_cost f =
   (string_of_int a) ^ " additions, "  ^
   (string_of_int m) ^ " multiplications, " ^
   (string_of_int fmas) ^ " fused multiply/add),\n" ^
-  " * " ^ (string_of_int v) ^ " stack variables, and " ^
+  " * " ^ (string_of_int v) ^ " stack variables, " ^
+  (string_of_int c) ^ " constants, and " ^
   (string_of_int mem) ^ " memory accesses\n" ^
   " */\n"
 

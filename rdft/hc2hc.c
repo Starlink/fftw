@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,10 +36,10 @@ static void apply_dit(const plan *ego_, R *I, R *O)
      plan_hc2hc *cldw;
 
      cld = (plan_rdft *) ego->cld;
-     cld->apply((plan *) cld, I, O);
+     cld->apply(ego->cld, I, O);
 
      cldw = (plan_hc2hc *) ego->cldw;
-     cldw->apply((plan *) cldw, O);
+     cldw->apply(ego->cldw, O);
 }
 
 static void apply_dif(const plan *ego_, R *I, R *O)
@@ -49,10 +49,10 @@ static void apply_dif(const plan *ego_, R *I, R *O)
      plan_hc2hc *cldw;
 
      cldw = (plan_hc2hc *) ego->cldw;
-     cldw->apply((plan *) cldw, I);
+     cldw->apply(ego->cldw, I);
 
      cld = (plan_rdft *) ego->cld;
-     cld->apply((plan *) cld, I, O);
+     cld->apply(ego->cld, I, O);
 }
 
 static void awake(plan *ego_, enum wakefulness wakefulness)
@@ -107,10 +107,10 @@ int X(hc2hc_applicable)(const hc2hc_solver *ego, const problem *p_, planner *pln
 
      p = (const problem_rdft *) p_;
 
-     /* emulate fftw2 behavior */
-     if (NO_VRECURSEP(plnr) && (p->vecsz->rnk > 0))  return 0;
-
-     return 1;
+     return (0
+	     || p->vecsz->rnk == 0
+	     || !NO_VRECURSEP(plnr)
+	  );
 }
 
 static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
@@ -119,9 +119,8 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      const problem_rdft *p;
      P *pln = 0;
      plan *cld = 0, *cldw = 0;
-     INT n, r, m, vl, ivs, ovs;
+     INT n, r, m, v, ivs, ovs;
      iodim *d;
-     tensor *t1, *t2;
 
      static const plan_adt padt = {
 	  X(rdft_solve), awake, print, destroy
@@ -136,23 +135,21 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      r = X(choose_radix)(ego->r, n);
      m = n / r;
 
-     X(tensor_tornk1)(p->vecsz, &vl, &ivs, &ovs);
+     X(tensor_tornk1)(p->vecsz, &v, &ivs, &ovs);
 
      switch (p->kind[0]) {
 	 case R2HC:
 	      cldw = ego->mkcldw(ego, 
-				 R2HC, r, m, d[0].os, vl, ovs, 0, (m+2)/2, 
+				 R2HC, r, m, d[0].os, v, ovs, 0, (m+2)/2, 
 				 p->O, plnr);
 	      if (!cldw) goto nada;
-
-	      t1 = X(mktensor_1d)(r, d[0].is, m * d[0].os);
-	      t2 = X(tensor_append)(t1, p->vecsz);
-	      X(tensor_destroy)(t1);
 
 	      cld = X(mkplan_d)(plnr, 
 				X(mkproblem_rdft_d)(
 				     X(mktensor_1d)(m, r * d[0].is, d[0].os),
-				     t2, p->I, p->O, p->kind)
+				     X(mktensor_2d)(r, d[0].is, m * d[0].os,
+						    v, ivs, ovs),
+				     p->I, p->O, p->kind)
 		   );
 	      if (!cld) goto nada;
 
@@ -161,18 +158,16 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 	 case HC2R:
 	      cldw = ego->mkcldw(ego,
-				 HC2R, r, m, d[0].is, vl, ivs, 0, (m+2)/2, 
+				 HC2R, r, m, d[0].is, v, ivs, 0, (m+2)/2, 
 				 p->I, plnr);
 	      if (!cldw) goto nada;
-
-	      t1 = X(mktensor_1d)(r, m * d[0].is, d[0].os);
-	      t2 = X(tensor_append)(t1, p->vecsz);
-	      X(tensor_destroy)(t1);
 
 	      cld = X(mkplan_d)(plnr, 
 				X(mkproblem_rdft_d)(
 				     X(mktensor_1d)(m, d[0].is, r * d[0].os),
-				     t2, p->I, p->O, p->kind)
+				     X(mktensor_2d)(r, m * d[0].is, d[0].os,
+						    v, ivs, ovs),
+				     p->I, p->O, p->kind)
 		   );
 	      if (!cld) goto nada;
 	      
@@ -181,7 +176,6 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 	 default: 
 	      A(0);
-	      
      }
 
      pln->cld = cld;
@@ -202,7 +196,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 hc2hc_solver *X(mksolver_hc2hc)(size_t size, INT r, hc2hc_mkinferior mkcldw)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT, mkplan, 0 };
      hc2hc_solver *slv = (hc2hc_solver *)X(mksolver)(size, &sadt);
      slv->r = r;
      slv->mkcldw = mkcldw;

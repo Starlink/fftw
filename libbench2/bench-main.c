@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: bench-main.c,v 1.19 2006-02-25 04:13:49 stevenj Exp $ */
 
 #include "bench.h"
 #include "my-getopt.h"
@@ -69,6 +68,9 @@ int bench_main(int argc, char *argv[])
      verbose = 0;
 
      tol = SINGLE_PRECISION ? 1.0e-3 : 1.0e-10;
+
+     main_init(&argc, &argv);
+
      bench_srand(1);
 
      while ((c = my_getopt (argc, argv, options)) != -1) {
@@ -94,10 +96,12 @@ int bench_main(int argc, char *argv[])
 		   useropt(my_optarg);
 		   break;
 	      case 'v':
-		   if (my_optarg)
-			verbose = atoi(my_optarg);
-		   else
-			++verbose;
+		   if (verbose >= 0) { /* verbose < 0 disables output */
+			if (my_optarg)
+			     verbose = atoi(my_optarg);
+			else
+			     ++verbose;
+		   }
 		   break;
 	      case 'y':
 		   verify(my_optarg, rounds, tol);
@@ -112,7 +116,7 @@ int bench_main(int argc, char *argv[])
 		   report_info_all();
 		   break;
 	      case 'h':
-		   my_usage(argv[0], options);
+		   if (verbose >= 0) my_usage(argv[0], options);
 		   break;
 
 	      case 300: /* --report-mflops */

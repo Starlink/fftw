@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: direct.c,v 1.48 2006-01-05 03:04:26 stevenj Exp $ */
 
 /* direct DFT solver, if we have a codelet */
 
@@ -40,25 +39,24 @@ typedef struct {
      const S *slv;
 } P;
 
-static void dobatch(kdft k, 
-		    R *ri, R *ii, R *ro, R *io,
-		    INT n, stride is, stride os,
-		    INT vl, INT ivs, INT ovs, 
-		    R *buf, stride bufstride)
+static void dobatch(const P *ego, R *ri, R *ii, R *ro, R *io, 
+		    R *buf, INT batchsz)
 {
      X(cpy2d_pair_ci)(ri, ii, buf, buf+1,
-		      n, WS(is, 1), WS(bufstride, 1),
-		      vl, ivs, 2);
+		      ego->n, WS(ego->is, 1), WS(ego->bufstride, 1),
+		      batchsz, ego->ivs, 2);
      
-     if (IABS(WS(os, 1)) < IABS(ovs)) {
+     if (IABS(WS(ego->os, 1)) < IABS(ego->ovs)) {
 	  /* transform directly to output */
-	  k(buf, buf+1, ro, io, bufstride, os, vl, 2, ovs);
+	  ego->k(buf, buf+1, ro, io, 
+		 ego->bufstride, ego->os, batchsz, 2, ego->ovs);
      } else {
 	  /* transform to buffer and copy back */
-	  k(buf, buf+1, buf, buf+1, bufstride, bufstride, vl, 2, 2);
+	  ego->k(buf, buf+1, buf, buf+1, 
+		 ego->bufstride, ego->bufstride, batchsz, 2, 2);
 	  X(cpy2d_pair_co)(buf, buf+1, ro, io,
-			   n, WS(bufstride, 1), WS(os, 1), 
-			   vl, 2, ovs);
+			   ego->n, WS(ego->bufstride, 1), WS(ego->os, 1), 
+			   batchsz, 2, ego->ovs);
      }
 }
 
@@ -75,27 +73,17 @@ static void apply_buf(const plan *ego_, R *ri, R *ii, R *ro, R *io)
 {
      const P *ego = (const P *) ego_;
      R *buf;
-     INT vl = ego->vl;
-     INT n = ego->n;
+     INT vl = ego->vl, n = ego->n, batchsz = compute_batchsize(n);
      INT i;
-     INT batchsz = compute_batchsize(n);
 
      STACK_MALLOC(R *, buf, n * batchsz * 2 * sizeof(R));
 
      for (i = 0; i < vl - batchsz; i += batchsz) {
-	  dobatch(ego->k, ri, ii, ro, io,
-		  n, ego->is, ego->os,
-		  batchsz, ego->ivs, ego->ovs,
-		  buf, ego->bufstride);
-	  ri += batchsz * ego->ivs;
-	  ii += batchsz * ego->ivs;
-	  ro += batchsz * ego->ovs;
-	  io += batchsz * ego->ovs;
+	  dobatch(ego, ri, ii, ro, io, buf, batchsz);
+	  ri += batchsz * ego->ivs; ii += batchsz * ego->ivs;
+	  ro += batchsz * ego->ovs; io += batchsz * ego->ovs;
      }
-     dobatch(ego->k, ri, ii, ro, io,
-	     n, ego->is, ego->os,
-	     vl - i, ego->ivs, ego->ovs,
-	     buf, ego->bufstride);
+     dobatch(ego, ri, ii, ro, io, buf, vl - i);
 
      STACK_FREE(buf);
 }
@@ -105,6 +93,23 @@ static void apply(const plan *ego_, R *ri, R *ii, R *ro, R *io)
      const P *ego = (const P *) ego_;
      ASSERT_ALIGNED_DOUBLE;
      ego->k(ri, ii, ro, io, ego->is, ego->os, ego->vl, ego->ivs, ego->ovs);
+}
+
+static void apply_extra_iter(const plan *ego_, R *ri, R *ii, R *ro, R *io)
+{
+     const P *ego = (const P *) ego_;
+     INT vl = ego->vl;
+
+     ASSERT_ALIGNED_DOUBLE;
+
+     /* for 4-way SIMD when VL is odd: iterate over an
+	even vector length VL, and then execute the last
+	iteration as a 2-vector with vector stride 0. */
+     ego->k(ri, ii, ro, io, ego->is, ego->os, vl - 1, ego->ivs, ego->ovs);
+
+     ego->k(ri + (vl - 1) * ego->ivs, ii + (vl - 1) * ego->ivs,
+	    ro + (vl - 1) * ego->ovs, io + (vl - 1) * ego->ovs,
+	    ego->is, ego->os, 1, 0, 0);
 }
 
 static void destroy(plan *ego_)
@@ -164,17 +169,18 @@ static int applicable_buf(const solver *ego_, const problem *p_,
 	      /* can operate out-of-place */
 	      || p->ri != p->ro
 
-	      /* any in-place problem that fits in the buffer is ok */
-	      || vl <= batchsz
-
 	      /* can operate in-place as long as strides are the same */
-	      || (X(tensor_inplace_strides2)(p->sz, p->vecsz))
+	      || X(tensor_inplace_strides2)(p->sz, p->vecsz)
+
+	      /* can do it if the problem fits in the buffer, no matter
+		 what the strides are */
+	      || vl <= batchsz
 	       )
 	  );
 }
 
 static int applicable(const solver *ego_, const problem *p_,
-		      const planner *plnr)
+		      const planner *plnr, int *extra_iterp)
 {
      const S *ego = (const S *) ego_;
      const problem_dft *p = (const problem_dft *) p_;
@@ -191,22 +197,29 @@ static int applicable(const solver *ego_, const problem *p_,
 	  /* check strides etc */
 	  && X(tensor_tornk1)(p->vecsz, &vl, &ivs, &ovs)
 
-	  && (d->genus->okp(d, p->ri, p->ii, p->ro, p->io,
-			    p->sz->dims[0].is, p->sz->dims[0].os,
-			    vl, ivs, ovs, plnr))
+	  && ((*extra_iterp = 0,
+	       (d->genus->okp(d, p->ri, p->ii, p->ro, p->io,
+			      p->sz->dims[0].is, p->sz->dims[0].os,
+			      vl, ivs, ovs, plnr)))
+	      ||
+	      (*extra_iterp = 1,
+	       ((d->genus->okp(d, p->ri, p->ii, p->ro, p->io,
+			       p->sz->dims[0].is, p->sz->dims[0].os,
+			       vl - 1, ivs, ovs, plnr))
+		&&
+		(d->genus->okp(d, p->ri, p->ii, p->ro, p->io,
+			       p->sz->dims[0].is, p->sz->dims[0].os,
+			       2, 0, 0, plnr)))))
 
 	  && (0
 	      /* can operate out-of-place */
 	      || p->ri != p->ro
 
-	      /*
-	       * can compute one transform in-place, no matter
-	       * what the strides are.
-	       */
-	      || p->vecsz->rnk == 0
+	      /* can always compute one transform */
+	      || vl == 1
 
 	      /* can operate in-place as long as strides are the same */
-	      || (X(tensor_inplace_strides2)(p->sz, p->vecsz))
+	      || X(tensor_inplace_strides2)(p->sz, p->vecsz)
 	       )
 	  );
 }
@@ -229,17 +242,16 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      if (ego->bufferedp) {
 	  if (!applicable_buf(ego_, p_, plnr))
 	       return (plan *)0;
+	  pln = MKPLAN_DFT(P, &padt, apply_buf);
      } else {
-	  if (!applicable(ego_, p_, plnr))
+	  int extra_iterp = 0;
+	  if (!applicable(ego_, p_, plnr, &extra_iterp))
 	       return (plan *)0;
+	  pln = MKPLAN_DFT(P, &padt, extra_iterp ? apply_extra_iter : apply);
      }
 
      p = (const problem_dft *) p_;
-
-     pln = MKPLAN_DFT(P, &padt, ego->bufferedp ? apply_buf : apply);
-
      d = p->sz->dims;
-
      pln->k = ego->k;
      pln->n = d[0].n;
      pln->is = X(mkstride)(pln->n, d[0].is);
@@ -261,7 +273,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(kdft k, const kdft_desc *desc, int bufferedp)
 {
-     static const solver_adt sadt = { PROBLEM_DFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_DFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->k = k;
      slv->desc = desc;

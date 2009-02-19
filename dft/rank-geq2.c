@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: rank-geq2.c,v 1.43 2006-01-27 02:10:50 athena Exp $ */
 
 /* plans for DFT of rank >= 2 (multidimensional) */
 
@@ -108,6 +107,9 @@ static int applicable(const solver *ego_, const problem *p_,
 
      if (NO_RANK_SPLITSP(plnr) && (ego->spltrnk != ego->buddies[0])) return 0;
 
+     /* FIXME: this heuristic is broken on Cell, where vrank-geq1
+	is slow */
+#ifndef HAVE_CELL
      /* Heuristic: if the vector stride is greater than the transform
         sz, don't use (prefer to do the vector loop first with a
         vrank-geq1 plan). */
@@ -115,6 +117,9 @@ static int applicable(const solver *ego_, const problem *p_,
 	  if (p->vecsz->rnk > 0 &&
 	      X(tensor_min_stride)(p->vecsz) > X(tensor_max_index)(p->sz))
 	       return 0;
+#else
+     UNUSED(p);
+#endif
 
      return 1;
 }
@@ -174,7 +179,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(int spltrnk, const int *buddies, int nbuddies)
 {
-     static const solver_adt sadt = { PROBLEM_DFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_DFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->spltrnk = spltrnk;
      slv->buddies = buddies;

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,43 +47,50 @@ typedef __m128 V;
 #define VMUL _mm_mul_ps
 #define VXOR _mm_xor_ps
 #define SHUFPS _mm_shuffle_ps
-#define LOADH(addr, val) _mm_loadh_pi(val, (const __m64 *)(addr))
 #define STOREH(addr, val) _mm_storeh_pi((__m64 *)(addr), val)
 #define STOREL(addr, val) _mm_storel_pi((__m64 *)(addr), val)
 #define UNPCKH _mm_unpackhi_ps
 #define UNPCKL _mm_unpacklo_ps
 
 #ifdef __GNUC__
-#define DVK(var, val) const V var = __extension__ ({		\
+#  define DVK(var, val) const V var = __extension__ ({		\
      static const union fvec _var = { {val, val, val, val} };	\
      _var.v;							\
-})
-#define LDK(x) x
+   })
+#  define LDK(x) x
 
-/* we use inline asm because gcc generates slow code for
-   _mm_loadh_pi().  gcc insists upon having an existing variable for
-   VAL, which is however never used.  Thus, it generates code to move
-   values in and out the variable.  Worse still, gcc-4.0 stores VAL on
-   the stack, causing valgrind to complain about uninitialized reads.
-*/   
+  /* we use inline asm because gcc generates slow code for
+     _mm_loadh_pi().  gcc insists upon having an existing variable for
+     VAL, which is however never used.  Thus, it generates code to move
+     values in and out the variable.  Worse still, gcc-4.0 stores VAL on
+     the stack, causing valgrind to complain about uninitialized reads.
+  */   
 
-static inline V LOADL0(const R *addr, V val)
-{
-     V retval;
-     /* gcc-3.3 -O3 produces wrong code with the ``obvious'' coding
-
-          __asm__("movlps %1, %0" : "=x"(retval) : "m"(*addr));
-
-        So we are back to the uninitialized variable nonsense.  Grrr... 
-     */
-     __asm__("movlps %1, %0" : "=x"(retval) : "m"(*addr), "x"(val));
-     return retval;
-}
+  static inline V LD(const R *x, INT ivs, const R *aligned_like)
+  {
+       V var;
+       (void)aligned_like; /* UNUSED */
+       __asm__("movlps %1, %0\n\tmovhps %2, %0"
+	       : "=x"(var) : "m"(x[0]), "m"(x[ivs]));
+       return var;
+  }
 
 #else
-#define DVK(var, val) const R var = K(val)
-#define LDK(x) _mm_set_ps1(x)
-#define LOADL0(addr, val) _mm_loadl_pi(val, (const __m64 *)(addr))
+
+# define DVK(var, val) const R var = K(val)
+# define LDK(x) _mm_set_ps1(x)
+# define LOADH(addr, val) _mm_loadh_pi(val, (const __m64 *)(addr))
+# define LOADL0(addr, val) _mm_loadl_pi(val, (const __m64 *)(addr))
+
+  static inline V LD(const R *x, INT ivs, const R *aligned_like)
+  {
+       V var;
+       (void)aligned_like; /* UNUSED */
+       var = LOADL0(x, var);
+       var = LOADH(x + ivs, var);
+       return var;
+  }
+
 #endif
 
 union fvec {
@@ -104,15 +111,6 @@ union uvec {
    (((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | ((fp0)))
 
 
-static inline V LD(const R *x, INT ivs, const R *aligned_like)
-{
-     V var;
-     (void)aligned_like; /* UNUSED */
-     var = LOADL0(x, var);
-     var = LOADH(x + ivs, var);
-     return var;
-}
-
 static inline V LDA(const R *x, INT ivs, const R *aligned_like)
 {
      (void)aligned_like; /* UNUSED */
@@ -123,8 +121,10 @@ static inline V LDA(const R *x, INT ivs, const R *aligned_like)
 static inline void ST(R *x, V v, INT ovs, const R *aligned_like)
 {
      (void)aligned_like; /* UNUSED */
-     STOREL(x, v);
+     /* WARNING: the extra_iter hack depends upon STOREL occurring
+	after STOREH */
      STOREH(x + ovs, v);
+     STOREL(x, v);
 }
 
 static inline void STA(R *x, V v, INT ovs, const R *aligned_like)
@@ -203,15 +203,15 @@ static inline V FLIP_RI(V x)
      return SHUFPS(x, x, SHUFVAL(1, 0, 3, 2));
 }
 
-extern const union uvec X(sse_mpmp);
-static inline V CHS_R(V x)
+extern const union uvec X(sse_pmpm);
+static inline V VCONJ(V x)
 {
-     return VXOR(X(sse_mpmp).v, x);
+     return VXOR(X(sse_pmpm).v, x);
 }
 
 static inline V VBYI(V x)
 {
-     return CHS_R(FLIP_RI(x));
+     return FLIP_RI(VCONJ(x));
 }
 
 static inline V VZMUL(V tx, V sr)
@@ -232,11 +232,30 @@ static inline V VZMULJ(V tx, V sr)
      return VSUB(tr, VMUL(ti, sr));
 }
 
+static inline V VZMULI(V tx, V sr)
+{
+     V tr = SHUFPS(tx, tx, SHUFVAL(0, 0, 2, 2));
+     V ti = SHUFPS(tx, tx, SHUFVAL(1, 1, 3, 3));
+     ti = VMUL(ti, sr);
+     sr = VBYI(sr);
+     return VSUB(VMUL(tr, sr), ti);
+}
+
+static inline V VZMULIJ(V tx, V sr)
+{
+     V tr = SHUFPS(tx, tx, SHUFVAL(0, 0, 2, 2));
+     V ti = SHUFPS(tx, tx, SHUFVAL(1, 1, 3, 3));
+     ti = VMUL(ti, sr);
+     sr = VBYI(sr);
+     return VADD(VMUL(tr, sr), ti);
+}
+
 #define VFMAI(b, c) VADD(c, VBYI(b))
 #define VFNMSI(b, c) VSUB(c, VBYI(b))
 
 /* twiddle storage #1: compact, slower */
-#define VTW1(x) {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_SIN, 0, x}, {TW_SIN, 1, x}
+#define VTW1(v,x)  \
+  {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_SIN, v, x}, {TW_SIN, v+1, x}
 #define TWVL1 (VL)
 
 static inline V BYTW1(const R *t, V sr)
@@ -262,9 +281,9 @@ static inline V BYTWJ1(const R *t, V sr)
 }
 
 /* twiddle storage #2: twice the space, faster (when in cache) */
-#define VTW2(x)								\
-  {TW_COS, 0, x}, {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_COS, 1, x},	\
-  {TW_SIN, 0, -x}, {TW_SIN, 0, x}, {TW_SIN, 1, -x}, {TW_SIN, 1, x}
+#define VTW2(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_COS, v+1, x},	\
+  {TW_SIN, v, -x}, {TW_SIN, v, x}, {TW_SIN, v+1, -x}, {TW_SIN, v+1, x}
 #define TWVL2 (2 * VL)
 
 static inline V BYTW2(const R *t, V sr)
@@ -284,13 +303,13 @@ static inline V BYTWJ2(const R *t, V sr)
 }
 
 /* twiddle storage #3 */
-#define VTW3(x) {TW_CEXP, 0, x}, {TW_CEXP, 1, x}
+#define VTW3(v,x) {TW_CEXP, v, x}, {TW_CEXP, v+1, x}
 #define TWVL3 (VL)
 
 /* twiddle storage for split arrays */
-#define VTWS(x)								\
-  {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_COS, 2, x}, {TW_COS, 3, x},	\
-  {TW_SIN, 0, x}, {TW_SIN, 1, x}, {TW_SIN, 2, x}, {TW_SIN, 3, x}
+#define VTWS(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_COS, v+2, x}, {TW_COS, v+3, x},	\
+  {TW_SIN, v, x}, {TW_SIN, v+1, x}, {TW_SIN, v+2, x}, {TW_SIN, v+3, x}	
 #define TWVLS (2 * VL)
 
 #endif /* __SSE__ */

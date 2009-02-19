@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: bench.h,v 1.15 2006-02-25 02:25:48 athena Exp $ */
 
 /* benchmark program definitions */
 #include "bench-user.h"
@@ -27,8 +26,6 @@ extern double time_min;
 extern int time_repeat;
 
 extern void timer_init(double tmin, int repeat);
-extern void bench_fft8(const float *ri, const float *ii, float *ro, float *io,
-		       int is, int os);
 
 /* report functions */
 extern void (*report)(const bench_problem *p, double *t, int st);
@@ -56,6 +53,7 @@ extern void bench_srand(int seed);
 extern bench_problem *problem_parse(const char *desc);
 
 extern void ovtpvt(const char *format, ...);
+extern void ovtpvt_err(const char *format, ...);
 
 extern void fftaccuracy(int n, bench_complex *a, bench_complex *ffta,
 			int sign, double err[6]);

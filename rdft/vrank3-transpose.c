@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: vrank3-transpose.c,v 1.49 2006-01-27 02:10:50 athena Exp $ */
 
 /* rank-0, vector-rank-3, non-square in-place transposition
    (see rank0.c for square transposition)  */
@@ -271,7 +270,7 @@ static int mkcldrn_gcd(const problem_rdft *p, planner *plnr, P *ego)
 				  p->I, p->I));
      if (!ego->cld2)
 	  goto nada;
-     X(ops_add)(&ego->super.super.ops, &ego->cld2->ops, &ego->super.super.ops);
+     X(ops_add2)(&ego->cld2->ops, &ego->super.super.ops);
 
      if (m > 1) {
 	  ego->cld3 = X(mkplan_d)(plnr,
@@ -282,8 +281,7 @@ static int mkcldrn_gcd(const problem_rdft *p, planner *plnr, P *ego)
 				       TAINT(p->I, num_el), buf));
 	  if (!ego->cld3)
 	       goto nada;
-	  X(ops_madd)(d, &ego->cld3->ops, &ego->super.super.ops,
-		      &ego->super.super.ops);
+	  X(ops_madd2)(d, &ego->cld3->ops, &ego->super.super.ops);
 	  ego->super.super.ops.other += num_el * d * 2;
      }
 
@@ -436,9 +434,7 @@ static int mkcldrn_cut(const problem_rdft *p, planner *plnr, P *ego)
 				       p->I + mc*vl, buf));
 	  if (!ego->cld1)
 	       goto nada;
-	  X(ops_add)(&ego->super.super.ops, &ego->cld1->ops, 
-		     &ego->super.super.ops);
-
+	  X(ops_add2)(&ego->cld1->ops, &ego->super.super.ops);
      }
 
      ego->cld2 = X(mkplan_d)(plnr,
@@ -449,7 +445,7 @@ static int mkcldrn_cut(const problem_rdft *p, planner *plnr, P *ego)
 				  p->I, p->I));
      if (!ego->cld2)
 	  goto nada;
-     X(ops_add)(&ego->super.super.ops, &ego->cld2->ops, &ego->super.super.ops);
+     X(ops_add2)(&ego->cld2->ops, &ego->super.super.ops);
 
      if (n > nc) {
 	  ego->cld3 = X(mkplan_d)(plnr,
@@ -460,8 +456,7 @@ static int mkcldrn_cut(const problem_rdft *p, planner *plnr, P *ego)
 				       buf + (m-mc)*(nc*vl), p->I + nc*vl));
 	  if (!ego->cld3)
 	       goto nada;
-	  X(ops_add)(&ego->super.super.ops, &ego->cld3->ops, 
-		     &ego->super.super.ops);
+	  X(ops_add2)(&ego->cld3->ops, &ego->super.super.ops);
      }
 
      /* memcpy/memmove operations */
@@ -482,19 +477,20 @@ static const transpose_adt adt_cut =
      "rdft-transpose-cut"
 };
 
-#define USE_TOMS513 0 /* define to include obsoleted(?) TOMS algorithm */
-
-#if USE_TOMS513
-
 /*************************************************************************/
-/* In-place transpose routine from TOMS.  This routine is much slower
-   than e.g. the transpose-gcd algorithm above, but is has the advantage
-   of requiring less buffer space for the case of gcd(nx,ny) small. 
+/* In-place transpose routine from TOMS, which follows the cycles of
+   the permutation so that it writes to each location only once.
+   Because of cache-line and other issues, however, this routine is
+   typically much slower than transpose-gcd or transpose-cut, even
+   though the latter do some extra writes.  On the other hand, if the
+   vector length is large then the TOMS routine is best.
 
-   However, it has been superseded by the combination of the generalized
-   transpose-cut method with the transpose-gcd method, which can always
-   transpose with buffers a small fraction of the array size regardless
-   of gcd(nx,ny). */
+   The TOMS routine also has the advantage of requiring less buffer
+   space for the case of gcd(nx,ny) small.  However, in this case it
+   has been superseded by the combination of the generalized
+   transpose-cut method with the transpose-gcd method, which can
+   always transpose with buffers a small fraction of the array size
+   regardless of gcd(nx,ny). */
 
 /*
  * TOMS Transpose.  Algorithm 513 (Revised version of algorithm 380).
@@ -671,7 +667,7 @@ static int applicable_toms513(const problem_rdft *p, planner *plnr,
      *nbuf = 2*vl 
 	  + ((n + m) / 2 * sizeof(char) + sizeof(R) - 1) / sizeof(R);
      return (!NO_SLOWP(plnr)
-	     && !NO_UGLYP(plnr) /* UGLY compared to cut+gcd method(?) */
+	     && (vl > 8 || !NO_UGLYP(plnr)) /* UGLY for small vl */
 	     && n != m
 	     && Ntuple_transposable(p->vecsz->dims + dim0,
 				    p->vecsz->dims + dim1,
@@ -681,8 +677,8 @@ static int applicable_toms513(const problem_rdft *p, planner *plnr,
 static int mkcldrn_toms513(const problem_rdft *p, planner *plnr, P *ego)
 {
      UNUSED(p); UNUSED(plnr);
-     /* heuristic so that TOMS algorithm is last resort */
-     ego->super.super.ops.other += ego->n * ego->m * ego->vl * 2 * 20;
+     /* heuristic so that TOMS algorithm is last resort for small vl */
+     ego->super.super.ops.other += ego->n * ego->m * 2 * (ego->vl + 30);
      return 1;
 }
 
@@ -692,8 +688,6 @@ static const transpose_adt adt_toms513 =
      "rdft-transpose-toms513"
 };
 
-#endif /* USE_TOMS513 */
-
 /*-----------------------------------------------------------------------*/
 /*-----------------------------------------------------------------------*/
 /* generic stuff: */
@@ -701,9 +695,9 @@ static const transpose_adt adt_toms513 =
 static void awake(plan *ego_, enum wakefulness wakefulness)
 {
      P *ego = (P *) ego_;
-     if (ego->cld1) X(plan_awake)(ego->cld1, wakefulness);
-     if (ego->cld2) X(plan_awake)(ego->cld2, wakefulness);
-     if (ego->cld3) X(plan_awake)(ego->cld3, wakefulness);
+     X(plan_awake)(ego->cld1, wakefulness);
+     X(plan_awake)(ego->cld2, wakefulness);
+     X(plan_awake)(ego->cld3, wakefulness);
 }
 
 static void print(const plan *ego_, printer *p)
@@ -765,7 +759,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(const transpose_adt *adt)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->adt = adt;
      return &(slv->super);
@@ -776,9 +770,7 @@ void X(rdft_vrank3_transpose_register)(planner *p)
      unsigned i;
      static const transpose_adt *const adts[] = {
 	  &adt_gcd, &adt_cut,
-#if USE_TOMS513
 	  &adt_toms513
-#endif
      };
      for (i = 0; i < sizeof(adts) / sizeof(adts[0]); ++i)
           REGISTER_SOLVER(p, mksolver(adts[i]));

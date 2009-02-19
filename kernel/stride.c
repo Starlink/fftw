@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,9 @@
  *
  */
 
-/* $Id: stride.c,v 1.11 2006-01-05 03:04:27 stevenj Exp $ */
 #include "ifftw.h"
 
-const INT X(a_stride_guaranteed_to_be_zero) = 0;
+const INT X(an_INT_guaranteed_to_be_zero) = 0;
 
 #ifdef PRECOMPUTE_ARRAY_INDICES
 stride X(mkstride)(INT n, INT s)

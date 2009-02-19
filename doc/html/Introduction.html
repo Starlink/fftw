@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Introduction - FFTW 3.1.2</title>
+<title>Introduction - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="prev" href="index.html#Top" title="Top">
@@ -10,7 +10,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -55,7 +55,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
 
 <h2 class="chapter">1 Introduction</h2>
 
-<p>This manual documents version 3.1.2 of FFTW, the
+<p>This manual documents version 3.2.1 of FFTW, the
 <em>Fastest Fourier Transform in the West</em>.  FFTW is a comprehensive
 collection of fast C routines for computing the discrete Fourier
 transform (DFT) and various special cases thereof. 
@@ -72,12 +72,12 @@ transform (DFT) and various special cases thereof.
 
      <li>FFTW supports arbitrary multi-dimensional data.
 
-     <li>FFTW supports the SSE, SSE2, 3DNow!, and Altivec instruction
+     <li>FFTW supports the SSE, SSE2, Altivec, and MIPS PS instruction
        sets.
 
-     <li>FFTW 3.1.2 includes parallel (multi-threaded) transforms
+     <li>FFTW 3.2.1 includes parallel (multi-threaded) transforms
   for shared-memory systems. 
-  FFTW 3.1.2 does not include distributed-memory parallel
+  FFTW 3.2.1 does not include distributed-memory parallel
   transforms, but we plan to implement an MPI version soon.  (Meanwhile,
   you can use the MPI implementation from FFTW 2.1.3.) 
 </ul>
@@ -156,14 +156,11 @@ about.
 <a name="index-code-generator-10"></a><a name="index-codelet-11"></a>For example, if you need transforms of size
 513&nbsp;=&nbsp;19*3<sup>3</sup>,you can customize FFTW to support the factor 19 efficiently.
 
-   <p>For more information regarding FFTW, see the paper, &ldquo;FFTW: An
-adaptive software architecture for the FFT,&rdquo; by M. Frigo and
-S. G. Johnson, which appeared in the 23rd International Conference on
-Acoustics, Speech, and Signal Processing (<cite>Proc. ICASSP 1998</cite>
-<b>3</b>, p. 1381).  See also, &ldquo;The Fastest Fourier Transform in the
-West,&rdquo; by M. Frigo and S. G. Johnson, which is the technical report
-MIT-LCS-TR-728 (Sep. '97).  The code generator is described in the
-paper &ldquo;A fast Fourier transform compiler&rdquo;,
+   <p>For more information regarding FFTW, see the paper, &ldquo;The Design and
+Implementation of FFTW3,&rdquo; by M. Frigo and S. G. Johnson, which was an
+invited paper in <cite>Proc. IEEE</cite> <b>93</b> (2), p. 216 (2005).  The
+code generator is described in the paper &ldquo;A fast Fourier transform
+compiler&rdquo;,
 <a name="index-compiler-12"></a>by M. Frigo, in the <cite>Proceedings of the 1999 ACM SIGPLAN Conference
 on Programming Language Design and Implementation (PLDI), Atlanta,
 Georgia, May 1999</cite>.  These papers, along with the latest version of
@@ -187,11 +184,13 @@ chapter discusses <a href="Other-Important-Topics.html#Other-Important-Topics">O
 storing plans on disk (see <a href="Words-of-Wisdom_002dSaving-Plans.html#Words-of-Wisdom_002dSaving-Plans">Words of Wisdom-Saving Plans</a>).  Next,
 <a href="FFTW-Reference.html#FFTW-Reference">FFTW Reference</a> provides comprehensive documentation of all
 FFTW's features.  Parallel transforms are discussed in their own
-chapter <a href="Parallel-FFTW.html#Parallel-FFTW">Parallel FFTW</a>.  Fortran programmers can also use FFTW,
-as described in <a href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran">Calling FFTW from Fortran</a>.  <a href="Installation-and-Customization.html#Installation-and-Customization">Installation and Customization</a> explains how to install FFTW in your computer
-system and how to adapt FFTW to your needs.  License and copyright
-information is given in <a href="License-and-Copyright.html#License-and-Copyright">License and Copyright</a>.  Finally, we
-thank all the people who helped us in <a href="Acknowledgments.html#Acknowledgments">Acknowledgments</a>.
+chapters: <a href="Multi_002dthreaded-FFTW.html#Multi_002dthreaded-FFTW">Multi-threaded FFTW</a>.  Fortran programmers can also use
+FFTW, as described in <a href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran">Calling FFTW from Fortran</a>. 
+<a href="Installation-and-Customization.html#Installation-and-Customization">Installation and Customization</a> explains how to install FFTW in
+your computer system and how to adapt FFTW to your needs.  License and
+copyright information is given in <a href="License-and-Copyright.html#License-and-Copyright">License and Copyright</a>. 
+Finally, we thank all the people who helped us in
+<a href="Acknowledgments.html#Acknowledgments">Acknowledgments</a>.
 
 <!-- ************************************************************ -->
 </body></html>

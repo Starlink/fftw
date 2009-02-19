@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: useropt.c,v 1.3 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,5 +25,5 @@
 
 void useropt(const char *arg)
 {
-     fprintf(stderr, "unknown user option: %s.  Ignoring.\n", arg);
+     ovtpvt_err("unknown user option: %s.  Ignoring.\n", arg);
 }

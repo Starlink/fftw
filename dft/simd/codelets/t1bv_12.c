@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Jul  1 14:59:39 EDT 2006 */
+/* Generated on Mon Feb  9 19:53:07 EST 2009 */
 
 #include "codelet-dft.h"
 
@@ -30,41 +30,34 @@
 /*
  * This function contains 59 FP additions, 42 FP multiplications,
  * (or, 41 additions, 24 multiplications, 18 fused multiply/add),
- * 41 stack variables, and 24 memory accesses
+ * 41 stack variables, 2 constants, and 24 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t1b.h"
 
-static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1bv_12(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      DVK(KP866025403, +0.866025403784438646763723170752936183471402627);
      DVK(KP500000000, +0.500000000000000000000000000000000000000000000);
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(rs)) {
 	  V TI, Ti, TA, T7, Tm, TE, Tw, Tk, Tf, TB, TU, TM;
 	  {
 	       V T9, TK, Tj, TL, Te;
 	       {
 		    V T1, T4, T2, Tp, Tt, Tr;
-		    T1 = LD(&(x[0]), dist, &(x[0]));
-		    T4 = LD(&(x[WS(ios, 8)]), dist, &(x[0]));
-		    T2 = LD(&(x[WS(ios, 4)]), dist, &(x[0]));
-		    Tp = LD(&(x[WS(ios, 9)]), dist, &(x[WS(ios, 1)]));
-		    Tt = LD(&(x[WS(ios, 5)]), dist, &(x[WS(ios, 1)]));
-		    Tr = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+		    T1 = LD(&(x[0]), ms, &(x[0]));
+		    T4 = LD(&(x[WS(rs, 8)]), ms, &(x[0]));
+		    T2 = LD(&(x[WS(rs, 4)]), ms, &(x[0]));
+		    Tp = LD(&(x[WS(rs, 9)]), ms, &(x[WS(rs, 1)]));
+		    Tt = LD(&(x[WS(rs, 5)]), ms, &(x[WS(rs, 1)]));
+		    Tr = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 		    {
 			 V T5, T3, Tq, Tu, Ts, Td, Tb, T8, Tc, Ta;
-			 T8 = LD(&(x[WS(ios, 6)]), dist, &(x[0]));
-			 Tc = LD(&(x[WS(ios, 2)]), dist, &(x[0]));
-			 Ta = LD(&(x[WS(ios, 10)]), dist, &(x[0]));
+			 T8 = LD(&(x[WS(rs, 6)]), ms, &(x[0]));
+			 Tc = LD(&(x[WS(rs, 2)]), ms, &(x[0]));
+			 Ta = LD(&(x[WS(rs, 10)]), ms, &(x[0]));
 			 T5 = BYTW(&(W[TWVL * 14]), T4);
 			 T3 = BYTW(&(W[TWVL * 6]), T2);
 			 Tq = BYTW(&(W[TWVL * 16]), Tp);
@@ -75,13 +68,13 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 			 Tb = BYTW(&(W[TWVL * 18]), Ta);
 			 {
 			      V Th, T6, Tl, Tv;
-			      Th = LD(&(x[WS(ios, 3)]), dist, &(x[WS(ios, 1)]));
+			      Th = LD(&(x[WS(rs, 3)]), ms, &(x[WS(rs, 1)]));
 			      TK = VSUB(T3, T5);
 			      T6 = VADD(T3, T5);
-			      Tl = LD(&(x[WS(ios, 11)]), dist, &(x[WS(ios, 1)]));
+			      Tl = LD(&(x[WS(rs, 11)]), ms, &(x[WS(rs, 1)]));
 			      Tv = VADD(Ts, Tu);
 			      TI = VSUB(Tu, Ts);
-			      Tj = LD(&(x[WS(ios, 7)]), dist, &(x[WS(ios, 1)]));
+			      Tj = LD(&(x[WS(rs, 7)]), ms, &(x[WS(rs, 1)]));
 			      TL = VSUB(Tb, Td);
 			      Te = VADD(Tb, Td);
 			      Ti = BYTW(&(W[TWVL * 4]), Th);
@@ -125,42 +118,41 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 			      TN = VMUL(LDK(KP866025403), VSUB(TJ, TM));
 			      TW = VFMA(LDK(KP866025403), TR, TQ);
 			      TS = VFNMS(LDK(KP866025403), TR, TQ);
-			      ST(&(x[WS(ios, 6)]), VSUB(Ty, Tz), dist, &(x[0]));
-			      ST(&(x[0]), VADD(Ty, Tz), dist, &(x[0]));
-			      ST(&(x[WS(ios, 9)]), VFMAI(Tx, Tg), dist, &(x[WS(ios, 1)]));
-			      ST(&(x[WS(ios, 3)]), VFNMSI(Tx, Tg), dist, &(x[WS(ios, 1)]));
+			      ST(&(x[WS(rs, 6)]), VSUB(Ty, Tz), ms, &(x[0]));
+			      ST(&(x[0]), VADD(Ty, Tz), ms, &(x[0]));
+			      ST(&(x[WS(rs, 9)]), VFMAI(Tx, Tg), ms, &(x[WS(rs, 1)]));
+			      ST(&(x[WS(rs, 3)]), VFNMSI(Tx, Tg), ms, &(x[WS(rs, 1)]));
 			      TO = VADD(TC, TF);
 			      TG = VSUB(TC, TF);
 			      TX = VFNMS(LDK(KP866025403), TU, TT);
 			      TV = VFMA(LDK(KP866025403), TU, TT);
 			 }
-			 ST(&(x[WS(ios, 8)]), VFNMSI(TP, TO), dist, &(x[0]));
-			 ST(&(x[WS(ios, 4)]), VFMAI(TP, TO), dist, &(x[0]));
-			 ST(&(x[WS(ios, 2)]), VFMAI(TN, TG), dist, &(x[0]));
-			 ST(&(x[WS(ios, 10)]), VFNMSI(TN, TG), dist, &(x[0]));
-			 ST(&(x[WS(ios, 5)]), VFMAI(TX, TW), dist, &(x[WS(ios, 1)]));
-			 ST(&(x[WS(ios, 7)]), VFNMSI(TX, TW), dist, &(x[WS(ios, 1)]));
-			 ST(&(x[WS(ios, 11)]), VFNMSI(TV, TS), dist, &(x[WS(ios, 1)]));
-			 ST(&(x[WS(ios, 1)]), VFMAI(TV, TS), dist, &(x[WS(ios, 1)]));
+			 ST(&(x[WS(rs, 8)]), VFNMSI(TP, TO), ms, &(x[0]));
+			 ST(&(x[WS(rs, 4)]), VFMAI(TP, TO), ms, &(x[0]));
+			 ST(&(x[WS(rs, 2)]), VFMAI(TN, TG), ms, &(x[0]));
+			 ST(&(x[WS(rs, 10)]), VFNMSI(TN, TG), ms, &(x[0]));
+			 ST(&(x[WS(rs, 5)]), VFMAI(TX, TW), ms, &(x[WS(rs, 1)]));
+			 ST(&(x[WS(rs, 7)]), VFNMSI(TX, TW), ms, &(x[WS(rs, 1)]));
+			 ST(&(x[WS(rs, 11)]), VFNMSI(TV, TS), ms, &(x[WS(rs, 1)]));
+			 ST(&(x[WS(rs, 1)]), VFMAI(TV, TS), ms, &(x[WS(rs, 1)]));
 		    }
 	       }
 	  }
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(2),
-     VTW(3),
-     VTW(4),
-     VTW(5),
-     VTW(6),
-     VTW(7),
-     VTW(8),
-     VTW(9),
-     VTW(10),
-     VTW(11),
+     VTW(0, 1),
+     VTW(0, 2),
+     VTW(0, 3),
+     VTW(0, 4),
+     VTW(0, 5),
+     VTW(0, 6),
+     VTW(0, 7),
+     VTW(0, 8),
+     VTW(0, 9),
+     VTW(0, 10),
+     VTW(0, 11),
      {TW_NEXT, VL, 0}
 };
 
@@ -176,33 +168,26 @@ void X(codelet_t1bv_12) (planner *p) {
 /*
  * This function contains 59 FP additions, 30 FP multiplications,
  * (or, 55 additions, 26 multiplications, 4 fused multiply/add),
- * 28 stack variables, and 24 memory accesses
+ * 28 stack variables, 2 constants, and 24 memory accesses
  */
-/*
- * Generator Id's : 
- * $Id: algsimp.ml,v 1.9 2006-02-12 23:34:12 athena Exp $
- * $Id: fft.ml,v 1.4 2006-01-05 03:04:27 stevenj Exp $
- * $Id: gen_twiddle_c.ml,v 1.14 2006-02-12 23:34:12 athena Exp $
- */
-
 #include "t1b.h"
 
-static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
+static void t1bv_12(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      DVK(KP866025403, +0.866025403784438646763723170752936183471402627);
      DVK(KP500000000, +0.500000000000000000000000000000000000000000000);
-     INT i;
+     INT m;
      R *x;
      x = ii;
-     for (i = m; i > 0; i = i - VL, x = x + (VL * dist), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(ios)) {
+     for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(rs)) {
 	  V T1, Tt, T6, T7, TB, Tq, TC, TD, T9, Tu, Te, Tf, Tx, Tl, Ty;
 	  V Tz;
 	  {
 	       V T5, T3, T4, T2;
-	       T1 = LD(&(x[0]), dist, &(x[0]));
-	       T4 = LD(&(x[WS(ios, 8)]), dist, &(x[0]));
+	       T1 = LD(&(x[0]), ms, &(x[0]));
+	       T4 = LD(&(x[WS(rs, 8)]), ms, &(x[0]));
 	       T5 = BYTW(&(W[TWVL * 14]), T4);
-	       T2 = LD(&(x[WS(ios, 4)]), dist, &(x[0]));
+	       T2 = LD(&(x[WS(rs, 4)]), ms, &(x[0]));
 	       T3 = BYTW(&(W[TWVL * 6]), T2);
 	       Tt = VSUB(T3, T5);
 	       T6 = VADD(T3, T5);
@@ -210,11 +195,11 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	  }
 	  {
 	       V Tn, Tp, Tm, TA, To;
-	       Tm = LD(&(x[WS(ios, 1)]), dist, &(x[WS(ios, 1)]));
+	       Tm = LD(&(x[WS(rs, 1)]), ms, &(x[WS(rs, 1)]));
 	       Tn = BYTW(&(W[0]), Tm);
-	       TA = LD(&(x[WS(ios, 9)]), dist, &(x[WS(ios, 1)]));
+	       TA = LD(&(x[WS(rs, 9)]), ms, &(x[WS(rs, 1)]));
 	       TB = BYTW(&(W[TWVL * 16]), TA);
-	       To = LD(&(x[WS(ios, 5)]), dist, &(x[WS(ios, 1)]));
+	       To = LD(&(x[WS(rs, 5)]), ms, &(x[WS(rs, 1)]));
 	       Tp = BYTW(&(W[TWVL * 8]), To);
 	       Tq = VSUB(Tn, Tp);
 	       TC = VADD(Tn, Tp);
@@ -222,11 +207,11 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	  }
 	  {
 	       V Td, Tb, T8, Tc, Ta;
-	       T8 = LD(&(x[WS(ios, 6)]), dist, &(x[0]));
+	       T8 = LD(&(x[WS(rs, 6)]), ms, &(x[0]));
 	       T9 = BYTW(&(W[TWVL * 10]), T8);
-	       Tc = LD(&(x[WS(ios, 2)]), dist, &(x[0]));
+	       Tc = LD(&(x[WS(rs, 2)]), ms, &(x[0]));
 	       Td = BYTW(&(W[TWVL * 2]), Tc);
-	       Ta = LD(&(x[WS(ios, 10)]), dist, &(x[0]));
+	       Ta = LD(&(x[WS(rs, 10)]), ms, &(x[0]));
 	       Tb = BYTW(&(W[TWVL * 18]), Ta);
 	       Tu = VSUB(Tb, Td);
 	       Te = VADD(Tb, Td);
@@ -234,11 +219,11 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 	  }
 	  {
 	       V Ti, Tk, Th, Tw, Tj;
-	       Th = LD(&(x[WS(ios, 7)]), dist, &(x[WS(ios, 1)]));
+	       Th = LD(&(x[WS(rs, 7)]), ms, &(x[WS(rs, 1)]));
 	       Ti = BYTW(&(W[TWVL * 12]), Th);
-	       Tw = LD(&(x[WS(ios, 3)]), dist, &(x[WS(ios, 1)]));
+	       Tw = LD(&(x[WS(rs, 3)]), ms, &(x[WS(rs, 1)]));
 	       Tx = BYTW(&(W[TWVL * 4]), Tw);
-	       Tj = LD(&(x[WS(ios, 11)]), dist, &(x[WS(ios, 1)]));
+	       Tj = LD(&(x[WS(rs, 11)]), ms, &(x[WS(rs, 1)]));
 	       Tk = BYTW(&(W[TWVL * 20]), Tj);
 	       Tl = VSUB(Ti, Tk);
 	       Ty = VADD(Ti, Tk);
@@ -257,10 +242,10 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    TF = VBYI(VADD(Tv, TE));
 		    TH = VBYI(VSUB(TE, Tv));
 	       }
-	       ST(&(x[WS(ios, 11)]), VSUB(Ts, TF), dist, &(x[WS(ios, 1)]));
-	       ST(&(x[WS(ios, 5)]), VADD(TG, TH), dist, &(x[WS(ios, 1)]));
-	       ST(&(x[WS(ios, 1)]), VADD(Ts, TF), dist, &(x[WS(ios, 1)]));
-	       ST(&(x[WS(ios, 7)]), VSUB(TG, TH), dist, &(x[WS(ios, 1)]));
+	       ST(&(x[WS(rs, 11)]), VSUB(Ts, TF), ms, &(x[WS(rs, 1)]));
+	       ST(&(x[WS(rs, 5)]), VADD(TG, TH), ms, &(x[WS(rs, 1)]));
+	       ST(&(x[WS(rs, 1)]), VADD(Ts, TF), ms, &(x[WS(rs, 1)]));
+	       ST(&(x[WS(rs, 7)]), VSUB(TG, TH), ms, &(x[WS(rs, 1)]));
 	  }
 	  {
 	       V TS, TW, TV, TX;
@@ -275,10 +260,10 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    TV = VBYI(VSUB(TT, TU));
 		    TX = VADD(TT, TU);
 	       }
-	       ST(&(x[WS(ios, 3)]), VSUB(TS, TV), dist, &(x[WS(ios, 1)]));
-	       ST(&(x[0]), VADD(TW, TX), dist, &(x[0]));
-	       ST(&(x[WS(ios, 9)]), VADD(TS, TV), dist, &(x[WS(ios, 1)]));
-	       ST(&(x[WS(ios, 6)]), VSUB(TW, TX), dist, &(x[0]));
+	       ST(&(x[WS(rs, 3)]), VSUB(TS, TV), ms, &(x[WS(rs, 1)]));
+	       ST(&(x[0]), VADD(TW, TX), ms, &(x[0]));
+	       ST(&(x[WS(rs, 9)]), VADD(TS, TV), ms, &(x[WS(rs, 1)]));
+	       ST(&(x[WS(rs, 6)]), VSUB(TW, TX), ms, &(x[0]));
 	  }
 	  {
 	       V TK, TO, TN, TP;
@@ -293,27 +278,26 @@ static const R *t1bv_12(R *ri, R *ii, const R *W, stride ios, INT m, INT dist)
 		    TN = VSUB(TL, TM);
 		    TP = VADD(TL, TM);
 	       }
-	       ST(&(x[WS(ios, 2)]), VADD(TK, TN), dist, &(x[0]));
-	       ST(&(x[WS(ios, 8)]), VSUB(TP, TO), dist, &(x[0]));
-	       ST(&(x[WS(ios, 10)]), VSUB(TN, TK), dist, &(x[0]));
-	       ST(&(x[WS(ios, 4)]), VADD(TO, TP), dist, &(x[0]));
+	       ST(&(x[WS(rs, 2)]), VADD(TK, TN), ms, &(x[0]));
+	       ST(&(x[WS(rs, 8)]), VSUB(TP, TO), ms, &(x[0]));
+	       ST(&(x[WS(rs, 10)]), VSUB(TN, TK), ms, &(x[0]));
+	       ST(&(x[WS(rs, 4)]), VADD(TO, TP), ms, &(x[0]));
 	  }
      }
-     return W;
 }
 
 static const tw_instr twinstr[] = {
-     VTW(1),
-     VTW(2),
-     VTW(3),
-     VTW(4),
-     VTW(5),
-     VTW(6),
-     VTW(7),
-     VTW(8),
-     VTW(9),
-     VTW(10),
-     VTW(11),
+     VTW(0, 1),
+     VTW(0, 2),
+     VTW(0, 3),
+     VTW(0, 4),
+     VTW(0, 5),
+     VTW(0, 6),
+     VTW(0, 7),
+     VTW(0, 8),
+     VTW(0, 9),
+     VTW(0, 10),
+     VTW(0, 11),
      {TW_NEXT, VL, 0}
 };
 

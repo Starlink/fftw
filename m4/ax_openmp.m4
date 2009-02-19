@@ -4,7 +4,7 @@ dnl @category InstalledPackages
 dnl
 dnl This macro tries to find out how to compile programs that
 dnl use OpenMP, a standard API and set of compiler directives for
-dnl parallel programming (see http://www-unix.mcs/).
+dnl parallel programming (see http://www.openmp.org/).
 dnl
 dnl On success, it sets the OPENMP_CFLAGS/OPENMP_CXXFLAGS/OPENMP_FFLAGS
 dnl output variable to the flag (e.g. -omp) used both to compile *and* link
@@ -29,7 +29,7 @@ dnl flag is found, and ACTION-IF-NOT-FOUND is a list of commands
 dnl to run it if it is not found.  If ACTION-IF-FOUND is not specified,
 dnl the default action will define HAVE_OPENMP.
 dnl
-dnl @version 2006-01-24
+dnl @version 2006-11-20
 dnl @license GPLWithACException
 dnl @author Steven G. Johnson <stevenj@alum.mit.edu>
 
@@ -62,4 +62,5 @@ else
   fi
   m4_default([$1], [AC_DEFINE(HAVE_OPENMP,1,[Define if OpenMP is enabled])])
 fi
+AC_SUBST(OPENMP_[]_AC_LANG_PREFIX[]FLAGS)
 ])dnl AX_OPENMP

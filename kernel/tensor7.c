@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: tensor7.c,v 1.10 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "ifftw.h"
 
@@ -85,8 +84,7 @@ tensor *X(tensor_compress)(const tensor *sz)
                x->dims[rnk++] = sz->dims[i];
      }
 
-     if (rnk) {
-	  /* God knows how qsort() behaves if n==0 */
+     if (rnk > 1) {
 	  qsort(x->dims, (size_t)x->rnk, sizeof(iodim),
 		(int (*)(const void *, const void *))X(dimcmp));
      }
@@ -147,4 +145,42 @@ void X(tensor_split)(const tensor *sz, tensor **a, int arnk, tensor **b)
 
      *a = X(tensor_copy_sub)(sz, 0, arnk);
      *b = X(tensor_copy_sub)(sz, arnk, sz->rnk - arnk);
+}
+
+/* TRUE if the two tensors are equal */
+int X(tensor_equal)(const tensor *a, const tensor *b)
+{
+     if (a->rnk != b->rnk)
+	  return 0;
+
+     if (FINITE_RNK(a->rnk)) {
+	  int i;
+	  for (i = 0; i < a->rnk; ++i) 
+	       if (0
+		   || a->dims[i].n != b->dims[i].n
+		   || a->dims[i].is != b->dims[i].is
+		   || a->dims[i].os != b->dims[i].os
+		    )
+		    return 0;
+     }
+
+     return 1;
+}
+
+/* TRUE if the sets of input and output locations described by
+   (append sz vecsz) are the same */
+int X(tensor_inplace_locations)(const tensor *sz, const tensor *vecsz)
+{
+     tensor *t = X(tensor_append)(sz, vecsz);
+     tensor *ti = X(tensor_copy_inplace)(t, INPLACE_IS);
+     tensor *to = X(tensor_copy_inplace)(t, INPLACE_OS);
+     tensor *tic = X(tensor_compress_contiguous)(ti);
+     tensor *toc = X(tensor_compress_contiguous)(to);
+
+     int retval = X(tensor_equal)(tic, toc);
+
+     X(tensor_destroy)(t);
+     X(tensor_destroy4)(ti, to, tic, toc);
+
+     return retval;
 }

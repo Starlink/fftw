@@ -38,9 +38,8 @@ extern int posix_memalign(void **, size_t, size_t);
 
 void bench_assertion_failed(const char *s, int line, const char *file)
 {
-     fflush(stdout);
-     fprintf(stderr, "bench: %s:%d: assertion failed: %s\n", file, line, s);
-     exit(EXIT_FAILURE);
+     ovtpvt_err("bench: %s:%d: assertion failed: %s\n", file, line, s);
+     bench_exit(EXIT_FAILURE);
 }
 
 #ifdef HAVE_DRAND48
@@ -172,7 +171,7 @@ void bench_free(void *p)
  **********************************************************/
 /* production version, no hacks */
 
-#define MIN_ALIGNMENT 16    /* must be power of two */
+#define MIN_ALIGNMENT 128    /* must be power of two */
 
 #define real_free free /* memalign and malloc use ordinary free */
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: vrank-geq1-rdft2.c,v 1.43 2006-01-27 02:10:50 athena Exp $ */
 
 
 /* Plans for handling vector transform loops.  These are *just* the
@@ -49,19 +48,20 @@ typedef struct {
 
      plan *cld;
      INT vl;
-     INT ivs, ovs;
+     INT rvs, cvs;
      const S *solver;
 } P;
 
-static void apply(const plan *ego_, R *r, R *rio, R *iio)
+static void apply(const plan *ego_, R *r0, R *r1, R *cr, R *ci)
 {
      const P *ego = (const P *) ego_;
      INT i, vl = ego->vl;
-     INT ivs = ego->ivs, ovs = ego->ovs;
+     INT rvs = ego->rvs, cvs = ego->cvs;
      rdft2apply cldapply = ((plan_rdft2 *) ego->cld)->apply;
 
      for (i = 0; i < vl; ++i) {
-          cldapply(ego->cld, r + i * ivs, rio + i * ovs, iio + i * ovs);
+          cldapply(ego->cld, r0 + i * rvs, r1 + i * rvs,
+		   cr + i * cvs, ci + i * cvs);
      }
 }
 
@@ -97,9 +97,8 @@ static int applicable0(const solver *ego_, const problem *p_, int *dp)
      const problem_rdft2 *p = (const problem_rdft2 *) p_;
      if (FINITE_RNK(p->vecsz->rnk)
 	 && p->vecsz->rnk > 0
-	 && pickdim(ego, p->vecsz, 
-		    p->r != p->rio && p->r != p->iio, dp)) {
-	  if (p->r != p->rio && p->r != p->iio)
+	 && pickdim(ego, p->vecsz, p->r0 != p->cr, dp)) {
+	  if (p->r0 != p->cr)
 	       return 1;  /* can always operate out-of-place */
 
 	  return(X(rdft2_inplace_strides)(p, *dp));
@@ -113,7 +112,6 @@ static int applicable(const solver *ego_, const problem *p_,
 		      const planner *plnr, int *dp)
 {
      const S *ego = (const S *)ego_;
-
      if (!applicable0(ego_, p_, dp)) return 0;
 
      /* fftw2 behavior */
@@ -154,7 +152,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      plan *cld;
      int vdim;
      iodim *d;
-     INT ivs, ovs;
+     INT rvs, cvs;
 
      static const plan_adt padt = {
 	  X(rdft2_solve), awake, print, destroy
@@ -168,14 +166,14 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
      A(d->n > 1);  /* or else, p->ri + d->is etc. are invalid */
 
-     X(rdft2_strides)(p->kind, d, &ivs, &ovs);
+     X(rdft2_strides)(p->kind, d, &rvs, &cvs);
 
      cld = X(mkplan_d)(plnr, 
 		       X(mkproblem_rdft2_d)(
 			    X(tensor_copy)(p->sz),
 			    X(tensor_copy_except)(p->vecsz, vdim),
-			    TAINT(p->r, ivs), 
-			    TAINT(p->rio, ovs), TAINT(p->iio, ovs),
+			    TAINT(p->r0, rvs), TAINT(p->r1, rvs), 
+			    TAINT(p->cr, cvs), TAINT(p->ci, cvs),
 			    p->kind));
      if (!cld) return (plan *) 0;
 
@@ -183,8 +181,8 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
      pln->cld = cld;
      pln->vl = d->n;
-     pln->ivs = ivs;
-     pln->ovs = ovs;
+     pln->rvs = rvs;
+     pln->cvs = cvs;
 
      pln->solver = ego;
      X(ops_zero)(&pln->super.super.ops);
@@ -199,7 +197,7 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 
 static solver *mksolver(int vecloop_dim, const int *buddies, int nbuddies)
 {
-     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan };
+     static const solver_adt sadt = { PROBLEM_RDFT2, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
      slv->vecloop_dim = vecloop_dim;
      slv->buddies = buddies;

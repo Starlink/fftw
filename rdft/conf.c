@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: conf.c,v 1.28 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "rdft.h"
 
@@ -45,7 +44,7 @@ static const solvtab s =
      SOLVTAB(X(rdft2_rank0_register)),
      SOLVTAB(X(rdft2_buffered_register)),
      SOLVTAB(X(rdft2_rank_geq2_register)),
-     SOLVTAB(X(rdft2_radix2_register)),
+     SOLVTAB(X(rdft2_rdft_register)),
 
      SOLVTAB(X(hc2hc_generic_register)),
 
@@ -55,7 +54,11 @@ static const solvtab s =
 void X(rdft_conf_standard)(planner *p)
 {
      X(solvtab_exec)(s, p);
-     X(solvtab_exec)(X(solvtab_rdft_r2hc), p);
-     X(solvtab_exec)(X(solvtab_rdft_hc2r), p);
+     X(solvtab_exec)(X(solvtab_rdft_r2cf), p);
+     X(solvtab_exec)(X(solvtab_rdft_r2cb), p);
      X(solvtab_exec)(X(solvtab_rdft_r2r), p);
+
+#if HAVE_SIMD
+     X(solvtab_exec)(X(solvtab_rdft_simd), p);
+#endif
 }

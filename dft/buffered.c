@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,32 +18,23 @@
  *
  */
 
-/* $Id: buffered.c,v 1.59 2006-01-27 02:10:50 athena Exp $ */
 
 #include "dft.h"
 
 typedef struct {
-     INT nbuf;
-     INT maxbufsz;
-     INT skew_alignment;
-     INT skew;
-     const char *nam;
-} bufadt;
-
-typedef struct {
      solver super;
-     const bufadt *adt;
+     int maxnbuf_ndx;
 } S;
+
+static const INT maxnbufs[] = { 8, 256 };
 
 typedef struct {
      plan_dft super;
 
      plan *cld, *cldcpy, *cldrest;
      INT n, vl, nbuf, bufdist;
-     INT ivs, ovs;
+     INT ivs_by_nbuf, ovs_by_nbuf;
      INT roffset, ioffset;
-
-     const S *slv;
 } P;
 
 /* transform a vector input with the help of bufs */
@@ -57,24 +48,24 @@ static void apply(const plan *ego_, R *ri, R *ii, R *ro, R *io)
      plan_dft *cldcpy = (plan_dft *) ego->cldcpy;
      plan_dft *cldrest;
      INT i, vl = ego->vl;
-     INT ivs = ego->ivs, ovs = ego->ovs;
+     INT ivs_by_nbuf = ego->ivs_by_nbuf, ovs_by_nbuf = ego->ovs_by_nbuf;
      INT roffset = ego->roffset, ioffset = ego->ioffset;
 
      for (i = nbuf; i <= vl; i += nbuf) {
           /* transform to bufs: */
           cld->apply((plan *) cld, ri, ii, bufs + roffset, bufs + ioffset);
-	  ri += ivs; ii += ivs;
+	  ri += ivs_by_nbuf; ii += ivs_by_nbuf;
 
           /* copy back */
           cldcpy->apply((plan *) cldcpy, bufs+roffset, bufs+ioffset, ro, io);
-	  ro += ovs; io += ovs;
+	  ro += ovs_by_nbuf; io += ovs_by_nbuf;
      }
+
+     X(ifree)(bufs);
 
      /* Do the remaining transforms, if any: */
      cldrest = (plan_dft *) ego->cldrest;
      cldrest->apply((plan *) cldrest, ri, ii, ro, io);
-
-     X(ifree)(bufs);
 }
 
 
@@ -98,24 +89,13 @@ static void destroy(plan *ego_)
 static void print(const plan *ego_, printer *p)
 {
      const P *ego = (const P *) ego_;
-     p->print(p, "(%s-%D%v/%D-%D%(%p%)%(%p%)%(%p%))",
-              ego->slv->adt->nam,
+     p->print(p, "(dft-buffered-%D%v/%D-%D%(%p%)%(%p%)%(%p%))",
               ego->n, ego->nbuf,
               ego->vl, ego->bufdist % ego->n,
               ego->cld, ego->cldcpy, ego->cldrest);
 }
 
-static INT compute_nbuf(INT n, INT vl, const S *ego)
-{
-     return X(compute_nbuf)(n, vl, ego->adt->nbuf, ego->adt->maxbufsz);
-}
-
-static int toobig(INT n, const S *ego)
-{
-     return (n > ego->adt->maxbufsz);
-}
-
-static int applicable0(const problem *p_, const S *ego, const planner *plnr)
+static int applicable0(const S *ego, const problem *p_, const planner *plnr)
 {
      const problem_dft *p = (const problem_dft *) p_;
      const iodim *d = p->sz->dims;
@@ -124,8 +104,18 @@ static int applicable0(const problem *p_, const S *ego, const planner *plnr)
 	 && p->vecsz->rnk <= 1
 	 && p->sz->rnk == 1
 	  ) {
+	  INT vl, ivs, ovs;
+	  X(tensor_tornk1)(p->vecsz, &vl, &ivs, &ovs);
 
-	  if (toobig(p->sz->dims[0].n, ego) && CONSERVE_MEMORYP(plnr))
+	  if (X(toobig)(p->sz->dims[0].n) && CONSERVE_MEMORYP(plnr))
+	       return 0;
+
+	  /* if this solver is redundant, in the sense that a solver
+	     of lower index generates the same plan, then prune this
+	     solver */
+	  if (X(nbuf_redundant)(d[0].n, vl, 
+				ego->maxnbuf_ndx,
+				maxnbufs, NELEM(maxnbufs)))
 	       return 0;
 
 	  /*
@@ -138,40 +128,42 @@ static int applicable0(const problem *p_, const S *ego, const planner *plnr)
 	  if (p->ri != p->ro)
 	       return (d[0].os > 2);
 
-	  /* We can always do a single transform in-place */
-	  if (p->vecsz->rnk == 0)
-	       return 1;
-
 	  /*
 	   * If the problem is in place, the input/output strides must
 	   * be the same or the whole thing must fit in the buffer.
 	   */
-	  return ((X(tensor_inplace_strides2)(p->sz, p->vecsz))
-		  || (compute_nbuf(d[0].n, p->vecsz->dims[0].n, ego)
-		      == p->vecsz->dims[0].n));
+	  if (X(tensor_inplace_strides2)(p->sz, p->vecsz))
+	       return 1;
+
+	  if (/* fits into buffer: */
+	       ((p->vecsz->rnk == 0)
+		||
+		(X(nbuf)(d[0].n, p->vecsz->dims[0].n, 
+			 maxnbufs[ego->maxnbuf_ndx]) 
+		 == p->vecsz->dims[0].n)))
+	       return 1;
      }
 
      return 0;
 }
 
-static int applicable(const problem *p_, const S *ego, const planner *plnr)
+static int applicable(const S *ego, const problem *p_, const planner *plnr)
 {
      if (NO_BUFFERINGP(plnr)) return 0;
-     if (!applicable0(p_, ego, plnr)) return 0;
+     if (!applicable0(ego, p_, plnr)) return 0;
 
      if (NO_UGLYP(plnr)) {
 	  const problem_dft *p = (const problem_dft *) p_;
 	  if (p->ri != p->ro) return 0;
-	  if (toobig(p->sz->dims[0].n, ego)) return 0;
+	  if (X(toobig)(p->sz->dims[0].n)) return 0;
      }
      return 1;
 }
 
 static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 {
-     const S *ego = (const S *) ego_;
-     const bufadt *adt = ego->adt;
      P *pln;
+     const S *ego = (const S *)ego_;
      plan *cld = (plan *) 0;
      plan *cldcpy = (plan *) 0;
      plan *cldrest = (plan *) 0;
@@ -184,29 +176,16 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
 	  X(dft_solve), awake, print, destroy
      };
 
-     if (!applicable(p_, ego, plnr))
+     if (!applicable(ego, p_, plnr))
           goto nada;
 
      n = X(tensor_sz)(p->sz);
 
      X(tensor_tornk1)(p->vecsz, &vl, &ivs, &ovs);
 
-     nbuf = compute_nbuf(n, vl, ego);
+     nbuf = X(nbuf)(n, vl, maxnbufs[ego->maxnbuf_ndx]);
+     bufdist = X(bufdist)(n, vl);
      A(nbuf > 0);
-
-     /*
-      * Determine BUFDIST, the offset between successive array bufs.
-      * bufdist = n + skew, where skew is chosen such that bufdist %
-      * skew_alignment = skew.
-      */
-     if (vl == 1) {
-          bufdist = n;
-     } else {
-          bufdist =
-               n + ((adt->skew_alignment + adt->skew - n % adt->skew_alignment)
-                    % adt->skew_alignment);
-          A(p->vecsz->rnk == 1);
-     }
 
      /* attempt to keep real and imaginary part in the same order,
 	so as to allow optimizations in the the copy plan */
@@ -263,11 +242,10 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      pln->cld = cld;
      pln->cldcpy = cldcpy;
      pln->cldrest = cldrest;
-     pln->slv = ego;
      pln->n = n;
      pln->vl = vl;
-     pln->ivs = ivs * nbuf;
-     pln->ovs = ovs * nbuf;
+     pln->ivs_by_nbuf = ivs * nbuf;
+     pln->ovs_by_nbuf = ovs * nbuf;
      pln->roffset = roffset;
      pln->ioffset = ioffset;
 
@@ -290,29 +268,17 @@ static plan *mkplan(const solver *ego_, const problem *p_, planner *plnr)
      return (plan *) 0;
 }
 
-static solver *mksolver(const bufadt *adt)
+static solver *mksolver(int maxnbuf_ndx)
 {
-     static const solver_adt sadt = { PROBLEM_DFT, mkplan };
+     static const solver_adt sadt = { PROBLEM_DFT, mkplan, 0 };
      S *slv = MKSOLVER(S, &sadt);
-     slv->adt = adt;
+     slv->maxnbuf_ndx = maxnbuf_ndx;
      return &(slv->super);
 }
 
-
 void X(dft_buffered_register)(planner *p)
 {
-     /* FIXME: what are good defaults? */
-     static const bufadt adt = {
-	  /* nbuf */           8,
-	  /* maxbufsz */       (INT)(65536 / sizeof(R)),
-	  /* skew_alignment */ 8,
-#if HAVE_SIMD  /* 5 is odd and screws up the alignment. */
-	  /* skew */           6,
-#else
-	  /* skew */           5,
-#endif
-	  /* nam */            "dft-buffered"
-     };
-
-     REGISTER_SOLVER(p, mksolver(&adt));
+     size_t i;
+     for (i = 0; i < NELEM(maxnbufs); ++i)
+	  REGISTER_SOLVER(p, mksolver(i));
 }

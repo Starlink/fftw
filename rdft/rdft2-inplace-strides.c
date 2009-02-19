@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: rdft2-inplace-strides.c,v 1.7 2006-01-05 03:04:27 stevenj Exp $ */
 
 #include "rdft.h"
 
@@ -31,7 +30,7 @@
 int X(rdft2_inplace_strides)(const problem_rdft2 *p, int vdim)
 {
      INT N, Nc;
-     INT is, os;
+     INT rs, cs;
      int i;
      
      for (i = 0; i + 1 < p->sz->rnk; ++i)
@@ -54,8 +53,12 @@ int X(rdft2_inplace_strides)(const problem_rdft2 *p, int vdim)
      N = X(tensor_sz)(p->sz);
      Nc = (N / p->sz->dims[p->sz->rnk-1].n) *
 	  (p->sz->dims[p->sz->rnk-1].n/2 + 1);
-     X(rdft2_strides)(p->kind, p->sz->dims + p->sz->rnk - 1, &is, &os);
+     X(rdft2_strides)(p->kind, p->sz->dims + p->sz->rnk - 1, &rs, &cs);
+
+     /* the factor of 2 comes from the fact that RS is the stride
+	of p->r0 and p->r1, which is twice as large as the strides
+	in the r2r case */
      return(p->vecsz->dims[vdim].is == p->vecsz->dims[vdim].os
-	    && X(iabs)(p->vecsz->dims[vdim].os)
-	    >= X(imax)(Nc * X(iabs)(os), N * X(iabs)(is)));
+	    && (X(iabs)(2 * p->vecsz->dims[vdim].os)
+		>= X(imax)(2 * Nc * X(iabs)(cs), N * X(iabs)(rs))));
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,8 +104,10 @@ static inline void STA(R *x, V v, INT ovs, R *aligned_like)
 
 static inline void ST(R *x, V v, INT ovs, R *aligned_like) 
 {
-     STH(x, v, aligned_like);
+     /* WARNING: the extra_iter hack depends upon STH occurring after
+	STL */
      STL(x, v, ovs, aligned_like);
+     STH(x, v, aligned_like);
 }
 
 #define STM2(x, v, ovs, aligned_like) /* no-op */
@@ -147,27 +149,44 @@ static inline V FLIP_RI(V x)
      return vec_perm(x, x, (vector unsigned char)perm);
 }
 
-static inline V CHS_R(V x)
+static inline V VCONJ(V x)
 {
-     const V pmpm = VLIT(-0.0, 0.0, -0.0, 0.0);
+     const V pmpm = VLIT(0.0, -0.0, 0.0, -0.0);
      return vec_xor(x, pmpm);
 }
 
 static inline V VBYI(V x)
 {
-     return CHS_R(FLIP_RI(x));
+     return FLIP_RI(VCONJ(x));
 }
 
 static inline V VFMAI(V b, V c)
 {
-     const V pmpm = VLIT(-1.0, 1.0, -1.0, 1.0);
-     return VFMA(FLIP_RI(b), pmpm, c);
+     const V mpmp = VLIT(-1.0, 1.0, -1.0, 1.0);
+     return VFMA(FLIP_RI(b), mpmp, c);
 }
 
 static inline V VFNMSI(V b, V c)
 {
-     const V pmpm = VLIT(-1.0, 1.0, -1.0, 1.0);
-     return VFNMS(FLIP_RI(b), pmpm, c);
+     const V mpmp = VLIT(-1.0, 1.0, -1.0, 1.0);
+     return VFNMS(FLIP_RI(b), mpmp, c);
+}
+
+static inline V VFMACONJ(V b, V c)
+{
+     const V pmpm = VLIT(1.0, -1.0, 1.0, -1.0);
+     return VFMA(b, pmpm, c);
+}
+
+static inline V VFNMSCONJ(V b, V c)
+{
+     const V pmpm = VLIT(1.0, -1.0, 1.0, -1.0);
+     return VFNMS(b, pmpm, c);
+}
+
+static inline V VFMSCONJ(V b, V c)
+{
+     return VSUB(VCONJ(b), c);
 }
 
 static inline V VZMUL(V tx, V sr)
@@ -194,8 +213,33 @@ static inline V VZMULJ(V tx, V sr)
      return VFNMS(ti, si, VMUL(tr, sr));
 }
 
+static inline V VZMULI(V tx, V si)
+{
+     const vector unsigned int real = 
+	  VLIT(0x00010203, 0x00010203, 0x08090a0b, 0x08090a0b);
+     const vector unsigned int imag = 
+	  VLIT(0x04050607, 0x04050607, 0x0c0d0e0f, 0x0c0d0e0f);
+     V sr = VBYI(si);
+     V tr = vec_perm(tx, tx, (vector unsigned char)real);
+     V ti = vec_perm(tx, tx, (vector unsigned char)imag);
+     return VFNMS(ti, si, VMUL(tr, sr));
+}
+
+static inline V VZMULIJ(V tx, V si)
+{
+     const vector unsigned int real = 
+	  VLIT(0x00010203, 0x00010203, 0x08090a0b, 0x08090a0b);
+     const vector unsigned int imag = 
+	  VLIT(0x04050607, 0x04050607, 0x0c0d0e0f, 0x0c0d0e0f);
+     V sr = VBYI(si);
+     V tr = vec_perm(tx, tx, (vector unsigned char)real);
+     V ti = vec_perm(tx, tx, (vector unsigned char)imag);
+     return VFMA(ti, si, VMUL(tr, sr));
+}
+
 /* twiddle storage #1: compact, slower */
-#define VTW1(x) {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_SIN, 0, x}, {TW_SIN, 1, x}
+#define VTW1(v,x) \
+ {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_SIN, v, x}, {TW_SIN, v+1, x}
 #define TWVL1 (VL)
 
 static inline V BYTW1(const R *t, V sr)
@@ -219,9 +263,9 @@ static inline V BYTWJ1(const R *t, V sr)
 }
 
 /* twiddle storage #2: twice the space, faster (when in cache) */
-#define VTW2(x)								\
-  {TW_COS, 0, x}, {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_COS, 1, x},	\
-  {TW_SIN, 0, -x}, {TW_SIN, 0, x}, {TW_SIN, 1, -x}, {TW_SIN, 1, x}
+#define VTW2(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_COS, v+1, x},	\
+  {TW_SIN, v, -x}, {TW_SIN, v, x}, {TW_SIN, v+1, -x}, {TW_SIN, v+1, x}
 #define TWVL2 (2 * VL)
 
 static inline V BYTW2(const R *t, V sr)
@@ -241,13 +285,13 @@ static inline V BYTWJ2(const R *t, V sr)
 }
 
 /* twiddle storage #3 */
-#define VTW3(x) {TW_CEXP, 0, x}, {TW_CEXP, 1, x}
+#define VTW3(v,x) {TW_CEXP, v, x}, {TW_CEXP, v+1, x}
 #define TWVL3 (VL)
 
 /* twiddle storage for split arrays */
-#define VTWS(x)								\
-  {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_COS, 2, x}, {TW_COS, 3, x},	\
-  {TW_SIN, 0, x}, {TW_SIN, 1, x}, {TW_SIN, 2, x}, {TW_SIN, 3, x}
+#define VTWS(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_COS, v+2, x}, {TW_COS, v+3, x},	\
+  {TW_SIN, v, x}, {TW_SIN, v+1, x}, {TW_SIN, v+2, x}, {TW_SIN, v+3, x}
 #define TWVLS (2 * VL)
 
 #endif /* #ifdef __VEC__ */

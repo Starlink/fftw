@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: problem.c,v 1.39 2006-01-05 03:04:26 stevenj Exp $ */
 
 #include "dft.h"
 #include <stddef.h>
@@ -45,7 +44,7 @@ static void hash(const problem *p_, md5 *m)
      X(tensor_md5)(m, p->vecsz);
 }
 
-static void print(problem *ego_, printer *p)
+static void print(const problem *ego_, printer *p)
 {
      const problem_dft *ego = (const problem_dft *) ego_;
      p->print(p, "(dft %d %d %d %D %D %T %T)", 
@@ -76,14 +75,9 @@ static const problem_adt padt =
 };
 
 problem *X(mkproblem_dft)(const tensor *sz, const tensor *vecsz,
-                          R *ri, R *ii, R *ro, R *io)
+			  R *ri, R *ii, R *ro, R *io)
 {
-     problem_dft *ego =
-          (problem_dft *)X(mkproblem)(sizeof(problem_dft), &padt);
-
-     A((ri == ro) == (ii == io)); /* both in place or both out of place */
-     A(X(tensor_kosherp)(sz));
-     A(X(tensor_kosherp)(vecsz));
+     problem_dft *ego;
 
      /* enforce pointer equality if untainted pointers are equal */
      if (UNTAINT(ri) == UNTAINT(ro))
@@ -94,6 +88,17 @@ problem *X(mkproblem_dft)(const tensor *sz, const tensor *vecsz,
      /* more correctness conditions: */
      A(TAINTOF(ri) == TAINTOF(ii));
      A(TAINTOF(ro) == TAINTOF(io));
+
+     A(X(tensor_kosherp)(sz));
+     A(X(tensor_kosherp)(vecsz));
+
+     if (ri == ro || ii == io) {
+	  /* If either real or imag pointers are in place, both must be. */
+	  if (ri != ro || ii != io || !X(tensor_inplace_locations)(sz, vecsz))
+	       return X(mkproblem_unsolvable)();
+     }
+
+     ego = (problem_dft *)X(mkproblem)(sizeof(problem_dft), &padt);
 
      ego->sz = X(tensor_compress)(sz);
      ego->vecsz = X(tensor_compress_contiguous)(vecsz);
@@ -108,10 +113,9 @@ problem *X(mkproblem_dft)(const tensor *sz, const tensor *vecsz,
 
 /* Same as X(mkproblem_dft), but also destroy input tensors. */
 problem *X(mkproblem_dft_d)(tensor *sz, tensor *vecsz,
-                            R *ri, R *ii, R *ro, R *io)
+			    R *ri, R *ii, R *ro, R *io)
 {
-     problem *p;
-     p = X(mkproblem_dft)(sz, vecsz, ri, ii, ro, io);
+     problem *p = X(mkproblem_dft)(sz, vecsz, ri, ii, ro, io);
      X(tensor_destroy2)(vecsz, sz);
      return p;
 }

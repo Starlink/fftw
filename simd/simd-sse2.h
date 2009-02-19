@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,16 +123,16 @@ static inline V FLIP_RI(V x)
      return SHUFPD(x, x, 1);
 }
 
-extern const union uvec X(sse2_mp);
-static inline V CHS_R(V x)
+extern const union uvec X(sse2_pm);
+static inline V VCONJ(V x)
 {
-     return VXOR(X(sse2_mp).v, x);
+     return VXOR(X(sse2_pm).v, x);
 }
 
 static inline V VBYI(V x)
 {
+     x = VCONJ(x);
      x = FLIP_RI(x);
-     x = CHS_R(x);
      return x;
 }
 
@@ -157,10 +157,28 @@ static inline V VZMULJ(V tx, V sr)
      return VSUB(tr, VMUL(ti, sr));
 }
 
+static inline V VZMULI(V tx, V sr)
+{
+     V tr = UNPCKL(tx, tx);
+     V ti = UNPCKH(tx, tx);
+     ti = VMUL(ti, sr);
+     sr = VBYI(sr);
+     return VSUB(VMUL(tr, sr), ti);
+}
+
+static inline V VZMULIJ(V tx, V sr)
+{
+     V tr = UNPCKL(tx, tx);
+     V ti = UNPCKH(tx, tx);
+     ti = VMUL(ti, sr);
+     sr = VBYI(sr);
+     return VADD(VMUL(tr, sr), ti);
+}
+
 /* twiddle storage #1: compact, slower */
-#define VTW1(x) {TW_CEXP, 0, x}
+#define VTW1(v,x) {TW_CEXP, v, x}
 #define TWVL1 1
-#define VTW3(x) VTW1(x)
+#define VTW3(v,x) VTW1(v,x)
 #define TWVL3 TWVL1
 
 static inline V BYTW1(const R *t, V sr)
@@ -176,8 +194,8 @@ static inline V BYTWJ1(const R *t, V sr)
 }
 
 /* twiddle storage #2: twice the space, faster (when in cache) */
-#define VTW2(x)								\
-  {TW_COS, 0, x}, {TW_COS, 0, x}, {TW_SIN, 0, -x}, {TW_SIN, 0, x}
+#define VTW2(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v, x}, {TW_SIN, v, -x}, {TW_SIN, v, x}
 #define TWVL2 2
 
 static inline V BYTW2(const R *t, V sr)
@@ -201,8 +219,8 @@ static inline V BYTWJ2(const R *t, V sr)
 #define VFMS(a, b, c) VSUB(VMUL(a, b), c)
 
 /* twiddle storage for split arrays */
-#define VTWS(x)								\
-  {TW_COS, 0, x}, {TW_COS, 1, x}, {TW_SIN, 0, x}, {TW_SIN, 1, x}
+#define VTWS(v,x)							\
+  {TW_COS, v, x}, {TW_COS, v+1, x}, {TW_SIN, v, x}, {TW_SIN, v+1, x}
 #define TWVLS (2 * VL)
 
 #endif /* __SSE2__ */

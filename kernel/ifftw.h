@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: ifftw.h,v 1.281 2006-02-10 14:18:39 athena Exp $ */
 
 /* FFTW internal header file */
 #ifndef __IFFTW_H__
@@ -77,18 +76,18 @@ typedef ptrdiff_t INT;
 /* dummy use of unused parameters to silence compiler warnings */
 #define UNUSED(x) (void)x
 
+#define NELEM(array) ((int) (sizeof(array) / sizeof((array)[0])))
+
 #define FFT_SIGN (-1)  /* sign convention for forward transforms */
+extern void X(extract_reim)(int sign, R *c, R **r, R **i);
 
 #define REGISTER_SOLVER(p, s) X(solver_register)(p, s)
 
 #define STRINGIZEx(x) #x
 #define STRINGIZE(x) STRINGIZEx(x)
 
-#ifndef HAVE_K7
-#define HAVE_K7 0
-#endif
-
-#if defined(HAVE_SSE) || defined(HAVE_SSE2) || defined(HAVE_ALTIVEC)
+#if defined(HAVE_SSE) || defined(HAVE_SSE2) || defined(HAVE_ALTIVEC) || \
+    defined(HAVE_MIPS_PS)
 #define HAVE_SIMD 1
 #else
 #define HAVE_SIMD 0
@@ -104,7 +103,7 @@ typedef struct scanner_s scanner;
 
 /*-----------------------------------------------------------------------*/
 /* alloca: */
-#if HAVE_SIMD
+#if HAVE_SIMD || HAVE_CELL
 #define MIN_ALIGNMENT 16
 #endif
 
@@ -244,7 +243,7 @@ IFFTW_EXTERN void *X(malloc_plain)(size_t sz);
 
 #endif
 
-#if defined(FFTW_DEBUG) && defined(FFTW_DEBUG_MALLOC) && defined(HAVE_THREADS)
+#if defined(FFTW_DEBUG) && defined(FFTW_DEBUG_MALLOC) && (defined(HAVE_THREADS) || defined(HAVE_OPENMP))
 extern int X(in_thread);
 #  define IN_THREAD X(in_thread)
 #  define THREAD_ON { int in_thread_save = X(in_thread); X(in_thread) = 1
@@ -258,32 +257,37 @@ extern int X(in_thread);
 /*-----------------------------------------------------------------------*/
 /* low-resolution clock */
 
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
+#ifdef FAKE_CRUDE_TIME
+ typedef int crude_time;
 #else
-# if HAVE_SYS_TIME_H
+# if TIME_WITH_SYS_TIME
 #  include <sys/time.h>
-# else
 #  include <time.h>
+# else
+#  if HAVE_SYS_TIME_H
+#   include <sys/time.h>
+#  else
+#   include <time.h>
+#  endif
 # endif
-#endif
 
-#ifdef HAVE_BSDGETTIMEOFDAY
-#ifndef HAVE_GETTIMEOFDAY
-#define gettimeofday BSDgettimeofday
-#define HAVE_GETTIMEOFDAY 1
-#endif
-#endif
+# ifdef HAVE_BSDGETTIMEOFDAY
+# ifndef HAVE_GETTIMEOFDAY
+# define gettimeofday BSDgettimeofday
+# define HAVE_GETTIMEOFDAY 1
+# endif
+# endif
 
-#if defined(HAVE_GETTIMEOFDAY)
-typedef struct timeval crude_time;
-#else
-typedef clock_t crude_time;
-#endif
+# if defined(HAVE_GETTIMEOFDAY)
+   typedef struct timeval crude_time;
+# else
+   typedef clock_t crude_time;
+# endif
+#endif /* else FAKE_CRUDE_TIME */
 
 crude_time X(get_crude_time)(void);
-double X(elapsed_since)(crude_time t0); /* time in seconds since t0 */
+double X(elapsed_since)(const planner *plnr, const problem *p,
+			crude_time t0); /* time in seconds since t0 */
 
 /*-----------------------------------------------------------------------*/
 /* ops.c: */
@@ -396,6 +400,15 @@ tensor *X(mktensor_2d)(INT n0, INT is0, INT os0,
 tensor *X(mktensor_3d)(INT n0, INT is0, INT os0,
 		       INT n1, INT is1, INT os1,
 		       INT n2, INT is2, INT os2);
+tensor *X(mktensor_4d)(INT n0, INT is0, INT os0,
+		       INT n1, INT is1, INT os1,
+		       INT n2, INT is2, INT os2,
+		       INT n3, INT is3, INT os3);
+tensor *X(mktensor_5d)(INT n0, INT is0, INT os0,
+		       INT n1, INT is1, INT os1,
+		       INT n2, INT is2, INT os2,
+		       INT n3, INT is3, INT os3,
+		       INT n4, INT is4, INT os4);
 INT X(tensor_sz)(const tensor *sz);
 void X(tensor_md5)(md5 *p, const tensor *t);
 INT X(tensor_max_index)(const tensor *sz);
@@ -422,13 +435,25 @@ void X(tensor_destroy2)(tensor *a, tensor *b);
 void X(tensor_destroy4)(tensor *a, tensor *b, tensor *c, tensor *d);
 void X(tensor_print)(const tensor *sz, printer *p);
 int X(dimcmp)(const iodim *a, const iodim *b);
+int X(tensor_equal)(const tensor *a, const tensor *b);
+int X(tensor_inplace_locations)(const tensor *sz, const tensor *vecsz);
 
 /*-----------------------------------------------------------------------*/
 /* problem.c: */
 enum { 
+     /* a problem that cannot be solved */
+     PROBLEM_UNSOLVABLE,
+
      PROBLEM_DFT, 
      PROBLEM_RDFT,
      PROBLEM_RDFT2,
+
+     /* for mpi/ subdirectory */
+     PROBLEM_MPI_DFT,
+     PROBLEM_MPI_RDFT,
+     PROBLEM_MPI_RDFT2,
+     PROBLEM_MPI_TRANSPOSE,
+
      PROBLEM_LAST 
 };
 
@@ -436,7 +461,7 @@ typedef struct {
      int problem_kind;
      void (*hash) (const problem *ego, md5 *p);
      void (*zero) (const problem *ego);
-     void (*print) (problem *ego, printer *p);
+     void (*print) (const problem *ego, printer *p);
      void (*destroy) (problem *ego);
 } problem_adt;
 
@@ -446,6 +471,7 @@ struct problem_s {
 
 problem *X(mkproblem)(size_t sz, const problem_adt *adt);
 void X(problem_destroy)(problem *ego);
+problem *X(mkproblem_unsolvable)(void);
 
 /*-----------------------------------------------------------------------*/
 /* print.c */
@@ -510,6 +536,7 @@ void X(plan_null_destroy)(plan *ego);
 typedef struct {
      int problem_kind;
      plan *(*mkplan)(const solver *ego, const problem *p, planner *plnr);
+     void (*destroy)(solver *ego);
 } solver_adt;
 
 struct solver_s {
@@ -641,7 +668,7 @@ typedef enum {
 
 typedef struct {
      void (*register_solver)(planner *ego, solver *s);
-     plan *(*mkplan)(planner *ego, problem *p);
+     plan *(*mkplan)(planner *ego, const problem *p);
      void (*forget)(planner *ego, amnesia a);
      void (*exprt)(planner *ego, printer *p); /* ``export'' is a reserved
 						 word in C++. */
@@ -659,10 +686,13 @@ typedef struct {
      int nrehash;
 } hashtab;
 
+typedef enum { COST_SUM, COST_MAX } cost_kind;
+
 struct planner_s {
      const planner_adt *adt;
      void (*hook)(struct planner_s *plnr, plan *pln, 
 		  const problem *p, int optimalp);
+     double (*cost_hook)(const problem *p, double t, cost_kind k);
 
      /* solver descriptors */
      slvdesc *slvdescs;
@@ -736,16 +766,20 @@ plan *X(mkplan_f_d)(planner *ego, problem *p,
 /* stride.c: */
 
 /* If PRECOMPUTE_ARRAY_INDICES is defined, precompute all strides. */
-#if (defined(__i386__) || defined(__x86_64__) || _M_IX86 >= 500) && !HAVE_K7 && !defined(FFTW_LDOUBLE)
+#if (defined(__i386__) || defined(__x86_64__) || _M_IX86 >= 500) && !defined(FFTW_LDOUBLE)
 #define PRECOMPUTE_ARRAY_INDICES
 #endif
+
+extern const INT X(an_INT_guaranteed_to_be_zero);
 
 #ifdef PRECOMPUTE_ARRAY_INDICES
 typedef INT *stride;
 #define WS(stride, i)  (stride[i])
 extern stride X(mkstride)(INT n, INT s);
 void X(stride_destroy)(stride p);
-#define MAKE_VOLATILE_STRIDE(x) (void)0 /* a no-op in expession context */
+/* hackery to prevent the compiler from copying the strides array
+   onto the stack */
+#define MAKE_VOLATILE_STRIDE(x) (x) = (x) + X(an_INT_guaranteed_to_be_zero)
 #else
 
 typedef INT stride;
@@ -759,8 +793,7 @@ typedef INT stride;
 
 /* hackery to prevent the compiler from ``optimizing'' induction
    variables in codelet loops. */
-extern const stride X(a_stride_guaranteed_to_be_zero);
-#define MAKE_VOLATILE_STRIDE(x) (x) = (x) ^ X(a_stride_guaranteed_to_be_zero)
+#define MAKE_VOLATILE_STRIDE(x) (x) = (x) ^ X(an_INT_guaranteed_to_be_zero)
 
 #endif /* PRECOMPUTE_ARRAY_INDICES */
 
@@ -802,7 +835,6 @@ typedef struct twid_s {
 INT X(twiddle_length)(INT r, const tw_instr *p);
 void X(twiddle_awake)(enum wakefulness wakefulness,
 		      twid **pp, const tw_instr *instr, INT n, INT r, INT m);
-const R *X(twiddle_shift)(const twid *p, INT mstart);
 
 /*-----------------------------------------------------------------------*/
 /* trig.c */
@@ -844,6 +876,7 @@ INT X(next_prime)(INT n);
 int X(factors_into)(INT n, const INT *primes);
 INT X(choose_radix)(INT r, INT n);
 INT X(isqrt)(INT n);
+INT X(modulo)(INT a, INT n);
 
 #define GENERIC_MIN_BAD 173 /* min prime for which generic becomes bad */
 
@@ -907,17 +940,30 @@ typedef void (*cpy2d_func)(R *I, R *O,
 			   INT n1, INT is1, INT os1,
 			   INT vl);
 
+#if HAVE_CELL
+int X(cell_transpose_applicable)(R *I, const iodim *d, INT vl);
+void X(cell_transpose)(R *I, INT n, INT s0, INT s1, INT vl);
+int X(cell_copy_applicable)(R *I, R *O, const iodim *n, const iodim *v);
+void X(cell_copy)(R *I, R *O, const iodim *n, const iodim *v);
+#endif
+
 /*-----------------------------------------------------------------------*/
 /* misc stuff */
 void X(null_awake)(plan *ego, enum wakefulness wakefulness);
-double X(iestimate_cost)(const plan *pln);
-double X(measure_execution_time)(plan *pln, const problem *p);
+double X(iestimate_cost)(const planner *, const plan *, const problem *);
+
+double X(measure_execution_time)(const planner *plnr, 
+				 plan *pln, const problem *p);
 int X(alignment_of)(R *p);
 unsigned X(hash)(const char *s);
-INT X(compute_nbuf)(INT n, INT vl, INT nbuf, INT maxbufsz);
+INT X(nbuf)(INT n, INT vl, INT maxnbuf);
+int X(nbuf_redundant)(INT n, INT vl, int which, 
+		      const INT *maxnbuf, int nmaxnbuf);
+INT X(bufdist)(INT n, INT vl);
+int X(toobig)(INT n);
 int X(ct_uglyp)(INT min_n, INT n, INT r);
 
-#if HAVE_SIMD
+#if HAVE_SIMD || HAVE_CELL
 R *X(taint)(R *p, INT s);
 R *X(join_taint)(R *p1, R *p2);
 #define TAINT(p, s) X(taint)(p, s)

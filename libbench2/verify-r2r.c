@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -369,7 +369,9 @@ static void cpyr(R *ra, bench_tensor *sza, R *rb, bench_tensor *szb)
 static void dofft(info *nfo, R *in, R *out)
 {
      cpyr(in, nfo->pckdsz, (R *) nfo->p->in, nfo->totalsz);
+     after_problem_rcopy_from(nfo->p, (bench_real *)nfo->p->in);
      doit(1, nfo->p);
+     after_problem_rcopy_to(nfo->p, (bench_real *)nfo->p->out);
      cpyr((R *) nfo->p->out, nfo->totalsz, out, nfo->pckdsz);
 }
 
@@ -377,15 +379,16 @@ static double racmp(R *a, R *b, int n, const char *test, double tol)
 {
      double d = raerror(a, b, n);
      if (d > tol) {
-	  fprintf(stderr, "Found relative error %e (%s)\n", d, test);
+	  ovtpvt_err("Found relative error %e (%s)\n", d, test);
 	  {
-	       int i;
-	       for (i = 0; i < n; ++i)
-		    fprintf(stderr, "%8d %16.12f   %16.12f\n", i, 
-			    (double) a[i],
-			    (double) b[i]);
+	       int i, N;
+	       N = n > 300 && verbose <= 2 ? 300 : n;
+	       for (i = 0; i < N; ++i)
+		    ovtpvt_err("%8d %16.12f   %16.12f\n", i, 
+			       (double) a[i],
+			       (double) b[i]);
 	  }
-	  exit(EXIT_FAILURE);
+	  bench_exit(EXIT_FAILURE);
      }
      return d;
 }
@@ -845,7 +848,9 @@ static void r2r_apply(dofft_closure *k_, bench_complex *in, bench_complex *out)
 	      BENCH_ASSERT(0); /* not yet implemented */
      }
 
+     after_problem_rcopy_from(p, ri);
      doit(1, p);
+     after_problem_rcopy_to(p, ro);
 
      switch (p->k[0]) {
 	 case R2R_R2HC:

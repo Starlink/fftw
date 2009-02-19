@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: simd.ml,v 1.23 2006-02-12 23:34:12 athena Exp $ *)
 
 open Expr
 open List
@@ -32,8 +31,6 @@ let realtype = "V"
 let realtypep = realtype ^ " *"
 let constrealtype = "const " ^ realtype
 let constrealtypep = constrealtype ^ " *"
-let ivs = ref "ivs"
-let ovs = ref "ovs"
 let alignment_mod = 2
 
 (*
@@ -48,17 +45,19 @@ and unparse_store dst = function
   | Times (NaN MULTI_A, x) ->
       sprintf "STM%d(&(%s),%s,%s,&(%s));\n" 
 	!Simdmagic.store_multiple
-	(Variable.unparse dst) (unparse_expr x) !ovs
+	(Variable.unparse dst) (unparse_expr x)
+	(Variable.vstride_of_locative dst)
 	(Variable.unparse_for_alignment alignment_mod dst)
   | Times (NaN MULTI_B, Plus stuff) ->
       sprintf "STN%d(&(%s)%s,%s);\n" 
 	!Simdmagic.store_multiple
 	(Variable.unparse dst) 
 	(List.fold_right (fun x a -> "," ^ (unparse_expr x) ^ a) stuff "")
-	!ovs
+	(Variable.vstride_of_locative dst)
   | src_expr -> 
       sprintf "ST(&(%s),%s,%s,&(%s));\n" 
-	(Variable.unparse dst) (unparse_expr src_expr) !ovs
+	(Variable.unparse dst) (unparse_expr src_expr) 
+	(Variable.vstride_of_locative dst)
 	(Variable.unparse_for_alignment alignment_mod dst)
 
 and unparse_expr =
@@ -67,10 +66,16 @@ and unparse_expr =
 
     | (Uminus (Times (NaN I, b))) :: c :: d -> op2 "VFNMSI" [b] (c :: d)
     | c :: (Uminus (Times (NaN I, b))) :: d -> op2 "VFNMSI" [b] (c :: d)
-    | (Times (NaN I, b)) :: (Uminus c) :: d -> failwith "VFMSI"
-    | (Uminus c) :: (Times (NaN I, b)) :: d -> failwith "VFMSI"
+    | (Uminus (Times (NaN CONJ, b))) :: c :: d -> op2 "VFNMSCONJ" [b] (c :: d)
+    | c :: (Uminus (Times (NaN CONJ, b))) :: d -> op2 "VFNMSCONJ" [b] (c :: d)
     | (Times (NaN I, b)) :: c :: d -> op2 "VFMAI" [b] (c :: d)
     | c :: (Times (NaN I, b)) :: d -> op2 "VFMAI" [b] (c :: d)
+    | (Times (NaN CONJ, b)) :: (Uminus c) :: d -> op2 "VFMSCONJ" [b] (c :: d)
+    | (Uminus c) :: (Times (NaN CONJ, b)) :: d -> op2 "VFMSCONJ" [b] (c :: d)
+    | (Times (NaN CONJ, b)) :: c :: d -> op2 "VFMACONJ" [b] (c :: d)
+    | c :: (Times (NaN CONJ, b)) :: d -> op2 "VFMACONJ" [b] (c :: d)
+    | (Times (NaN _, b)) :: (Uminus c) :: d -> failwith "VFMS NaN"
+    | (Uminus c) :: (Times (NaN _, b)) :: d -> failwith "VFMS NaN"
 
     | (Uminus (Times (a, b))) :: c :: d -> op3 "VFNMS" a b (c :: d)
     | c :: (Uminus (Times (a, b))) :: d -> op3 "VFNMS" a b (c :: d)
@@ -103,7 +108,8 @@ and unparse_expr =
 	when Variable.is_constant tw && !Magic.generate_bytw ->
 	unparse_by_twiddle "BYTWJ" tw src
     | Load v when is_locative(v) ->
-	sprintf "LD(&(%s), %s, &(%s))" (Variable.unparse v) !ivs
+	sprintf "LD(&(%s), %s, &(%s))" (Variable.unparse v) 
+	  (Variable.vstride_of_locative v)
 	  (Variable.unparse_for_alignment alignment_mod v)
     | Load v when is_constant(v) -> sprintf "LDW(&(%s))" (Variable.unparse v)
     | Load v  -> Variable.unparse v
@@ -113,10 +119,15 @@ and unparse_expr =
     | Plus [a] -> " /* bug */ " ^ (unparse_expr a)
     | Plus a -> unparse_plus a
     | Times(NaN I,b) -> op1 "VBYI" b
+    | Times(NaN CONJ,b) -> op1 "VCONJ" b
     | Times(a,b) ->
 	sprintf "VMUL(%s, %s)" (unparse_expr a) (unparse_expr b)
+    | CTimes(a,Times(NaN I, b)) ->
+	sprintf "VZMULI(%s, %s)" (unparse_expr a) (unparse_expr b)
     | CTimes(a,b) ->
 	sprintf "VZMUL(%s, %s)" (unparse_expr a) (unparse_expr b)
+    | CTimesJ(a,Times(NaN I, b)) ->
+	sprintf "VZMULIJ(%s, %s)" (unparse_expr a) (unparse_expr b)
     | CTimesJ(a,b) ->
 	sprintf "VZMULJ(%s, %s)" (unparse_expr a) (unparse_expr b)
     | Uminus a when !Magic.vneg -> op1 "VNEG" a

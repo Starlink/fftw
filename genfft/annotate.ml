@@ -1,7 +1,7 @@
 (*
  * Copyright (c) 1997-1999 Massachusetts Institute of Technology
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *)
-(* $Id: annotate.ml,v 1.23 2006-02-12 23:34:12 athena Exp $ *)
 
 (* Here, we take a schedule (produced by schedule.ml) ordering a
    sequence of instructions, and produce an annotated schedule.  The
@@ -30,7 +29,6 @@
    nested blocks that help communicate variable lifetimes to the
    compiler. *)
 
-(* $Id: annotate.ml,v 1.23 2006-02-12 23:34:12 athena Exp $ *)
 open Schedule
 open Expr
 open Variable

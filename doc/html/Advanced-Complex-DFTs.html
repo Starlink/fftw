@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Advanced Complex DFTs - FFTW 3.1.2</title>
+<title>Advanced Complex DFTs - FFTW 3.2.1</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.1.2">
+<meta name="description" content="FFTW 3.2.1">
 <meta name="generator" content="makeinfo 4.8">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Advanced-Interface.html#Advanced-Interface" title="Advanced Interface">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.1.2, 23 June 2006).
+(version 3.2.1, 5 February 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -63,7 +63,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Advanced-Interface.html#Advanced-Interf
                                   int ostride, int odist,
                                   int sign, unsigned flags);
 </pre>
-   <p><a name="index-fftw_005fplan_005fmany_005fdft-222"></a>
+   <p><a name="index-fftw_005fplan_005fmany_005fdft-223"></a>
 This plans multidimensional complex DFTs, and is exactly the same as
 <code>fftw_plan_dft</code> except for the new parameters <code>howmany</code>,
 {<code>i</code>,<code>o</code>}<code>nembed</code>, {<code>i</code>,<code>o</code>}<code>stride</code>,
@@ -75,7 +75,7 @@ and {<code>i</code>,<code>o</code>}<code>dist</code>.
 calling FFTW multiple times for the individual transforms.  The basic
 <code>fftw_plan_dft</code> interface corresponds to <code>howmany=1</code> (in which
 case the <code>dist</code> parameters are ignored). 
-<a name="index-howmany-parameter-223"></a><a name="index-dist-224"></a>
+<a name="index-howmany-parameter-224"></a><a name="index-dist-225"></a>
 The two <code>nembed</code> parameters (which should be arrays of length
 <code>rank</code>) indicate the sizes of the input and output array
 dimensions, respectively, where the transform is of a subarray of size
@@ -94,7 +94,7 @@ the input or output arrays is located at <code>j*istride</code> or
 <code>k</code>-th transform in a <code>howmany</code> loop, from above, this means
 that the (<code>j</code>,<code>k</code>)-th element is at <code>j*stride+k*dist</code>. 
 (The basic <code>fftw_plan_dft</code> interface corresponds to a stride of 1.) 
-<a name="index-stride-225"></a>
+<a name="index-stride-226"></a>
 For in-place transforms, the input and output <code>stride</code> and
 <code>dist</code> parameters should be the same; otherwise, the planner may
 return <code>NULL</code>.
@@ -108,7 +108,7 @@ of N, where N is the product of the dimensions.  In
 another example, to transform an array of contiguous &ldquo;vectors&rdquo; of
 length M, one would use a <code>howmany</code> of M, a
 <code>stride</code> of M, and a <code>dist</code> of 1. 
-<a name="index-vector-226"></a>
+<a name="index-vector-227"></a>
 <!-- =========> -->
 
    </body></html>

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: timer.c,v 1.27 2006-01-27 02:10:50 athena Exp $ */
 
 #include "ifftw.h"
 
@@ -34,7 +33,33 @@
 #define FFTW_TIME_LIMIT 2.0  /* don't run for more than two seconds */
 #endif
 
-#if defined(HAVE_GETTIMEOFDAY)
+/* the following code is disabled for now, because it seems to
+   require that we #include <windows.h> in ifftw.h to 
+   typedef LARGE_INTEGER crude_time, and this pulls in the whole
+   Windows universe and leads to namespace conflicts (unless
+   we did some hack like assuming sizeof(LARGE_INTEGER) == sizeof(long long).
+   gettimeofday is provided by MinGW, which we use to cross-compile
+   FFTW for Windows, and this seems to work well enough */
+#if 0 && (defined(__WIN32__) || defined(_WIN32) || defined(_WIN64))
+crude_time X(get_crude_time)(void)
+{
+     crude_time tv;
+     QueryPerformanceCounter(&tv);
+     return tv;
+}
+
+static double elapsed_since(crude_time t0)
+{
+     crude_time t1, freq;
+     QueryPerformanceCounter(&t1);
+     QueryPerformanceFrequency(&freq);
+     return (((double) (t1.QuadPart - t0.QuadPart))) /
+	  ((double) freq.QuadPart);
+}
+
+#  define TIME_MIN_SEC 1.0e-2
+
+#elif defined(HAVE_GETTIMEOFDAY)
 crude_time X(get_crude_time)(void)
 {
      crude_time tv;
@@ -45,7 +70,7 @@ crude_time X(get_crude_time)(void)
 #define elapsed_sec(t1,t0) ((double)(t1.tv_sec - t0.tv_sec) +		\
 			    (double)(t1.tv_usec - t0.tv_usec) * 1.0E-6)
 
-double X(elapsed_since)(crude_time t0)
+static double elapsed_since(crude_time t0)
 {
      crude_time t1;
      gettimeofday(&t1, 0);
@@ -64,7 +89,7 @@ crude_time X(get_crude_time)(void) { return clock(); }
 
 #define elapsed_sec(t1,t0) ((double) ((t1) - (t0)) / CLOCKS_PER_SEC)
 
-double X(elapsed_since)(crude_time t0)
+static double elapsed_since(crude_time t0)
 {
      return elapsed_sec(clock(), t0);
 }
@@ -72,6 +97,14 @@ double X(elapsed_since)(crude_time t0)
 #  define TIME_MIN_SEC 2.0e-1 /* from fftw2 */
 
 #endif /* !HAVE_GETTIMEOFDAY */
+
+double X(elapsed_since)(const planner *plnr, const problem *p, crude_time t0)
+{
+     double t = elapsed_since(t0);
+     if (plnr->cost_hook)
+	  t = plnr->cost_hook(p, t, COST_MAX);
+     return t;
+}
 
 #ifdef WITH_SLOW_TIMER
 /* excruciatingly slow; only use this if there is no choice! */
@@ -106,7 +139,8 @@ typedef crude_time ticks;
   }
 
 
-  double X(measure_execution_time)(plan *pln, const problem *p)
+  double X(measure_execution_time)(const planner *plnr, 
+				   plan *pln, const problem *p)
   {
        int iter;
        int repeat;
@@ -116,31 +150,31 @@ typedef crude_time ticks;
 
   start_over:
        for (iter = 1; iter; iter *= 2) {
-	    double tmin = 1.0E10, tmax = -1.0E10;
+	    double tmin = 0;
+	    int first = 1;
 	    crude_time begin = X(get_crude_time)();
 
 	    /* repeat the measurement TIME_REPEAT times */
 	    for (repeat = 0; repeat < TIME_REPEAT; ++repeat) {
 		 double t = measure(pln, p, iter);
-
+		 
+		 if (plnr->cost_hook)
+		      t = plnr->cost_hook(p, t, COST_MAX);
 		 if (t < 0)
 		      goto start_over;
 
-		 if (t < tmin)
+		 if (first || t < tmin)
 		      tmin = t;
-		 if (t > tmax)
-		      tmax = t;
+		 first = 0;
 
 		 /* do not run for too long */
-		 if (X(elapsed_since)(begin) > FFTW_TIME_LIMIT)
+		 if (X(elapsed_since)(plnr, p, begin) > FFTW_TIME_LIMIT)
 		      break;
 	    }
 
 	    if (tmin >= TIME_MIN) {
-		 tmin /= (double) iter;
-		 tmax /= (double) iter;
 		 X(plan_awake)(pln, SLEEPY);
-		 return tmin;
+		 return tmin / (double) iter;
 	    }
        }
        goto start_over; /* may happen if timer is screwed up */
@@ -148,8 +182,10 @@ typedef crude_time ticks;
 
 #else /* no cycle counter */
 
-  double X(measure_execution_time)(plan *pln, const problem *p)
+  double X(measure_execution_time)(const planner *plnr, 
+				   plan *pln, const problem *p)
   {
+       UNUSED(plnr);
        UNUSED(p);
        UNUSED(pln);
        return -1.0;

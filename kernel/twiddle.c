@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  *
  */
 
-/* $Id: twiddle.c,v 1.33 2006-01-05 22:39:02 athena Exp $ */
 
 /* Twiddle manipulation */
 
@@ -50,7 +49,7 @@ static int equal_instr(const tw_instr *p, const tw_instr *q)
 
 	  switch (p->op) {
 	      case TW_NEXT:
-		   return 1;
+		   return (p->v == q->v); /* p->i is ignored */
 
 	      case TW_FULL:
 	      case TW_HALF:
@@ -142,8 +141,9 @@ static R *compute(enum wakefulness wakefulness,
 	       switch (p->op) {
 		   case TW_FULL: {
 			INT i;
-			A(m * r <= n);
 			for (i = 1; i < r; ++i) {
+			     A((j + (INT)p->v) * i < n);
+			     A((j + (INT)p->v) * i > -n);
 			     t->cexp(t, (j + (INT)p->v) * i, W);
 			     W += 2;
 			}
@@ -163,24 +163,26 @@ static R *compute(enum wakefulness wakefulness,
 		   case TW_COS: {
 			R d[2];
 
-			A(m * r <= n);
+			A((j + (INT)p->v) * p->i < n);
+			A((j + (INT)p->v) * p->i > -n);
 			t->cexp(t, (j + (INT)p->v) * (INT)p->i, d);
 			*W++ = d[0];
 			break;
-
 		   }
 
 		   case TW_SIN: {
 			R d[2];
 
-			A(m * r <= n);
+			A((j + (INT)p->v) * p->i < n);
+			A((j + (INT)p->v) * p->i > -n);
 			t->cexp(t, (j + (INT)p->v) * (INT)p->i, d);
 			*W++ = d[1];
 			break;
 		   }
 
 		   case TW_CEXP:
-			A(m * r <= n);
+			A((j + (INT)p->v) * p->i < n);
+			A((j + (INT)p->v) * p->i > -n);
 			t->cexp(t, (j + (INT)p->v) * (INT)p->i, W);
 			W += 2;
 			break;
@@ -250,19 +252,5 @@ void X(twiddle_awake)(enum wakefulness wakefulness, twid **pp,
 	 default:
 	      mktwiddle(wakefulness, pp, instr, n, r, m);
 	      break;
-     }
-}
-
-/* return a pointer to twiddles (0 if none) starting at mstart out of m */
-const R *X(twiddle_shift)(const twid *p, INT mstart)
-{
-     if (p) {
-	  INT ntwiddle, vl;
-
-	  ntwiddle = twlen0(p->r, p->instr, &vl);
-	  A((mstart % vl) == 0);
-	  return (p->W + (mstart / vl) * ntwiddle);
-     } else {
-	  return 0;
      }
 }

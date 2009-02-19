@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2006 Matteo Frigo
- * Copyright (c) 2003, 2006 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-8 Matteo Frigo
+ * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,18 @@
  *
  */
 
-/* $Id: conf.c,v 1.3 2006-01-05 03:04:28 stevenj Exp $ */
 
 #include "threads.h"
 
 static const solvtab s =
 {
-#ifdef HAVE_THREADS
+#if defined(HAVE_THREADS) || defined(HAVE_OPENMP)
 
      SOLVTAB(X(dft_thr_vrank_geq1_register)),
      SOLVTAB(X(rdft_thr_vrank_geq1_register)),
      SOLVTAB(X(rdft2_thr_vrank_geq1_register)),
 
-#endif /* HAVE_THREADS */
+#endif 
 
      SOLVTAB_END
 };

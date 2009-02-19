@@ -1,9 +1,9 @@
 # this makefile requires GNU make.
 
 EXTRA_DIST = .depend algsimp.ml annotate.ml assoctable.ml c.ml		\
-complex.ml conv.ml dag.ml expr.ml fft.ml gen_athnotw.ml gen_athtw.ml	\
-gen_conv.ml gen_hc2hc.ml gen_hc2r.ml gen_mdct.ml gen_notw.ml		\
-gen_notw_c.ml gen_r2hc.ml gen_r2r.ml gen_twiddle.ml gen_twiddle_c.ml	\
+complex.ml conv.ml dag.ml expr.ml fft.ml gen_hc2c.ml gen_hc2cdft.ml	\
+gen_hc2cdft_c.ml gen_hc2hc.ml gen_r2cb.ml gen_mdct.ml gen_notw.ml	\
+gen_notw_c.ml gen_r2cf.ml gen_r2r.ml gen_twiddle.ml gen_twiddle_c.ml	\
 gen_twidsq.ml gen_twidsq_c.ml genutil.ml littlesimp.ml magic.ml		\
 monads.ml number.ml oracle.ml schedule.ml simd.ml simdmagic.ml		\
 to_alist.ml trig.ml twiddle.ml unique.ml util.ml variable.ml		\
@@ -13,8 +13,8 @@ schedule.mli simd.mli to_alist.mli trig.mli twiddle.mli unique.mli	\
 util.mli variable.mli
 
 noinst_SCRIPTS=gen_notw gen_notw_c gen_twiddle gen_twiddle_c		\
-gen_twidsq gen_twidsq_c gen_r2r gen_conv gen_r2hc gen_hc2r gen_hc2hc	\
-gen_mdct
+gen_twidsq gen_twidsq_c gen_r2r gen_r2cf gen_r2cb gen_hc2c gen_hc2cdft	\
+gen_hc2cdft_c gen_hc2hc gen_mdct
 
 libgenfft_objects = unique.cmo magic.cmo util.cmo number.cmo		\
 variable.cmo expr.cmo littlesimp.cmo monads.cmo complex.cmo		\
@@ -65,17 +65,17 @@ gen_twidsq_c: libgenfft.cmxa $(gen_twidsq_c_OBJECTS:.cmo=.cmx)
 maintainer-clean-local::
 	rm -f gen_twidsq_c
 
-gen_r2hc_OBJECTS = gen_r2hc.cmo
-gen_r2hc: libgenfft.cmxa $(gen_r2hc_OBJECTS:.cmo=.cmx)
+gen_r2cf_OBJECTS = gen_r2cf.cmo
+gen_r2cf: libgenfft.cmxa $(gen_r2cf_OBJECTS:.cmo=.cmx)
 	$(OCAMLOPTLINK)
 maintainer-clean-local::
-	rm -f gen_r2hc
+	rm -f gen_r2cf
 
-gen_hc2r_OBJECTS = gen_hc2r.cmo
-gen_hc2r: libgenfft.cmxa $(gen_hc2r_OBJECTS:.cmo=.cmx)
+gen_r2cb_OBJECTS = gen_r2cb.cmo
+gen_r2cb: libgenfft.cmxa $(gen_r2cb_OBJECTS:.cmo=.cmx)
 	$(OCAMLOPTLINK)
 maintainer-clean-local::
-	rm -f gen_hc2r
+	rm -f gen_r2cb
 
 gen_hc2hc_OBJECTS = gen_hc2hc.cmo
 gen_hc2hc: libgenfft.cmxa $(gen_hc2hc_OBJECTS:.cmo=.cmx)
@@ -83,18 +83,29 @@ gen_hc2hc: libgenfft.cmxa $(gen_hc2hc_OBJECTS:.cmo=.cmx)
 maintainer-clean-local::
 	rm -f gen_hc2hc
 
+gen_hc2c_OBJECTS = gen_hc2c.cmo
+gen_hc2c: libgenfft.cmxa $(gen_hc2c_OBJECTS:.cmo=.cmx)
+	$(OCAMLOPTLINK)
+maintainer-clean-local::
+	rm -f gen_hc2c
+
+gen_hc2cdft_OBJECTS = gen_hc2cdft.cmo
+gen_hc2cdft: libgenfft.cmxa $(gen_hc2cdft_OBJECTS:.cmo=.cmx)
+	$(OCAMLOPTLINK)
+maintainer-clean-local::
+	rm -f gen_hc2cdft
+
+gen_hc2cdft_c_OBJECTS = gen_hc2cdft_c.cmo
+gen_hc2cdft_c: libgenfft.cmxa $(gen_hc2cdft_c_OBJECTS:.cmo=.cmx)
+	$(OCAMLOPTLINK)
+maintainer-clean-local::
+	rm -f gen_hc2cdft_c
+
 gen_r2r_OBJECTS = gen_r2r.cmo
 gen_r2r: libgenfft.cmxa $(gen_r2r_OBJECTS:.cmo=.cmx)
 	$(OCAMLOPTLINK)
 maintainer-clean-local::
 	rm -f gen_r2r
-
-# experimental stuff
-gen_conv_OBJECTS = gen_conv.cmo
-gen_conv: libgenfft.cmxa $(gen_conv_OBJECTS:.cmo=.cmx)
-	$(OCAMLOPTLINK)
-maintainer-clean-local::
-	rm -f gen_conv
 
 gen_mdct_OBJECTS = gen_mdct.cmo
 gen_mdct: libgenfft.cmxa $(gen_mdct_OBJECTS:.cmo=.cmx)
