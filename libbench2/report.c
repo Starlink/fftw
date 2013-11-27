@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -58,8 +58,8 @@ static void mkstat(double *t, int st, struct stats *a)
 	  for (j = 0; j < i - 1; ++j) {
 	       double t0, t1;
 	       if ((t0 = t[j]) > (t1 = t[j + 1])) {
-		    t[j] = t0;
-		    t[j + 1] = t1;
+		    t[j] = t1;
+		    t[j + 1] = t0;
 	       }
 	  } 
      }

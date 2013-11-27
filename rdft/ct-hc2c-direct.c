@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-8 Matteo Frigo
- * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-11 Matteo Frigo
+ * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -134,8 +134,9 @@ static void apply_buf(const plan *ego_, R *cr, R *ci)
      INT batchsz = compute_batchsize(ego->r);
      R *buf;
      INT mb = 1, me = (ego->m+1) / 2;
+     size_t bufsz = ego->r * batchsz * 2 * sizeof(R);
 
-     STACK_MALLOC(R *, buf, ego->r * batchsz * 2 * sizeof(R));
+     BUF_ALLOC(R *, buf, bufsz);
 
      for (i = 0; i < v; ++i, cr += ego->vs, ci += ego->vs) {
 	  R *Rp = cr;
@@ -156,7 +157,7 @@ static void apply_buf(const plan *ego_, R *cr, R *ci)
 
      }
 
-     STACK_FREE(buf);
+     BUF_FREE(buf, bufsz);
 }
 
 /*************************************************************
@@ -290,7 +291,7 @@ static int applicable(const S *ego, rdft_kind kind,
      }
 
      if (NO_UGLYP(plnr) && X(ct_uglyp)((ego->bufferedp? (INT)512 : (INT)16),
-				       m * r, r))
+				       v, m * r, r))
 	  return 0;
 
      return 1;

@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>The 1d Discrete Fourier Transform (DFT) - FFTW 3.2.1</title>
+<title>The 1d Discrete Fourier Transform (DFT) - FFTW 3.3.3</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.3.3">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes" title="What FFTW Really Computes">
 <link rel="prev" href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes" title="What FFTW Really Computes">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.3.3, 25 November 2012).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,9 +46,9 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="The-1d-Discrete-Fourier-Transform-(DFT)"></a>
 <a name="The-1d-Discrete-Fourier-Transform-_0028DFT_0029"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="The-1d-Real_002ddata-DFT.html#The-1d-Real_002ddata-DFT">The 1d Real-data DFT</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes">What FFTW Really Computes</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes">What FFTW Really Computes</a>
@@ -57,18 +57,18 @@ Up:&nbsp;<a rel="up" accesskey="u" href="What-FFTW-Really-Computes.html#What-FFT
 
 <h4 class="subsection">4.8.1 The 1d Discrete Fourier Transform (DFT)</h4>
 
-<p><a name="index-discrete-Fourier-transform-282"></a><a name="index-DFT-283"></a>The forward (<code>FFTW_FORWARD</code>) discrete Fourier transform (DFT) of a
+<p><a name="index-discrete-Fourier-transform-292"></a><a name="index-DFT-293"></a>The forward (<code>FFTW_FORWARD</code>) discrete Fourier transform (DFT) of a
 1d complex array X of size n computes an array Y,
 where:
 <center><img src="equation-dft.png" align="top">.</center>The backward (<code>FFTW_BACKWARD</code>) DFT computes:
 <center><img src="equation-idft.png" align="top">.</center>
 
-   <p><a name="index-normalization-284"></a>FFTW computes an unnormalized transform, in that there is no coefficient
+   <p><a name="index-normalization-294"></a>FFTW computes an unnormalized transform, in that there is no coefficient
 in front of the summation in the DFT.  In other words, applying the
 forward and then the backward transform will multiply the input by
 n.
 
-   <p><a name="index-frequency-285"></a>From above, an <code>FFTW_FORWARD</code> transform corresponds to a sign of
+   <p><a name="index-frequency-295"></a>From above, an <code>FFTW_FORWARD</code> transform corresponds to a sign of
 -1 in the exponent of the DFT.  Note also that we use the
 standard &ldquo;in-order&rdquo; output ordering&mdash;the k-th output
 corresponds to the frequency k/n (or k/T, where T
@@ -80,5 +80,5 @@ output.  (The frequency -k/n is the same as the frequency
 (n-k)/n.)
 
 <!-- =========> -->
-</body></html>
+   </body></html>
 

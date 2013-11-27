@@ -46,7 +46,7 @@ sub flush_problems {
 
     if ($#list_of_problems >= 0) {
 	for (@list_of_problems) {
-	    $problist = "$problist --verify $_";
+	    $problist = "$problist --verify '$_'";
 	}
 	print "Executing \"$program $options $problist\"\n" 
 	    if $verbose;
@@ -114,7 +114,8 @@ sub do_problem {
     } else {
 	print "Executing \"$program $options --can-do $problem\"\n" 
 	    if $verbose;
-	if (`$program $options --can-do $problem` ne "#f\n") {
+	$result=`$program $options --can-do $problem`;
+	if ($result ne "#f\n" && $result ne "#f\r\n") {
 	    print "FAILED $program: $problem is not undoable\n";
 	    exit 1 unless $keepgoing;
 	}
@@ -231,6 +232,7 @@ sub one_random_test {
 	$sz = "]${sz}" if ($stype == 1);
 	$sz = "[${sz}" if ($stype == 2);
     }
+    $sz = "d$sz" if (int(rand(3)) == 0);
     if ($is_r2r) {
 	do_problem("ik$sz", 1);
 	do_problem("ok$sz", 1);

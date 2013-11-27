@@ -1,16 +1,16 @@
 <html lang="en">
 <head>
-<title>One-dimensional distributions - FFTW 3.2alpha3</title>
+<title>One-dimensional distributions - FFTW 3.3.3</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2alpha3">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.3.3">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
-<link rel="up" href="MPI-data-distribution.html#MPI-data-distribution" title="MPI data distribution">
+<link rel="up" href="MPI-Data-Distribution.html#MPI-Data-Distribution" title="MPI Data Distribution">
 <link rel="prev" href="Transposed-distributions.html#Transposed-distributions" title="Transposed distributions">
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2alpha3, 14 August 2007).
+(version 3.3.3, 25 November 2012).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -45,11 +45,11 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="One-dimensional-distributions"></a>
 <a name="One_002ddimensional-distributions"></a>
+<p>
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Transposed-distributions.html#Transposed-distributions">Transposed distributions</a>,
-Up:&nbsp;<a rel="up" accesskey="u" href="MPI-data-distribution.html#MPI-data-distribution">MPI data distribution</a>
+Up:&nbsp;<a rel="up" accesskey="u" href="MPI-Data-Distribution.html#MPI-Data-Distribution">MPI Data Distribution</a>
 <hr>
 </div>
 
@@ -58,7 +58,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="MPI-data-distribution.html#MPI-data-dis
 <p>For one-dimensional distributed DFTs using FFTW, matters are slightly
 more complicated because the data distribution is more closely tied to
 how the algorithm works.  In particular, you can no longer pass an
-arbitrary block size, and must accept FFTW's default, and the block
+arbitrary block size and must accept FFTW's default; also, the block
 sizes may be different for input and output.  Also, the data
 distribution depends on the flags and transform direction, in order
 for forward and backward transforms to work correctly.
@@ -68,7 +68,7 @@ for forward and backward transforms to work correctly.
                      ptrdiff_t *local_ni, ptrdiff_t *local_i_start,
                      ptrdiff_t *local_no, ptrdiff_t *local_o_start);
 </pre>
-   <p><a name="index-fftw_005fmpi_005flocal_005fsize_005f1d-363"></a>
+   <p><a name="index-fftw_005fmpi_005flocal_005fsize_005f1d-383"></a>
 This function computes the data distribution for a 1d transform of
 size <code>n0</code> with the given transform <code>sign</code> and <code>flags</code>. 
 Both input and output data use block distributions.  The input on the
@@ -96,10 +96,11 @@ a communications step.)  If you pass <code>FFTW_MPI_SCRAMBLED_OUT</code> in
 the flags, then the output is stored in this (undocumented) scrambled
 order.  Conversely, to perform the inverse transform of data in
 scrambled order, pass the <code>FFTW_MPI_SCRAMBLED_IN</code> flag. 
-<a name="index-FFTW_005fMPI_005fSCRAMBLED_005fOUT-364"></a><a name="index-FFTW_005fMPI_005fSCRAMBLED_005fIN-365"></a>
-In MPI FFTW, only composite sizes <code>n0</code> can be parallelized; we
+<a name="index-FFTW_005fMPI_005fSCRAMBLED_005fOUT-384"></a><a name="index-FFTW_005fMPI_005fSCRAMBLED_005fIN-385"></a>
+
+   <p>In MPI FFTW, only composite sizes <code>n0</code> can be parallelized; we
 have not yet implemented a parallel algorithm for large prime sizes.
 
 <!--  -->
-</body></html>
+   </body></html>
 

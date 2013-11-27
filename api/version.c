@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-8 Matteo Frigo
- * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-11 Matteo Frigo
+ * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -22,7 +22,11 @@
 #include "api.h"
 
 const char X(cc)[] = FFTW_CC;
-const char X(codelet_optim)[] = CODELET_OPTIM;
+
+/* fftw <= 3.2.2 had special compiler flags for codelets, which are
+   not used anymore.  We keep this variable around because it is part
+   of the ABI */
+const char X(codelet_optim)[] = "";
 
 const char X(version)[] = PACKAGE "-" PACKAGE_VERSION
 
@@ -30,16 +34,20 @@ const char X(version)[] = PACKAGE "-" PACKAGE_VERSION
    "-fma"
 #endif
 
-#if HAVE_SSE
-   "-sse"
-#endif
-
 #if HAVE_SSE2
    "-sse2"
 #endif
 
+#if HAVE_AVX
+   "-avx"
+#endif
+
 #if HAVE_ALTIVEC
    "-altivec"
+#endif
+
+#if HAVE_NEON
+   "-neon"
 #endif
 
 ;

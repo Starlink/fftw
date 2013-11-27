@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -236,12 +236,12 @@ bench_problem *problem_parse(const char *s)
      int transpose = 0;
 
      p = (bench_problem *) bench_malloc(sizeof(bench_problem));
-
      p->kind = PROBLEM_COMPLEX;
      p->k = 0;
      p->sign = -1;
      p->in = p->out = 0;
      p->inphys = p->outphys = 0;
+     p->iphyssz = p->ophyssz = 0;
      p->in_place = 0;
      p->destroy_input = 0;
      p->split = 0;

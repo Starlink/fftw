@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-8 Matteo Frigo
- * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-11 Matteo Frigo
+ * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -43,7 +43,7 @@ typedef struct {
 } PD;
 
 static void *spawn_apply(spawn_data *d)
-WITH_ALIGNED_STACK({
+{
      PD *ego = (PD *) d->data;
      int thr_num = d->thr_num;
      plan_rdft *cld = (plan_rdft *) ego->cldrn[d->thr_num];
@@ -51,7 +51,7 @@ WITH_ALIGNED_STACK({
      cld->apply((plan *) cld,
 		ego->I + thr_num * ego->its, ego->O + thr_num * ego->ots);
      return 0;
-})
+}
 
 static void apply(const plan *ego_, R *I, R *O)
 {

@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>FFTW MPI Performance Tips - FFTW 3.2alpha3</title>
+<title>FFTW MPI Performance Tips - FFTW 3.3.3</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2alpha3">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.3.3">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Distributed_002dmemory-FFTW-with-MPI.html#Distributed_002dmemory-FFTW-with-MPI" title="Distributed-memory FFTW with MPI">
 <link rel="prev" href="Avoiding-MPI-Deadlocks.html#Avoiding-MPI-Deadlocks" title="Avoiding MPI Deadlocks">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2alpha3, 14 August 2007).
+(version 3.3.3, 25 November 2012).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,8 +46,8 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="FFTW-MPI-Performance-Tips"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Combining-MPI-and-Threads.html#Combining-MPI-and-Threads">Combining MPI and Threads</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Avoiding-MPI-Deadlocks.html#Avoiding-MPI-Deadlocks">Avoiding MPI Deadlocks</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Distributed_002dmemory-FFTW-with-MPI.html#Distributed_002dmemory-FFTW-with-MPI">Distributed-memory FFTW with MPI</a>
@@ -64,22 +64,25 @@ currently limited by the size of the first dimension.
 (Multidimensional block distributions may be supported by a future
 version.) More generally, you should ideally arrange the dimensions so
 that FFTW can divide them equally among the processes. See <a href="Load-balancing.html#Load-balancing">Load balancing</a>. 
-<a name="index-block-distribution-394"></a><a name="index-load-balancing-395"></a>
-Second, if it is not too inconvenient, you should consider working
+<a name="index-block-distribution-423"></a><a name="index-load-balancing-424"></a>
+
+   <p>Second, if it is not too inconvenient, you should consider working
 with transposed output for multidimensional plans, as this saves a
 considerable amount of communications.  See <a href="Transposed-distributions.html#Transposed-distributions">Transposed distributions</a>. 
-<a name="index-transpose-396"></a>
-Third, the fastest choices are generally either an in-place transform
+<a name="index-transpose-425"></a>
+
+   <p>Third, the fastest choices are generally either an in-place transform
 or an out-of-place transform with the <code>FFTW_DESTROY_INPUT</code> flag
 (which allows the input array to be used as scratch space).  In-place
 is especially beneficial if the amount of data per process is large. 
-<a name="index-FFTW_005fDESTROY_005fINPUT-397"></a>
-Fourth, if you have multiple arrays to transform at once, rather than
+<a name="index-FFTW_005fDESTROY_005fINPUT-426"></a>
+
+   <p>Fourth, if you have multiple arrays to transform at once, rather than
 calling FFTW's MPI transforms several times it usually seems to be
 faster to interleave the data and use the advanced interface.  (This
 groups the communications together instead of requiring separate
 messages for each transform.)
 
 <!--  -->
-</body></html>
+   </body></html>
 
