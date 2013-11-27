@@ -19,4 +19,6 @@ tools/fftw-wisdom
 tools/fftw-wisdom-to-conf
 tools/fftw-wisdom.1
 tools/fftw_wisdom.1
-
+api/fftw3.f03
+mpi/fftw3-mpi.f03
+mpi/fftw3l-mpi.f03
