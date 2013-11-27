@@ -1,3 +1,15 @@
+FFTW 3.3.3
+
+* Fix deadlock bug in MPI transforms (thanks to Michael Pippig for the
+  bug report and patch, and to Graham Dennis for the bug report).
+
+* Use 128-bit ARM NEON instructions instead of 64-bits.  This change
+  appears to speed up even ARM processors with a 64-bit NEON pipe.
+
+* Speed improvements for single-precision AVX.
+
+* Speed up planner on machines without "official" cycle counters, such as ARM.
+
 FFTW 3.3.2
 
 * Removed an archaic stack-alignment hack that was failing with

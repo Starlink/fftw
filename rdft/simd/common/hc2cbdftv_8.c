@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:05:06 EDT 2012 */
+/* Generated on Sun Nov 25 07:42:29 EST 2012 */
 
 #include "codelet-rdft.h"
 
@@ -39,7 +39,7 @@ static void hc2cbdftv_8(R *Rp, R *Ip, R *Rm, R *Im, const R *W, stride rs, INT m
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * ((TWVL / VL) * 14)); m < me; m = m + VL, Rp = Rp + (VL * ms), Ip = Ip + (VL * ms), Rm = Rm - (VL * ms), Im = Im - (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * ((TWVL / VL) * 14)); m < me; m = m + VL, Rp = Rp + (VL * ms), Ip = Ip + (VL * ms), Rm = Rm - (VL * ms), Im = Im - (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(32, rs)) {
 	       V TJ, T4, Tf, TB, TD, TE, Tm, T1, Tj, TF, Tp, Tb, Tg, Tt, Tx;
 	       V T2, T3, Td, Te, T5, T6, T8, T9, Tn, T7, To, Ta, Tk, Tl, TG;
 	       V TL, Tq, Tc, Tu, Th, Tv, Ty, Tw, TC, Ti, TK, TA, Tz, TI, TH;
@@ -138,7 +138,7 @@ static void hc2cbdftv_8(R *Rp, R *Ip, R *Rm, R *Im, const R *W, stride rs, INT m
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * ((TWVL / VL) * 14)); m < me; m = m + VL, Rp = Rp + (VL * ms), Ip = Ip + (VL * ms), Rm = Rm - (VL * ms), Im = Im - (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * ((TWVL / VL) * 14)); m < me; m = m + VL, Rp = Rp + (VL * ms), Ip = Ip + (VL * ms), Rm = Rm - (VL * ms), Im = Im - (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(32, rs)) {
 	       V T5, Tj, Tq, TI, Te, Tk, Tt, TJ, T2, Tg, T4, Ti, T3, Th, To;
 	       V Tp, T6, Tc, T8, Tb, T7, Ta, T9, Td, Tr, Ts, TP, Tu, Tm, TO;
 	       V Tn, Tf, Tl, T1, TN, Tv, TR, Tw, TQ, TC, TK, TA, TG, TB, TH;

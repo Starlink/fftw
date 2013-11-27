@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:00:03 EDT 2012 */
+/* Generated on Sun Nov 25 07:36:54 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -49,7 +49,7 @@ static void n1fv_32(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 	  R *xo;
 	  xi = ri;
 	  xo = ro;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(64, is), MAKE_VOLATILE_STRIDE(64, os)) {
 	       V T1h, Tr, T1a, T1k, TI, T1b, T1L, T1P, T1I, T1G, T1O, T1Q, T1H, T1z, T1c;
 	       V TZ;
 	       {
@@ -367,7 +367,7 @@ static void n1fv_32(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 	  R *xo;
 	  xi = ri;
 	  xo = ro;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(64, is), MAKE_VOLATILE_STRIDE(64, os)) {
 	       V T1T, T1W, T2K, T2x, T16, T1A, Tb, T1p, TT, T1v, TY, T1w, T27, T2a, T2b;
 	       V T2H, T2O, TC, T1s, TH, T1t, T20, T23, T24, T2E, T2N, T2g, T2j, Tq, T1B;
 	       V T19, T1q, T2A, T2L;

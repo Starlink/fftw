@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:01:54 EDT 2012 */
+/* Generated on Sun Nov 25 07:38:54 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -44,7 +44,7 @@ static void t3fv_5(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ri;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(5, rs)) {
 	       V T2, T5, T1, T3, Td, T7, Tb;
 	       T2 = LDW(&(W[0]));
 	       T5 = LDW(&(W[TWVL * 2]));
@@ -121,7 +121,7 @@ static void t3fv_5(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ri;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 4)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 4), MAKE_VOLATILE_STRIDE(5, rs)) {
 	       V T1, T4, T5, T9;
 	       T1 = LDW(&(W[0]));
 	       T4 = LDW(&(W[TWVL * 2]));

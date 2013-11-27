@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:03:39 EDT 2012 */
+/* Generated on Sun Nov 25 07:40:50 EST 2012 */
 
 #include "codelet-rdft.h"
 
@@ -42,7 +42,7 @@ static void hc2cfdft2_16(R *Rp, R *Ip, R *Rm, R *Im, const R *W, stride rs, INT 
      DK(KP500000000, +0.500000000000000000000000000000000000000000000);
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * 8); m < me; m = m + 1, Rp = Rp + ms, Ip = Ip + ms, Rm = Rm - ms, Im = Im - ms, W = W + 8, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * 8); m < me; m = m + 1, Rp = Rp + ms, Ip = Ip + ms, Rm = Rm - ms, Im = Im - ms, W = W + 8, MAKE_VOLATILE_STRIDE(64, rs)) {
 	       E T4p, T4o, T4n, T4s;
 	       {
 		    E T1, T2, Tw, Ty, Th, T3, Tx, TE, Ti, TK, Tj, T4, T5;
@@ -485,7 +485,7 @@ static void hc2cfdft2_16(R *Rp, R *Ip, R *Rm, R *Im, const R *W, stride rs, INT 
      DK(KP500000000, +0.500000000000000000000000000000000000000000000);
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * 8); m < me; m = m + 1, Rp = Rp + ms, Ip = Ip + ms, Rm = Rm - ms, Im = Im - ms, W = W + 8, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * 8); m < me; m = m + 1, Rp = Rp + ms, Ip = Ip + ms, Rm = Rm - ms, Im = Im - ms, W = W + 8, MAKE_VOLATILE_STRIDE(64, rs)) {
 	       E T1, T4, T2, T5, T7, Td, T12, TY, Tk, Ti, Tm, T1l, T1b, TL, T1h;
 	       E Ts, TR, T17, Ty, Tz, TA, TE, T1L, T1Q, T1H, T1O, T24, T2d, T20, T2b;
 	       {

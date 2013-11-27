@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 10:59:12 EDT 2012 */
+/* Generated on Sun Nov 25 07:35:49 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -42,7 +42,7 @@ static void t1_10(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DK(KP618033988, +0.618033988749894848204586834365638117720309180);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 18); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 18, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 18); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 18, MAKE_VOLATILE_STRIDE(20, rs)) {
 	       E T1X, T21, T20, T22;
 	       {
 		    E T23, T1U, T8, T12, T1y, T25, T1P, T1H, T1Y, T18, T10, T2b, T1K, T1O, T15;
@@ -293,7 +293,7 @@ static void t1_10(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DK(KP559016994, +0.559016994374947424102293417182819058860154590);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 18); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 18, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 18); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 18, MAKE_VOLATILE_STRIDE(20, rs)) {
 	       E T7, T1O, TT, T1C, TF, TQ, TR, T1o, T1p, T1y, TX, TY, TZ, T1d, T1g;
 	       E T1M, Ti, Tt, Tu, T1r, T1s, T1x, TU, TV, TW, T16, T19, T1L;
 	       {

@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 10:59:28 EDT 2012 */
+/* Generated on Sun Nov 25 07:36:09 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -42,7 +42,7 @@ static void t2_5(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DK(KP618033988, +0.618033988749894848204586834365638117720309180);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 4); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 4, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 4); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 4, MAKE_VOLATILE_STRIDE(10, rs)) {
 	       E Ta, T1, TO, Tp, TS, Ti, TL, TC, To, TE, Ts, TF, T2, T8, T5;
 	       E TT, Tt, TG;
 	       T2 = W[0];
@@ -168,7 +168,7 @@ static void t2_5(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DK(KP951056516, +0.951056516295153572116439333379382143405698634);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 4); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 4, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 4); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 4, MAKE_VOLATILE_STRIDE(10, rs)) {
 	       E T2, T4, T7, T9, Tb, Tl, Tf, Tj;
 	       {
 		    E T8, Te, Ta, Td;

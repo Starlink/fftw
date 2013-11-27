@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:04:16 EDT 2012 */
+/* Generated on Sun Nov 25 07:41:32 EST 2012 */
 
 #include "codelet-rdft.h"
 
@@ -40,7 +40,7 @@ static void r2cbIII_3(R *R0, R *R1, R *Cr, R *Ci, stride rs, stride csr, stride 
      DK(KP2_000000000, +2.000000000000000000000000000000000000000000000);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, R0 = R0 + ovs, R1 = R1 + ovs, Cr = Cr + ivs, Ci = Ci + ivs, MAKE_VOLATILE_STRIDE(rs), MAKE_VOLATILE_STRIDE(csr), MAKE_VOLATILE_STRIDE(csi)) {
+	  for (i = v; i > 0; i = i - 1, R0 = R0 + ovs, R1 = R1 + ovs, Cr = Cr + ivs, Ci = Ci + ivs, MAKE_VOLATILE_STRIDE(12, rs), MAKE_VOLATILE_STRIDE(12, csr), MAKE_VOLATILE_STRIDE(12, csi)) {
 	       E T4, T1, T2, T3;
 	       T4 = Ci[0];
 	       T1 = Cr[WS(csr, 1)];
@@ -76,7 +76,7 @@ static void r2cbIII_3(R *R0, R *R1, R *Cr, R *Ci, stride rs, stride csr, stride 
      DK(KP1_732050807, +1.732050807568877293527446341505872366942805254);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, R0 = R0 + ovs, R1 = R1 + ovs, Cr = Cr + ivs, Ci = Ci + ivs, MAKE_VOLATILE_STRIDE(rs), MAKE_VOLATILE_STRIDE(csr), MAKE_VOLATILE_STRIDE(csi)) {
+	  for (i = v; i > 0; i = i - 1, R0 = R0 + ovs, R1 = R1 + ovs, Cr = Cr + ivs, Ci = Ci + ivs, MAKE_VOLATILE_STRIDE(12, rs), MAKE_VOLATILE_STRIDE(12, csr), MAKE_VOLATILE_STRIDE(12, csi)) {
 	       E T5, T1, T2, T3, T4;
 	       T4 = Ci[0];
 	       T5 = KP1_732050807 * T4;

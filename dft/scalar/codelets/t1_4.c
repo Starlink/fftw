@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 10:59:09 EDT 2012 */
+/* Generated on Sun Nov 25 07:35:47 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -38,7 +38,7 @@ static void t1_4(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 6); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 6, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 6); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 6, MAKE_VOLATILE_STRIDE(8, rs)) {
 	       E To, Te, Tm, T8, Tw, Tx, Tq, Tk;
 	       {
 		    E T1, Tv, Tu, T7, Tg, Tj, Tf, Ti, Tp, Th;
@@ -123,7 +123,7 @@ static void t1_4(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 6); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 6, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 6); m < me; m = m + 1, ri = ri + ms, ii = ii + ms, W = W + 6, MAKE_VOLATILE_STRIDE(8, rs)) {
 	       E T1, Tp, T6, To, Tc, Tk, Th, Tl;
 	       T1 = ri[0];
 	       Tp = ii[0];

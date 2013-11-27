@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:02:00 EDT 2012 */
+/* Generated on Sun Nov 25 07:39:04 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -42,7 +42,7 @@ static void t1bv_12(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ii;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(12, rs)) {
 	       V TI, Ti, TA, T7, Tm, TE, Tw, Tk, Tf, TB, TU, TM;
 	       {
 		    V T9, TK, Tj, TL, Te;
@@ -183,7 +183,7 @@ static void t1bv_12(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ii;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 22)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 22), MAKE_VOLATILE_STRIDE(12, rs)) {
 	       V T1, Tt, T6, T7, TB, Tq, TC, TD, T9, Tu, Te, Tf, Tx, Tl, Ty;
 	       V Tz;
 	       {

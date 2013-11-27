@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:02:20 EDT 2012 */
+/* Generated on Sun Nov 25 07:39:24 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -41,7 +41,7 @@ static void t1sv_16(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 30); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 30), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 30); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 30), MAKE_VOLATILE_STRIDE(32, rs)) {
 	       V T2S, T2O, T2B, T2j, T2A, T24, T3J, T3L, T2Q, T2I, T2R, T2L, T2C, T2y, T3D;
 	       V T3F;
 	       {
@@ -432,7 +432,7 @@ static void t1sv_16(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
      DVK(KP707106781, +0.707106781186547524400844362104849039284835938);
      {
 	  INT m;
-	  for (m = mb, W = W + (mb * 30); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 30), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * 30); m < me; m = m + (2 * VL), ri = ri + ((2 * VL) * ms), ii = ii + ((2 * VL) * ms), W = W + ((2 * VL) * 30), MAKE_VOLATILE_STRIDE(32, rs)) {
 	       V T7, T37, T1t, T2U, Ti, T38, T1w, T2R, Tu, T2s, T1C, T2c, TF, T2t, T1H;
 	       V T2d, T1f, T1q, T2B, T2C, T2D, T2E, T1Z, T2j, T24, T2k, TS, T13, T2w, T2x;
 	       V T2y, T2z, T1O, T2g, T1T, T2h;

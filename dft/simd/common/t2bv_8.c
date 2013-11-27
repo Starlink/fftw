@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:02:05 EDT 2012 */
+/* Generated on Sun Nov 25 07:39:09 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -41,7 +41,7 @@ static void t2bv_8(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ii;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 14)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 14)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(8, rs)) {
 	       V T1, T2, Th, Tj, T5, T7, Ta, Tc;
 	       T1 = LD(&(x[0]), ms, &(x[0]));
 	       T2 = LD(&(x[WS(rs, 4)]), ms, &(x[0]));
@@ -135,7 +135,7 @@ static void t2bv_8(R *ri, R *ii, const R *W, stride rs, INT mb, INT me, INT ms)
 	  INT m;
 	  R *x;
 	  x = ii;
-	  for (m = mb, W = W + (mb * ((TWVL / VL) * 14)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + (mb * ((TWVL / VL) * 14)); m < me; m = m + VL, x = x + (VL * ms), W = W + (TWVL * 14), MAKE_VOLATILE_STRIDE(8, rs)) {
 	       V Tl, Tq, Tg, Tr, T5, Tt, Ta, Tu, Ti, Tk, Tj;
 	       Ti = LD(&(x[0]), ms, &(x[0]));
 	       Tj = LD(&(x[WS(rs, 4)]), ms, &(x[0]));

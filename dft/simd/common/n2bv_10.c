@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:00:36 EDT 2012 */
+/* Generated on Sun Nov 25 07:37:29 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -46,7 +46,7 @@ static void n2bv_10(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 	  R *xo;
 	  xi = ii;
 	  xo = io;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(20, is), MAKE_VOLATILE_STRIDE(20, os)) {
 	       V Tb, Tr, T3, Ts, T6, Tw, Tg, Tt, T9, Tc, T1, T2;
 	       T1 = LD(&(xi[0]), ivs, &(xi[0]));
 	       T2 = LD(&(xi[WS(is, 5)]), ivs, &(xi[WS(is, 1)]));
@@ -173,7 +173,7 @@ static void n2bv_10(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 	  R *xo;
 	  xi = ii;
 	  xo = io;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(20, is), MAKE_VOLATILE_STRIDE(20, os)) {
 	       V Tl, Ty, T7, Te, Tw, Tt, Tz, TA, TB, Tg, Th, Tm, Tj, Tk;
 	       Tj = LD(&(xi[0]), ivs, &(xi[0]));
 	       Tk = LD(&(xi[WS(is, 5)]), ivs, &(xi[WS(is, 1)]));

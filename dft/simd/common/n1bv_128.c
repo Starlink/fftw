@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:00:18 EDT 2012 */
+/* Generated on Sun Nov 25 07:37:08 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -73,7 +73,7 @@ static void n1bv_128(const R *ri, const R *ii, R *ro, R *io, stride is, stride o
 	  R *xo;
 	  xi = ii;
 	  xo = io;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(256, is), MAKE_VOLATILE_STRIDE(256, os)) {
 	       V T6a, T5J, T6b, T5K, T6B, T6C, T6J, T6A, T6o, T6j, T6r, T68, T6d, T5O, T5R;
 	       V T6e, T6D, T6K;
 	       {
@@ -1760,7 +1760,7 @@ static void n1bv_128(const R *ri, const R *ii, R *ro, R *io, stride is, stride o
 	  R *xo;
 	  xi = ii;
 	  xo = io;
-	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - VL, xi = xi + (VL * ivs), xo = xo + (VL * ovs), MAKE_VOLATILE_STRIDE(256, is), MAKE_VOLATILE_STRIDE(256, os)) {
 	       V T49, T6e, Tev, TgK, TfA, TgL, T4U, T5J, T7R, T9o, Tah, TdG, Tcw, TdB, T84;
 	       V T8T, Tfk, Tfo, T1G, T64, Tgs, Th6, T2p, T62, T7t, T9c, Tce, Tdm, T7i, T9e;
 	       V Tc8, Tdp, TgF, TgG, T4q, T4V, TeC, Tfx, T4H, T4W, T7X, T86, Tcr, TdH, T7U;

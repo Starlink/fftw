@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 10:59:05 EDT 2012 */
+/* Generated on Sun Nov 25 07:35:43 EST 2012 */
 
 #include "codelet-dft.h"
 
@@ -40,7 +40,7 @@ static void n1_12(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, 
      DK(KP500000000, +0.500000000000000000000000000000000000000000000);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, ri = ri + ivs, ii = ii + ivs, ro = ro + ovs, io = io + ovs, MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - 1, ri = ri + ivs, ii = ii + ivs, ro = ro + ovs, io = io + ovs, MAKE_VOLATILE_STRIDE(48, is), MAKE_VOLATILE_STRIDE(48, os)) {
 	       E TT, TW, TF, T1q, TY, TQ, TX, T1n;
 	       {
 		    E TA, TS, TR, T5, Ts, Tz, TD, TV, TU, Ta, Tx, TC, T1d, Th, TJ;
@@ -217,7 +217,7 @@ static void n1_12(const R *ri, const R *ii, R *ro, R *io, stride is, stride os, 
      DK(KP500000000, +0.500000000000000000000000000000000000000000000);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, ri = ri + ivs, ii = ii + ivs, ro = ro + ovs, io = io + ovs, MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - 1, ri = ri + ivs, ii = ii + ivs, ro = ro + ovs, io = io + ovs, MAKE_VOLATILE_STRIDE(48, is), MAKE_VOLATILE_STRIDE(48, os)) {
 	       E T5, TR, TA, Ts, TS, Tz, Ta, TU, TD, Tx, TV, TC, Tg, T1a, TG;
 	       E TJ, T1u, T1d, Tl, T1f, TL, TO, T1v, T1i;
 	       {

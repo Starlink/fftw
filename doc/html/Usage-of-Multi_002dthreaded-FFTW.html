@@ -1,8 +1,8 @@
 <html lang="en">
 <head>
-<title>Usage of Multi-threaded FFTW - FFTW 3.3.2</title>
+<title>Usage of Multi-threaded FFTW - FFTW 3.3.3</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.3.2">
+<meta name="description" content="FFTW 3.3.3">
 <meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Multi_002dthreaded-FFTW.html#Multi_002dthreaded-FFTW" title="Multi-threaded FFTW">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.3.2, 28 April 2012).
+(version 3.3.3, 25 November 2012).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -100,7 +100,7 @@ disabled for subsequent plans.
    <p><a name="index-OpenMP-336"></a>With OpenMP, to configure FFTW to use all of the currently running
 OpenMP threads (set by <code>omp_set_num_threads(nthreads)</code> or by the
 <code>OMP_NUM_THREADS</code> environment variable), you can do:
-<code>fftw_plan_with_nthreads(omp_get_num_threads())</code>. (The &lsquo;<samp><span class="samp">omp_</span></samp>&rsquo;
+<code>fftw_plan_with_nthreads(omp_get_max_threads())</code>. (The &lsquo;<samp><span class="samp">omp_</span></samp>&rsquo;
 OpenMP functions are declared via <code>#include &lt;omp.h&gt;</code>.)
 
    <p><a name="index-thread-safety-337"></a>Given a plan, you then execute it as usual with

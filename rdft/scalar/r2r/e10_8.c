@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:05:04 EDT 2012 */
+/* Generated on Sun Nov 25 07:42:27 EST 2012 */
 
 #include "codelet-rdft.h"
 
@@ -47,7 +47,7 @@ static void e10_8(const R *I, R *O, stride is, stride os, INT v, INT ivs, INT ov
      DK(KP1_847759065, +1.847759065022573512256366378793576573644833252);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, I = I + ivs, O = O + ovs, MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - 1, I = I + ivs, O = O + ovs, MAKE_VOLATILE_STRIDE(16, is), MAKE_VOLATILE_STRIDE(16, os)) {
 	       E T3, Te, Tl, Tp, Tm, T6, Tn, T9;
 	       {
 		    E T4, Tj, Tk, T5, T7, T8;
@@ -129,7 +129,7 @@ static void e10_8(const R *I, R *O, stride is, stride os, INT v, INT ivs, INT ov
      DK(KP707106781, +0.707106781186547524400844362104849039284835938);
      {
 	  INT i;
-	  for (i = v; i > 0; i = i - 1, I = I + ivs, O = O + ovs, MAKE_VOLATILE_STRIDE(is), MAKE_VOLATILE_STRIDE(os)) {
+	  for (i = v; i > 0; i = i - 1, I = I + ivs, O = O + ovs, MAKE_VOLATILE_STRIDE(16, is), MAKE_VOLATILE_STRIDE(16, os)) {
 	       E T3, Tj, Tf, Tk, Ta, Tn, Tc, Tm;
 	       {
 		    E T1, T2, Td, Te;

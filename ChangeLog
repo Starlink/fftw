@@ -1,3 +1,132 @@
+Sat Nov 24 22:37:54 EST 2012  stevenj@fftw.org
+  * fixed deadlock bug caused by bogosity flag getting out of synch between processes; thanks to Michael Pippig for the bug report
+
+    M ./kernel/ifftw.h +1
+    M ./kernel/planner.c -3 +6
+    M ./mpi/api.c +12
+
+Wed Nov 21 18:34:29 EST 2012  athena@fftw.org
+  * Updated NEWS
+
+    M ./NEWS -2 +7
+
+Wed Nov 21 18:33:15 EST 2012  athena@fftw.org
+  * use 2x2 AVX transposition instead of individual stores.
+  
+  This seems to improve single-precision AVX on Sandy Bridge machines.
+  
+
+    M ./simd-support/simd-avx.h -2 +14
+
+Tue Nov 20 12:18:00 EST 2012  stevenj@fftw.org
+  * revert part of Taylor patch to acx_mpi.m4: do not link -lmpi if mpicc works without libraries, as -lmpi may be some completely different MPI implementation
+
+    M ./m4/acx_mpi.m4 -3 +3
+
+Tue Nov 20 11:44:57 EST 2012  stevenj@fftw.org
+  * fix deadlock bug (thanks to Michael Pippig for the bug report and patch, and to Graham Dennis for the bug report) in which some processes called MPI_Alltoall and some called MPI_Alltoallv
+
+    M ./mpi/transpose-alltoall.c -3 +2
+
+Mon Oct 29 15:20:01 EDT 2012  athena@fftw.org
+  * fix texinfo quirk
+
+    M ./doc/tutorial.texi -2 +2
+
+Mon Oct 29 09:16:43 EDT 2012  athena@fftw.org
+  * clarify that padding only applies to in-place transforms
+
+    M ./doc/tutorial.texi -5 +10
+
+Sun Oct 28 18:42:48 EDT 2012  athena@fftw.org
+  * make the index-computation logic less paranoid
+  
+  The problem is that for each K and for each expression of the form P[I
+  + STRIDE * K] in a loop, most compilers will try to lift an induction
+  variable PK := &P[I + STRIDE * K].  In large codelets we have many
+  such values of K.  For example, a codelet of size 32 with 4 input
+  pointers will generate O(128) induction variables, which will likely
+  overflow the register set, which is likely worse than doing the index
+  computation in the first place.
+  
+  In the past we (wisely and correctly) assumed that compilers will do
+  the wrong thing, and consequently we disabled the induction-variable
+  "optimization" altogether by setting STRIDE ^= ZERO, where ZERO is a
+  value guaranteed to be 0.  Since the compiler does not know that
+  ZERO=0, it cannot perform its "optimization" and it is forced to
+  behave sensibly.
+  
+  With this patch, FFTW is a little bit less paranoid.  FFTW now
+  disables the induction-variable optimization" only when we estimate
+  that the codelet uses more than ESTIMATED_AVAILABLE_INDEX_REGISTERS
+  induction variables.
+  
+  Currently we set ESTIMATED_AVAILABLE_INDEX_REGISTERS=16.  16 registers ought
+  to be enough for anybody (or so the amd64 and ARM ISA's seem to imply).
+  
+
+    M ./genfft/gen_hc2c.ml -1 +1
+    M ./genfft/gen_hc2cdft.ml -1 +1
+    M ./genfft/gen_hc2cdft_c.ml -1 +1
+    M ./genfft/gen_hc2hc.ml -1 +1
+    M ./genfft/gen_notw.ml -2 +2
+    M ./genfft/gen_notw_c.ml -2 +2
+    M ./genfft/gen_r2cb.ml -3 +3
+    M ./genfft/gen_r2cf.ml -3 +3
+    M ./genfft/gen_r2r.ml -2 +2
+    M ./genfft/gen_twiddle.ml -1 +1
+    M ./genfft/gen_twiddle_c.ml -1 +1
+    M ./genfft/gen_twidsq.ml -2 +2
+    M ./genfft/gen_twidsq_c.ml -2 +2
+    M ./genfft/genutil.ml -1 +2
+    M ./kernel/ifftw.h -3 +20
+
+Sun Oct 28 18:33:24 EDT 2012  athena@fftw.org
+  * silence warnings
+
+    M ./kernel/buffered.c +1
+    M ./rdft/rank0.c +1
+
+Sat Oct 27 09:58:49 EDT 2012  athena@fftw.org
+  * bump version to 3.3.3
+
+    M ./NEWS +7
+    M ./configure.ac -1 +1
+
+Sat Oct 27 09:55:15 EDT 2012  athena@fftw.org
+  * evaluate plans for >1ms when using gettimeofday()
+  
+  The previous limit 10ms was too paranoid, and it made life difficult
+  on machines without an "official" cycle counter, such as ARM.
+
+    M ./kernel/timer.c -1 +1
+
+Sat Oct 27 09:46:04 EDT 2012  athena@fftw.org
+  * use 4-way NEON SIMD instead of 2-way
+  
+  Kai-Uwe Bloem tried to warn me a year ago that 128-bit NEON was better
+  than 64-bit NEON even on machines with a 64-bit pipe, but I foolishly
+  did not listen.  Now that 128-bit NEON pipes are starting to appear on
+  the market it is definitely time to switch.
+  
+
+    M ./simd-support/simd-neon.h -55 +100
+
+Wed Sep 26 14:21:12 EDT 2012  athena@fftw.org
+  * Note that fftw-3.3 includes MPI support
+
+    M ./doc/intro.texi -5 +4
+
+Wed Jul 18 11:25:40 EDT 2012  athena@fftw.org
+  * remove obsolete unused function
+
+    M ./dft/bluestein.c -14
+
+Fri Jun 29 15:57:14 EDT 2012  stevenj@fftw.org
+  * whoops, call omp_get_max_threads; thanks to Hanno Rein for the bug report
+
+    M ./doc/threads.texi -1 +1
+
 Sat Apr 28 10:55:09 EDT 2012  athena@fftw.org
   * Fix libfftw3/libfftw3_threads chicken-egg problem
   

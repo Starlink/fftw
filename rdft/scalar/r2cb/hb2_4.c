@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Sat Apr 28 11:04:08 EDT 2012 */
+/* Generated on Sun Nov 25 07:41:23 EST 2012 */
 
 #include "codelet-rdft.h"
 
@@ -38,7 +38,7 @@ static void hb2_4(R *cr, R *ci, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * 4); m < me; m = m + 1, cr = cr + ms, ci = ci - ms, W = W + 4, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * 4); m < me; m = m + 1, cr = cr + ms, ci = ci - ms, W = W + 4, MAKE_VOLATILE_STRIDE(8, rs)) {
 	       E Tg, Tc, Te, To, Tn;
 	       {
 		    E T7, Tb, T8, Ta;
@@ -132,7 +132,7 @@ static void hb2_4(R *cr, R *ci, const R *W, stride rs, INT mb, INT me, INT ms)
 {
      {
 	  INT m;
-	  for (m = mb, W = W + ((mb - 1) * 4); m < me; m = m + 1, cr = cr + ms, ci = ci - ms, W = W + 4, MAKE_VOLATILE_STRIDE(rs)) {
+	  for (m = mb, W = W + ((mb - 1) * 4); m < me; m = m + 1, cr = cr + ms, ci = ci - ms, W = W + 4, MAKE_VOLATILE_STRIDE(8, rs)) {
 	       E T7, T9, T8, Ta, Tb, Td;
 	       T7 = W[0];
 	       T9 = W[1];
