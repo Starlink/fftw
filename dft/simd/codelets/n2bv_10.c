@@ -19,7 +19,7 @@
  */
 
 /* This file was automatically generated --- DO NOT EDIT */
-/* Generated on Mon Feb  9 19:52:22 EST 2009 */
+/* Generated on Sun Jul 12 06:40:01 EDT 2009 */
 
 #include "codelet-dft.h"
 
@@ -142,6 +142,7 @@ static void n2bv_10(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 }
 
 static const kdft_desc desc = { 10, "n2bv_10", {24, 4, 18, 0}, &GENUS, 0, 2, 0, 0 };
+
 void X(codelet_n2bv_10) (planner *p) {
      X(kdft_register) (p, n2bv_10, &desc);
 }
@@ -262,6 +263,7 @@ static void n2bv_10(const R *ri, const R *ii, R *ro, R *io, stride is, stride os
 }
 
 static const kdft_desc desc = { 10, "n2bv_10", {36, 6, 6, 0}, &GENUS, 0, 2, 0, 0 };
+
 void X(codelet_n2bv_10) (planner *p) {
      X(kdft_register) (p, n2bv_10, &desc);
 }

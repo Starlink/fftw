@@ -49,6 +49,9 @@
 /* Define to enable debugging malloc. */
 #undef FFTW_DEBUG_MALLOC
 
+/* Define to enable the use of alloca(). */
+#undef FFTW_ENABLE_ALLOCA
+
 /* Define to compile in long-double precision. */
 #undef FFTW_LDOUBLE
 
@@ -255,6 +258,9 @@
 
 /* Define to 1 if you have the `vprintf' function. */
 #undef HAVE_VPRINTF
+
+/* Define to 1 if you have the <xmmintrin.h> header file. */
+#undef HAVE_XMMINTRIN_H
 
 /* Define to 1 if you have the `_mm_free' function. */
 #undef HAVE__MM_FREE

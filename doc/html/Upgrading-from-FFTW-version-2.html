@@ -1,16 +1,16 @@
 <html lang="en">
 <head>
-<title>Upgrading from FFTW version 2 - FFTW 3.2.1</title>
+<title>Upgrading from FFTW version 2 - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="prev" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran" title="Calling FFTW from Fortran">
 <link rel="next" href="Installation-and-Customization.html#Installation-and-Customization" title="Installation and Customization">
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -45,8 +45,8 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Upgrading-from-FFTW-version-2"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Installation-and-Customization.html#Installation-and-Customization">Installation and Customization</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran">Calling FFTW from Fortran</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="index.html#Top">Top</a>
@@ -107,7 +107,7 @@ the input/output arrays unless you use <code>FFTW_ESTIMATE</code>.
 
    <p>FFTW 2 had separate data types <code>fftw_plan</code>, <code>fftwnd_plan</code>,
 <code>rfftw_plan</code>, and <code>rfftwnd_plan</code> for complex and real one- and
-multi-dimensional transforms, and each type had its own `<samp><span class="samp">destroy</span></samp>'
+multi-dimensional transforms, and each type had its own &lsquo;<samp><span class="samp">destroy</span></samp>&rsquo;
 function.  In FFTW 3, all plans are of type <code>fftw_plan</code> and all are
 destroyed by <code>fftw_destroy_plan(plan)</code>.
 
@@ -204,9 +204,9 @@ in <code>kernel/alloc.c</code>).
 
 <h3 class="heading">Fortran interface</h3>
 
-<p>In FFTW 2, the subroutine names were obtained by replacing `<samp><span class="samp">fftw_</span></samp>'
-with `<samp><span class="samp">fftw_f77</span></samp>'; in FFTW 3, you replace `<samp><span class="samp">fftw_</span></samp>' with
-`<samp><span class="samp">dfftw_</span></samp>' (or `<samp><span class="samp">sfftw_</span></samp>' or `<samp><span class="samp">lfftw_</span></samp>', depending upon the
+<p>In FFTW 2, the subroutine names were obtained by replacing &lsquo;<samp><span class="samp">fftw_</span></samp>&rsquo;
+with &lsquo;<samp><span class="samp">fftw_f77</span></samp>&rsquo;; in FFTW 3, you replace &lsquo;<samp><span class="samp">fftw_</span></samp>&rsquo; with
+&lsquo;<samp><span class="samp">dfftw_</span></samp>&rsquo; (or &lsquo;<samp><span class="samp">sfftw_</span></samp>&rsquo; or &lsquo;<samp><span class="samp">lfftw_</span></samp>&rsquo;, depending upon the
 precision).
 
    <p>In FFTW 3, we have begun recommending that you always declare the type
@@ -246,14 +246,14 @@ a separate library (<code>-lfftw3_threads -lfftw3 -lm</code> on Unix), as well a
 to the threading library (e.g. POSIX threads on Unix).
 
 <!-- ************************************************************ -->
-<div class="footnote">
+   <div class="footnote">
 <hr>
 <h4>Footnotes</h4><p class="footnote"><small>[<a name="fn-1" href="#fnd-1">1</a>]</small> We
 do our own buffering because GNU libc I/O routines are horribly slow for
 single-character I/O, apparently for thread-safety reasons (whether you
 are using threads or not).</p>
 
-   <p><hr></div>
+   <hr></div>
 
    </body></html>
 

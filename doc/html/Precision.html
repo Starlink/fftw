@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Precision - FFTW 3.2.1</title>
+<title>Precision - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Data-Types-and-Files.html#Data-Types-and-Files" title="Data Types and Files">
 <link rel="prev" href="Complex-numbers.html#Complex-numbers" title="Complex numbers">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,8 +46,8 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Precision"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Memory-Allocation.html#Memory-Allocation">Memory Allocation</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Complex-numbers.html#Complex-numbers">Complex numbers</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Data-Types-and-Files.html#Data-Types-and-Files">Data Types and Files</a>
@@ -69,12 +69,12 @@ can link to the different-precision libraries simultaneously.)
 
      <li>Include the <em>same</em> <code>&lt;fftw3.h&gt;</code> header file.
 
-     <li>Replace all lowercase instances of `<samp><span class="samp">fftw_</span></samp>' with `<samp><span class="samp">fftwf_</span></samp>' or
+     <li>Replace all lowercase instances of &lsquo;<samp><span class="samp">fftw_</span></samp>&rsquo; with &lsquo;<samp><span class="samp">fftwf_</span></samp>&rsquo; or
 <code>fftwl_</code> for single or long-double precision, respectively. 
 (<code>fftw_complex</code> becomes <code>fftwf_complex</code>, <code>fftw_execute</code>
 becomes <code>fftwf_execute</code>, etcetera.)
 
-     <li>Uppercase names, i.e. names beginning with `<samp><span class="samp">FFTW_</span></samp>', remain the
+     <li>Uppercase names, i.e. names beginning with &lsquo;<samp><span class="samp">FFTW_</span></samp>&rsquo;, remain the
 same.
 
      <li>Replace <code>double</code> with <code>float</code> or <code>long double</code> for

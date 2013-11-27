@@ -107,7 +107,7 @@ typedef struct scanner_s scanner;
 #define MIN_ALIGNMENT 16
 #endif
 
-#ifdef HAVE_ALLOCA
+#if defined(HAVE_ALLOCA) && defined(FFTW_ENABLE_ALLOCA)
    /* use alloca if available */
 
 #ifndef alloca
@@ -961,7 +961,7 @@ int X(nbuf_redundant)(INT n, INT vl, int which,
 		      const INT *maxnbuf, int nmaxnbuf);
 INT X(bufdist)(INT n, INT vl);
 int X(toobig)(INT n);
-int X(ct_uglyp)(INT min_n, INT n, INT r);
+int X(ct_uglyp)(INT min_n, INT v, INT n, INT r);
 
 #if HAVE_SIMD || HAVE_CELL
 R *X(taint)(R *p, INT s);

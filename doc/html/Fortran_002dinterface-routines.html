@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Fortran-interface routines - FFTW 3.2.1</title>
+<title>Fortran-interface routines - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran" title="Calling FFTW from Fortran">
 <link rel="prev" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran" title="Calling FFTW from Fortran">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,9 +46,9 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Fortran-interface-routines"></a>
 <a name="Fortran_002dinterface-routines"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="FFTW-Constants-in-Fortran.html#FFTW-Constants-in-Fortran">FFTW Constants in Fortran</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran">Calling FFTW from Fortran</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Calling-FFTW-from-Fortran.html#Calling-FFTW-from-Fortran">Calling FFTW from Fortran</a>
@@ -59,10 +59,10 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Calling-FFTW-from-Fortran.html#Calling-
 
 <p>Nearly all of the FFTW functions have Fortran-callable equivalents.  The
 name of the Fortran routine is the same as that of the corresponding C
-routine, but with the `<samp><span class="samp">fftw_</span></samp>' prefix replaced by `<samp><span class="samp">dfftw_</span></samp>'. 
-(The single and long-double precision versions use `<samp><span class="samp">sfftw_</span></samp>' and
-`<samp><span class="samp">lfftw_</span></samp>', respectively, instead of `<samp><span class="samp">fftwf_</span></samp>' and
-`<samp><span class="samp">fftwl_</span></samp>'.)<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>
+routine, but with the &lsquo;<samp><span class="samp">fftw_</span></samp>&rsquo; prefix replaced by &lsquo;<samp><span class="samp">dfftw_</span></samp>&rsquo;. 
+(The single and long-double precision versions use &lsquo;<samp><span class="samp">sfftw_</span></samp>&rsquo; and
+&lsquo;<samp><span class="samp">lfftw_</span></samp>&rsquo;, respectively, instead of &lsquo;<samp><span class="samp">fftwf_</span></samp>&rsquo; and
+&lsquo;<samp><span class="samp">fftwl_</span></samp>&rsquo;.)<a rel="footnote" href="#fn-1" name="fnd-1"><sup>1</sup></a>
 
    <p>For the most part, all of the arguments to the functions are the same,
 with the following exceptions:
@@ -102,7 +102,7 @@ corresponding <code>rank</code> argument.
 translation between column-major and row-major; you are responsible
 for setting the strides etcetera to correspond to your Fortran arrays. 
 However, as a slight bug that we are preserving for backwards
-compatibility, the `<samp><span class="samp">plan_guru_r2r</span></samp>' in Fortran <em>does</em> reverse the
+compatibility, the &lsquo;<samp><span class="samp">plan_guru_r2r</span></samp>&rsquo; in Fortran <em>does</em> reverse the
 order of its <code>kind</code> array parameter, so the <code>kind</code> array
 of that routine should be in the reverse of the order of the iodim
 arrays (see above).
@@ -131,7 +131,7 @@ to link to FFTW.</p>
 reason for this is that some Fortran implementations seem to have
 trouble with C function return values, and vice versa.</p>
 
-   <p><hr></div>
+   <hr></div>
 
    </body></html>
 

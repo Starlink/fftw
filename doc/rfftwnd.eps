@@ -1,11 +1,11 @@
 %!PS-Adobe-2.0 EPSF-2.0
 %%Title: ./rfftwnd.fig
-%%Creator: fig2dev Version 3.2 Patchlevel 5-alpha7
-%%CreationDate: Wed Apr 25 21:11:46 2007
-%%For: stevenj@ab-initio (Steven G. Johnson,12-104,617-253-4780,617-225-9758)
+%%Creator: fig2dev Version 3.2 Patchlevel 5a
+%%CreationDate: Sun Jul 12 06:48:11 2009
 %%BoundingBox: 0 0 270 405
 %Magnification: 0.7000
 %%EndComments
+%%BeginProlog
 /$F2psDict 200 dict def
 $F2psDict begin
 $F2psDict /mtrx matrix put
@@ -51,10 +51,6 @@ $F2psDict /mtrx matrix put
 /col38 {0.875 0.859 0.000 srgb} bind def
 
 end
-save
-newpath 0 405 moveto 0 0 lineto 270 0 lineto 270 405 lineto closepath clip newpath
--2.5 407.2 translate
-1 -1 scale
 
 /cp {closepath} bind def
 /ef {eofill} bind def
@@ -129,10 +125,22 @@ newfontname newfont definefont pop end } def
 /$F2psBegin {$F2psDict begin /$F2psEnteredState save def} def
 /$F2psEnd {$F2psEnteredState restore end} def
 
+/pageheader {
+save
+newpath 0 405 moveto 0 0 lineto 270 0 lineto 270 405 lineto closepath clip newpath
+-2.5 407.2 translate
+1 -1 scale
 $F2psBegin
 10 setmiterlimit
 0 slj 0 slc
  0.04200 0.04200 sc
+} bind def
+/pagefooter {
+$F2psEnd
+restore
+} bind def
+%%EndProlog
+pageheader
 %
 % Fig objects follow
 %
@@ -2244,8 +2252,7 @@ n 378 5872 m
 n 487 6129 m
  612 6129 l gs col0 s gr 
 % here ends figure;
-$F2psEnd
-rs
+pagefooter
 showpage
 %%Trailer
 %EOF

@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Planner Flags - FFTW 3.2.1</title>
+<title>Planner Flags - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Basic-Interface.html#Basic-Interface" title="Basic Interface">
 <link rel="prev" href="Complex-DFTs.html#Complex-DFTs" title="Complex DFTs">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,8 +46,8 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Planner-Flags"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Real_002ddata-DFTs.html#Real_002ddata-DFTs">Real-data DFTs</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Complex-DFTs.html#Complex-DFTs">Complex DFTs</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Basic-Interface.html#Basic-Interface">Basic Interface</a>
@@ -57,7 +57,7 @@ Up:&nbsp;<a rel="up" accesskey="u" href="Basic-Interface.html#Basic-Interface">B
 <h4 class="subsection">4.3.2 Planner Flags</h4>
 
 <p>All of the planner routines in FFTW accept an integer <code>flags</code>
-argument, which is a bitwise OR (`<samp><span class="samp">|</span></samp>') of zero or more of the flag
+argument, which is a bitwise OR (&lsquo;<samp><span class="samp">|</span></samp>&rsquo;) of zero or more of the flag
 constants defined below.  These flags control the rigor (and time) of
 the planning process, and can also impose (or lift) restrictions on the
 type of transform algorithm that is employed.
@@ -100,7 +100,7 @@ substantially increased planning time.
      <li><a name="index-FFTW_005fWISDOM_005fONLY-166"></a><code>FFTW_WISDOM_ONLY</code> is a special planning mode in which the plan
 is only created if wisdom is available for the given problem, and
 otherwise a <code>NULL</code> plan is returned.  This can be combined with
-other flags, e.g. `<samp><span class="samp">FFTW_WISDOM_ONLY | FFTW_PATIENT</span></samp>' creates a
+other flags, e.g. &lsquo;<samp><span class="samp">FFTW_WISDOM_ONLY | FFTW_PATIENT</span></samp>&rsquo; creates a
 plan only if wisdom is available that was created in
 <code>FFTW_PATIENT</code> or <code>FFTW_EXHAUSTIVE</code> mode.  The
 <code>FFTW_WISDOM_ONLY</code> flag is intended for users who need to detect
@@ -165,5 +165,5 @@ in <code>FFTW_ESTIMATE</code> mode (which is thus equivalent to a time limit
 of 0).
 
 <!-- =========> -->
-</body></html>
+   </body></html>
 

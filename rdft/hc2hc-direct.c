@@ -166,14 +166,14 @@ static int applicable0(const S *ego, rdft_kind kind, INT r)
 	  );
 }
 
-static int applicable(const S *ego, rdft_kind kind, INT r, INT m,
+static int applicable(const S *ego, rdft_kind kind, INT r, INT m, INT v,
 		      const planner *plnr)
 {
      if (!applicable0(ego, kind, r))
           return 0;
 
      if (NO_UGLYP(plnr) && X(ct_uglyp)((ego->bufferedp? (INT)512 : (INT)16),
-				       m * r, r)) 
+				       v, m * r, r)) 
 	  return 0;
 
      return 1;
@@ -198,7 +198,7 @@ static plan *mkcldw(const hc2hc_solver *ego_,
 	  0, awake, print, destroy
      };
 
-     if (!applicable(ego, kind, r, m, plnr))
+     if (!applicable(ego, kind, r, m, v, plnr))
           return (plan *)0;
 
      cld0 = X(mkplan_d)(
@@ -241,6 +241,9 @@ static plan *mkcldw(const hc2hc_solver *ego_,
 
      if (ego->bufferedp) 
 	  pln->super.super.ops.other += 4 * r * (pln->me - pln->mb) * v;
+
+     pln->super.super.could_prune_now_p =
+	  (!ego->bufferedp && r >= 5 && r < 64 && m >= r);
 
      return &(pln->super.super);
 

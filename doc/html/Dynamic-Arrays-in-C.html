@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Dynamic Arrays in C - FFTW 3.2.1</title>
+<title>Dynamic Arrays in C - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensional-Array-Format" title="Multi-dimensional Array Format">
 <link rel="prev" href="Fixed_002dsize-Arrays-in-C.html#Fixed_002dsize-Arrays-in-C" title="Fixed-size Arrays in C">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,8 +46,8 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Dynamic-Arrays-in-C"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Dynamic-Arrays-in-C_002dThe-Wrong-Way.html#Dynamic-Arrays-in-C_002dThe-Wrong-Way">Dynamic Arrays in C-The Wrong Way</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Fixed_002dsize-Arrays-in-C.html#Fixed_002dsize-Arrays-in-C">Fixed-size Arrays in C</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Multi_002ddimensional-Array-Format.html#Multi_002ddimensional-Array-Format">Multi-dimensional Array Format</a>
@@ -72,7 +72,7 @@ values in the array).  For example, here is code to allocate a
      an_array = (fftw_complex*) fftw_malloc(5*12*27 * sizeof(fftw_complex));
 </pre>
    <p>Accessing the array elements, however, is more tricky&mdash;you can't
-simply use multiple applications of the `<samp><span class="samp">[]</span></samp>' operator like you
+simply use multiple applications of the &lsquo;<samp><span class="samp">[]</span></samp>&rsquo; operator like you
 could for fixed-size arrays.  Instead, you have to explicitly compute
 the offset into the array using the formula given earlier for
 row-major arrays.  For example, to reference the (i,j,k)-th
@@ -80,10 +80,10 @@ element of the array allocated above, you would use the expression
 <code>an_array[k + 27 * (j + 12 * i)]</code>.
 
    <p>This pain can be alleviated somewhat by defining appropriate macros,
-or, in C++, creating a class and overloading the `<samp><span class="samp">()</span></samp>' operator. 
+or, in C++, creating a class and overloading the &lsquo;<samp><span class="samp">()</span></samp>&rsquo; operator. 
 The recent C99 standard provides a way to reinterpret the dynamic
 array as a &ldquo;variable-length&rdquo; multi-dimensional array amenable to
-`<samp><span class="samp">[]</span></samp>', but this feature is not yet widely supported by compilers. 
+&lsquo;<samp><span class="samp">[]</span></samp>&rsquo;, but this feature is not yet widely supported by compilers. 
 <a name="index-C99-119"></a><a name="index-C_002b_002b-120"></a>
 <!-- =========> -->
 

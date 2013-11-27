@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Real-to-Real Transforms - FFTW 3.2.1</title>
+<title>Real-to-Real Transforms - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Basic-Interface.html#Basic-Interface" title="Basic Interface">
 <link rel="prev" href="Real_002ddata-DFT-Array-Format.html#Real_002ddata-DFT-Array-Format" title="Real-data DFT Array Format">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,9 +46,9 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Real-to-Real-Transforms"></a>
 <a name="Real_002dto_002dReal-Transforms"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Real_002dto_002dReal-Transform-Kinds.html#Real_002dto_002dReal-Transform-Kinds">Real-to-Real Transform Kinds</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Real_002ddata-DFT-Array-Format.html#Real_002ddata-DFT-Array-Format">Real-data DFT Array Format</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Basic-Interface.html#Basic-Interface">Basic Interface</a>
@@ -93,7 +93,7 @@ not defined).
      <ul>
 <li><code>rank</code> is the dimensionality of the transform (it should be the
 size of the arrays <code>*n</code> and <code>*kind</code>), and can be any
-non-negative integer.  The `<samp><span class="samp">_1d</span></samp>', `<samp><span class="samp">_2d</span></samp>', and `<samp><span class="samp">_3d</span></samp>'
+non-negative integer.  The &lsquo;<samp><span class="samp">_1d</span></samp>&rsquo;, &lsquo;<samp><span class="samp">_2d</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">_3d</span></samp>&rsquo;
 planners correspond to a <code>rank</code> of <code>1</code>, <code>2</code>, and
 <code>3</code>, respectively.  A <code>rank</code> of zero is equivalent to a copy
 of one number from input to output.
@@ -135,11 +135,11 @@ what is computed is the separable product formed by taking each
 transform kind along the corresponding dimension, one dimension after
 another.
 
-     <li><a name="index-flags-202"></a><code>flags</code> is a bitwise OR (`<samp><span class="samp">|</span></samp>') of zero or more planner flags,
+     <li><a name="index-flags-202"></a><code>flags</code> is a bitwise OR (&lsquo;<samp><span class="samp">|</span></samp>&rsquo;) of zero or more planner flags,
 as defined in <a href="Planner-Flags.html#Planner-Flags">Planner Flags</a>.
 
 </ul>
 
 <!-- =========> -->
-</body></html>
+   </body></html>
 

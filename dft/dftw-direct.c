@@ -170,7 +170,7 @@ static int applicable0(const S *ego,
 
 	  /* check for alignment/vector length restrictions */
 	  && ((*extra_iter = 0,
-	       e->genus->okp(e, rio, iio, ivs, 0, m, mb, me, ms, plnr))
+	       e->genus->okp(e, rio, iio, irs, ivs, m, mb, me, ms, plnr))
 	      ||
 	      (*extra_iter = 1,
 	       (1
@@ -179,13 +179,13 @@ static int applicable0(const S *ego,
 		   Generating the proper twiddle factors is a pain in
 		   this case */
 		&& mb == 0 && me == m
-		&& e->genus->okp(e, rio, iio, ivs, 0, m, 
-				 mb, me - 1, ms, plnr)
-		&& e->genus->okp(e, rio, iio, ivs, 0, m, 
-				 me - 1, me + 1, ms, plnr))))
+		&& e->genus->okp(e, rio, iio, irs, ivs,
+				 m, mb, me - 1, ms, plnr)
+		&& e->genus->okp(e, rio, iio, irs, ivs,
+				 m, me - 1, me + 1, ms, plnr))))
 
-	  && (e->genus->okp(e, rio + ivs, iio + ivs, ivs, 0, m, 
-			    mb, me - *extra_iter, ms, plnr))
+	  && (e->genus->okp(e, rio + ivs, iio + ivs, irs, ivs,
+			    m, mb, me - *extra_iter, ms, plnr))
 
 	  );
 }
@@ -240,7 +240,7 @@ static int applicable(const S *ego,
      }
 
      if (NO_UGLYP(plnr) && X(ct_uglyp)((ego->bufferedp? (INT)512 : (INT)16),
-				       m * r, r))
+				       v, m * r, r))
 	  return 0;
 
      if (m * r > 262144 && NO_FIXED_RADIX_LARGE_NP(plnr))

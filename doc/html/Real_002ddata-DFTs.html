@@ -1,9 +1,9 @@
 <html lang="en">
 <head>
-<title>Real-data DFTs - FFTW 3.2.1</title>
+<title>Real-data DFTs - FFTW 3.2.2</title>
 <meta http-equiv="Content-Type" content="text/html">
-<meta name="description" content="FFTW 3.2.1">
-<meta name="generator" content="makeinfo 4.8">
+<meta name="description" content="FFTW 3.2.2">
+<meta name="generator" content="makeinfo 4.13">
 <link title="Top" rel="start" href="index.html#Top">
 <link rel="up" href="Basic-Interface.html#Basic-Interface" title="Basic Interface">
 <link rel="prev" href="Planner-Flags.html#Planner-Flags" title="Planner Flags">
@@ -11,7 +11,7 @@
 <link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
 <!--
 This manual is for FFTW
-(version 3.2.1, 5 February 2009).
+(version 3.2.2, 12 July 2009).
 
 Copyright (C) 2003 Matteo Frigo.
 
@@ -46,9 +46,9 @@ Copyright (C) 2003 Massachusetts Institute of Technology.
 </head>
 <body>
 <div class="node">
-<p>
 <a name="Real-data-DFTs"></a>
 <a name="Real_002ddata-DFTs"></a>
+<p>
 Next:&nbsp;<a rel="next" accesskey="n" href="Real_002ddata-DFT-Array-Format.html#Real_002ddata-DFT-Array-Format">Real-data DFT Array Format</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="Planner-Flags.html#Planner-Flags">Planner Flags</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="Basic-Interface.html#Basic-Interface">Basic Interface</a>
@@ -90,7 +90,7 @@ with a multi-dimensional out-of-place c2r transform (see below).
      <ul>
 <li><code>rank</code> is the dimensionality of the transform (it should be the
 size of the array <code>*n</code>), and can be any non-negative integer.  The
-`<samp><span class="samp">_1d</span></samp>', `<samp><span class="samp">_2d</span></samp>', and `<samp><span class="samp">_3d</span></samp>' planners correspond to a
+&lsquo;<samp><span class="samp">_1d</span></samp>&rsquo;, &lsquo;<samp><span class="samp">_2d</span></samp>&rsquo;, and &lsquo;<samp><span class="samp">_3d</span></samp>&rsquo; planners correspond to a
 <code>rank</code> of <code>1</code>, <code>2</code>, and <code>3</code>, respectively.  A
 <code>rank</code> of zero is equivalent to a transform of size 1, i.e. a copy
 of one number (with zero imaginary part) from input to output.
@@ -122,7 +122,7 @@ initialized, but they must be allocated.)  For an in-place transform, it
 is important to remember that the real array will require padding,
 described in <a href="Real_002ddata-DFT-Array-Format.html#Real_002ddata-DFT-Array-Format">Real-data DFT Array Format</a>. 
 <a name="index-padding-182"></a>
-<li><a name="index-flags-183"></a><code>flags</code> is a bitwise OR (`<samp><span class="samp">|</span></samp>') of zero or more planner flags,
+<li><a name="index-flags-183"></a><code>flags</code> is a bitwise OR (&lsquo;<samp><span class="samp">|</span></samp>&rsquo;) of zero or more planner flags,
 as defined in <a href="Planner-Flags.html#Planner-Flags">Planner Flags</a>.
 
 </ul>
@@ -156,5 +156,5 @@ complex DFT of the same input, and a c2r transform is correspondingly
 equivalent to <code>FFTW_BACKWARD</code>.  For more information, see <a href="What-FFTW-Really-Computes.html#What-FFTW-Really-Computes">What FFTW Really Computes</a>.
 
 <!-- =========> -->
-</body></html>
+   </body></html>
 
