@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -40,6 +40,8 @@ extern "C" {
 typedef float bench_real;
 #elif defined(BENCHFFT_LDOUBLE)
 typedef long double bench_real;
+#elif defined(BENCHFFT_QUAD)
+typedef __float128 bench_real;
 #else
 typedef double bench_real;
 #endif
@@ -55,6 +57,13 @@ typedef bench_real bench_complex[2];
 #define SINGLE_PRECISION (!DOUBLE_PRECISION && sizeof(bench_real) == sizeof(float))
 #undef LDOUBLE_PRECISION
 #define LDOUBLE_PRECISION (!DOUBLE_PRECISION && sizeof(bench_real) == sizeof(long double))
+
+#undef QUAD_PRECISION
+#ifdef BENCHFFT_QUAD
+#define QUAD_PRECISION (!LDOUBLE_PRECISION && sizeof(bench_real) == sizeof(__float128))
+#else
+#define QUAD_PRECISION 0
+#endif
 
 typedef enum { PROBLEM_COMPLEX, PROBLEM_REAL, PROBLEM_R2R } problem_kind_t;
 

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-8 Matteo Frigo
- * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-11 Matteo Frigo
+ * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -24,7 +24,6 @@
 
 #include "threads.h"
 
-#ifdef HAVE_THREADS
 #if defined(USING_POSIX_THREADS)
 
 #include <pthread.h>
@@ -239,7 +238,7 @@ struct worker {
 
 static struct worker *make_worker(void)
 {
-     struct worker *q = MALLOC(sizeof(*q), OTHER);
+     struct worker *q = (struct worker *)MALLOC(sizeof(*q), OTHER);
      os_sem_init(&q->ready);
      os_sem_init(&q->done);
      return q;
@@ -332,6 +331,9 @@ static void kill_workforce(void)
 
      w.proc = 0;
 
+     THREAD_ON; /* needed for debugging mode: since make_worker
+		   is called from dequeue which is only called in
+		   thread_on mode, we need to unmake_worker in thread_on. */
      WITH_QUEUE_LOCK({
 	  /* tell all workers that they must terminate.  
 
@@ -349,6 +351,7 @@ static void kill_workforce(void)
 	       unmake_worker(q);
 	  }
      });
+     THREAD_OFF;
 }
 
 int X(ithreads_init)(void)
@@ -434,5 +437,3 @@ void X(threads_cleanup)(void)
      os_mutex_destroy(&queue_lock);
      os_sem_destroy(&termination_semaphore);
 }
-
-#endif /* HAVE_THREADS */

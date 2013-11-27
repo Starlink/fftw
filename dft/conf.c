@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2003, 2007-8 Matteo Frigo
- * Copyright (c) 2003, 2007-8 Massachusetts Institute of Technology
+ * Copyright (c) 2003, 2007-11 Matteo Frigo
+ * Copyright (c) 2003, 2007-11 Massachusetts Institute of Technology
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
@@ -41,7 +41,20 @@ void X(dft_conf_standard)(planner *p)
 {
      X(solvtab_exec)(s, p);
      X(solvtab_exec)(X(solvtab_dft_standard), p);
-#if HAVE_SIMD
-     X(solvtab_exec)(X(solvtab_dft_simd), p);
+#if HAVE_SSE2
+     if (X(have_simd_sse2)())
+	  X(solvtab_exec)(X(solvtab_dft_sse2), p);
+#endif
+#if HAVE_AVX
+     if (X(have_simd_avx)())
+	  X(solvtab_exec)(X(solvtab_dft_avx), p);
+#endif
+#if HAVE_ALTIVEC
+     if (X(have_simd_altivec)())
+	  X(solvtab_exec)(X(solvtab_dft_altivec), p);
+#endif
+#if HAVE_NEON
+     if (X(have_simd_neon)())
+	  X(solvtab_exec)(X(solvtab_dft_neon), p);
 #endif
 }
